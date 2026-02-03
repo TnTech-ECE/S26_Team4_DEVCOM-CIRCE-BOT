@@ -1,4 +1,4 @@
-# {Name of the Project} - Your project should have a catchy and functional name
+# DEVCOM CIRCE V2 (ZEKROM) - Zone Establishment Kinetic Rover for Overland Mesh (placeholder)
 
 The descriptions and information in all readme files in the starter repo (including this one) must be edited. All section descriptions must be deleted. Any failure to remove the description information (like the statement that you are currently reading) will be heavily penalized!
 
@@ -28,7 +28,11 @@ Below the video link show some well-taken, appropriately sized images of the pro
 
 ### Team
 
-Give a brief bio for each team member and their broad contribution to the project (no need to be terribly specifc).
+Gerardo Ramirez  
+Nick Romsdal  
+Brady Harkleroad  
+Sharif Zahra  
+Daniel Davis  
 
 ### Faculty Supervisor
 
