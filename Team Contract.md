@@ -21,9 +21,8 @@ In this section, the team will discuss and clearly define their collective expec
 - **Expectation:** Each team member is expected to:
   - Actively productively participate in all team meetings and discussions.
   - Engage fully in project activities and contribute ideas.
-  - Notify the team a minimum of 12 hours in advance if unable to attend a regularly scheduled meeting or meet an obligation.
+  - Notify the team a minimum of 12 hours in advance if unable to attend a regularly scheduled meeting or meet an obligation, failure to do so will be considered an 'unexcused' absence.
   - Notify the team a minimum of 2 hours in advance if unable to attend meetings scheduled outside of regularly scheduled meetings.
-  - 
 
 ### **2. Contribution** *(Progress on the Project)*
 
@@ -39,8 +38,8 @@ In this section, the team will discuss and clearly define their collective expec
   - Professional, respectful, and considerate.
   - Primary internal communication shall be conducted through Microsoft Teams.
   - Secondary communication platform will be SMS messaging.
-  - Acknowledgement of recieving communication shall be made within 24 hours of sent.
-  - Failure to acknowledge recieving communcation after 6 hours, the contacting party may resort to secondary communication platform for follow up.
+  - Acknowledgement of receiving communication shall be made within 24 hours of sent.
+  - Failure to acknowledge receiving communication after 6 hours, the contacting party may resort to secondary communication platform for follow up.
   - Notify team ahead of time for there is planned extended duration away from communication platforms.
 
 ### **4. Meetings**
@@ -49,10 +48,11 @@ In this section, the team will discuss and clearly define their collective expec
   - **Frequency:** The team will meet a minimum of once (1) per week.
   - Meetings shall be held Thursdays 3:00-4:15 PM
   - Primary meeting location shall be the ECE Capstone Room in Brown Hall
-  - Auxillary meeting locations shall be in the Ashraf Islam Engineering Building (AIEB) with the room number being communicated to all team members.  
+  - Auxiliary meeting locations shall be in the Ashraf Islam Engineering Building (AIEB) with the room number being communicated to all team members.  
   - **Attendance:** Members are expected to attend all meetings; absences should be communicated in advance.
   - **Preparation:** Members should come prepared, having completed any agreed-upon tasks or research.
-
+  - Unexcused absences will require the offender to complete the following LinkedIn Learning(s) and show proof of completion:
+	  - "Efficient Time Management": Duration (1.5 hours)
 ### **5. Conduct**
 
 - **Expectation:** Team members will:
@@ -60,6 +60,8 @@ In this section, the team will discuss and clearly define their collective expec
   - Listen actively and allow others to express their ideas without interruption.
   - Address disagreements professionally and constructively.
   - Constructive criticism is encouraged and shall be made with the intent of bettering the work and team.  
+- Voting on team decisions shall be made with 80% quorum met in person, with 60% of the team in agreeance.  
+- Voting decisions shall go into effect 24 hours after the conclusion of the voting meeting to allow discussion with absent members and gain absentee voting.  
 
 ### **6. Conflict Resolution**
 
@@ -78,6 +80,7 @@ In this section, the team will discuss and clearly define their collective expec
   - Deadlines shall be agreed upon by the team as being achievable in a timely manner.  
   - If a member anticipates difficulty meeting a deadline, they must inform the team as soon as possible.
   - The team will collaboratively adjust workloads to ensure project timelines are maintained.
+  - Failure to meeting deadlines or delivering incomplete deliverables will require the offender to handwrite a 500 minimum word essay explaining why they missed the deadline in detail, their day by day plan to complete the deadline/deliverable, and plan moving forward to fix their mistakes.  
 
 
 ## **Unique Roles**
@@ -118,8 +121,6 @@ Include any other important agreements the team decides upon.
 ## **Team Member Signatures**
 
 By typing our names below, we acknowledge that we have read, understand, and agree to abide by the terms of this Teamwork Contract.
-
-[List all student names here]
 
  Nick Romsdal, Brady Harkleroad, Daniel Davis, Sharif Zahra, Gerardo Ramirez 
 
