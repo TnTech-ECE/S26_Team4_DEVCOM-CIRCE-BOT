@@ -32,7 +32,7 @@ Gerardo Ramirez
 Nick Romsdal  
 Brady Harkleroad  
 Sharif Zahra  
-Daniel Davis  
+Daniel Davis    
 Summer Morris  
 
 ### Faculty Supervisor
