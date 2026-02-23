@@ -1,7 +1,7 @@
 # **Teamwork Contract**
 
 **Team 4 - DEVCOM CIRCE BOT**  
-**Team Members:** Nick Romsdal, Brady Harkleroad, Daniel Davis, Sharif Zahra, Gerardo Ramirez 
+**Team Members:** Nick Romsdal, Brady Harkleroad, Daniel Davis, Sharif Zahra, Summer Morris, Gerardo Ramirez  
 *Electrical and Computer Engineering Department*  
 *Tennessee Technological University*
 
@@ -122,6 +122,6 @@ Include any other important agreements the team decides upon.
 
 By typing our names below, we acknowledge that we have read, understand, and agree to abide by the terms of this Teamwork Contract.
 
- Nick Romsdal, Brady Harkleroad, Daniel Davis, Sharif Zahra, Gerardo Ramirez 
+ Nick Romsdal, Brady Harkleroad, Daniel Davis, Sharif Zahra, Summer Morris, Gerardo Ramirez 
 
 
