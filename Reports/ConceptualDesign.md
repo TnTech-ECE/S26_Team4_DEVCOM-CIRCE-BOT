@@ -187,11 +187,11 @@ This design minimizes risk by leveraging proven platforms — the Rover Zero 3, 
 
 ### Hardware Block Diagram
 
-![Hardware Block Diagram](images/block_diagram.png)
+![Hardware Block Diagram](block_diagram.png)
 
 ### Operational Flow Chart
 
-![Operational Flow Chart](images/operational_flowchart.png)
+![Operational Flow Chart](operational_flowchart.png)
 
 ---
 
@@ -206,11 +206,11 @@ This design minimizes risk by leveraging proven platforms — the Rover Zero 3, 
 - CirceBot shall have at least one Battery Management System (BMS) to monitor the activity of both batteries. The BMS shall communicate the state of charge (%), state of health, and battery temperature for both batteries back to the system operator to ensure safe operation and prevent overcharge, over-discharge, and thermal faults [20, 21]. The BMS(s) shall have a dedicated fuse implemented in the circuit to prevent overcurrent.
 - There shall be a dedicated, easy-access emergency stop (E-STOP) button to cut power to CirceBot's motors by sending a dedicated hard-wire E-STOP signal to the motor drivers, wheel motors, cable-laying motor, and high-current loads. Maintaining power to low-power logic, microcontroller, sensors, and Raspberry Pi to ensure continuous event logging, in accordance with emergency stop safety principles for machinery [22].
 
-![E-STOP System Flowchart](images/estop.png)
+![E-STOP System Flowchart](estop.png)
 
 ### B. Navigation
 
-![Navigation Signal/Wiring Flow Chart (Simplified)](images/nav.png)
+![Navigation Signal/Wiring Flow Chart (Simplified)](nav.png)
 
 - As opposed to relying on GPS coordinates and satellites to localize the robot, CirceBot shall locate itself using a local ENU coordinate system paired with UTM map projections to precisely localize itself without relying on satellite signals.
 - CirceBot shall track itself within the ENU coordinate system using onboard IMU and onboard wheel rotation tracking.
@@ -227,7 +227,7 @@ This design minimizes risk by leveraging proven platforms — the Rover Zero 3, 
 - CirceBot shall carry 100 meters of ethernet cable.
 - CirceBot shall be able to operate for a minimum of 20 minutes.
 
-![Hardwired Communication System Flowchart](images/hardwired.png)
+![Hardwired Communication System Flowchart](hardwired.png)
 
 ### D. Robot Operating System
 
@@ -271,7 +271,7 @@ The Teensy 4.1 microcontroller runs Zephyr RTOS to guarantee deterministic execu
 - The RTOS shall poll telemetry sensors via I2C and SPI at sufficient frequency to maintain accurate state estimation.
 - The RTOS shall assign hardware interrupts the highest execution priority for emergency stop events and encoder pulse reading.
 
-![OS Operational Signal Chart](images/os_signal_chart.png)
+![OS Operational Signal Chart](os_signal_chart.png)
 
 ### E. Drivetrain
 
@@ -297,7 +297,7 @@ The drivetrain for CIRCE is based on the Rover Robotics 4WD Rover Zero 3 platfor
 - The drivetrain shall be capable of operating for a minimum of 20 minutes under full load on the onboard power supply.
 - The drivetrain shall be capable of navigating outdoor uneven terrain without becoming immobilized.
 
-![Drivetrain Chart](images/drive_train.png)
+![Drivetrain Chart](drive_train.png)
 
 ### F. M.E. Team Systems
 
