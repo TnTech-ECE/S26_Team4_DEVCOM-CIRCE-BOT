@@ -271,7 +271,7 @@ The Teensy 4.1 microcontroller runs Zephyr RTOS to guarantee deterministic execu
 - The RTOS shall poll telemetry sensors via I2C and SPI at sufficient frequency to maintain accurate state estimation.
 - The RTOS shall assign hardware interrupts the highest execution priority for emergency stop events and encoder pulse reading.
 
-![OS Operational Signal Chart](ossignalchart.png)
+![OS Operational Signal Chart](Operating.png)
 
 ### E. Drivetrain
 
@@ -297,7 +297,7 @@ The drivetrain for CIRCE is based on the Rover Robotics 4WD Rover Zero 3 platfor
 - The drivetrain shall be capable of operating for a minimum of 20 minutes under full load on the onboard power supply.
 - The drivetrain shall be capable of navigating outdoor uneven terrain without becoming immobilized.
 
-![Drivetrain Chart](drivetrain.png)
+![Drivetrain Chart](driveTrainC.png)
 
 ### F. M.E. Team Systems
 
