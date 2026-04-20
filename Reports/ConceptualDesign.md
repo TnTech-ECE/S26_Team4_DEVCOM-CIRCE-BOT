@@ -59,11 +59,28 @@ Ultrasonic sensors have also been considered as another option for a short-range
 
 When working under GPS-denied constraints, the robot must rely on dead reckoning navigation starting at C2 to guide itself to the next waypoint, confined to approximately within a 100-meter radius of C2 as outlined by the customer specifications.
 
-#### UTM Projection and ENU Frame
-At a local scale in determining waypoints, Universal Transverse Mercator (UTM) projections can provide suitable navigational data using a system already established in military communities. Paired alongside the UTM map system, East North Up (ENU) provides a local tangential plane which follows the Northing and Easting coordinate format used in UTM maps. Should CirceBot be operated closer to the poles or have its operating range extended, UTM projections may become less accurate.
+#### Local Level Navigation (LLN) Frame
+At a local scale in determining waypoints, a Local Level Navigation (LLN) navigational solution fixes the origin of the coordinate system to the center of mass of CirceBot. With the origin moving with CirceBot, CirceBot can adapt to obstacles that may obstruct its intended path while still reaching the designated waypoint. Should CirceBot be operated closer to the North and/or South poles, the LLN system may become unstable due to polar singularity.
+
+#### Local Tangent Plane (LTP)
+Unlike the LLN, a Local Tangent Plane (LTP) affixes the origin to a location on Earth chosen by the navigational solution. For CirceBot, this would be where CirceBot is powered on at C2. Beyond the origin location, LTP orients the z-axis as up and down relative to Earth's surface. LTP also allows the x-axis and y-axis to be aligned with either topographical directions or environmental features such as roads and buildings.
 
 #### Earth Centered Earth Fixed (ECEF) Frame
-More often applied to satellite tracking, an ECEF reference frame can be applied to UGVs, albeit with generally smaller values on all three axes. ECEF uses reference points fixed relative to the origin located at the Earth's center of mass, remaining accurate at a global scale regardless of latitude. However, because the coordinate system's typical scale encompasses the entire Earth, path planning over the scale CirceBot operates in will prove ECEF too complicated for general use. Thus, ECEF may only be considered as an intermediary coordinate system before being transformed into an ENU frame to be processed by CirceBot.
+Often applicable for long range GPS-enabled navigation, an Earth Centered Earth Fixed (ECEF) reference frame can be applied to UGVs, albeit with generally smaller values on all three axes. ECEF uses reference points fixed relative to the origin located at the Earth's center of mass, remaining accurate at a global scale regardless of latitude. However, because the coordinate system's typical scale encompasses the entire Earth, path planning over the scale CirceBot operates in may prove ECEF too complicated for general use. Coordinates in ECEF may become inaccurate due to rounding errors when running calculations. Furthermore, the z-axis for ECEF is parallel to the Earth's spin axis, which follows a circle approximately 15 meters in radius at the north pole. Thus, this system may only be considered as an intermediary coordinate system before being transformed into a local navigational solution to be processed by CirceBot.
+
+#### Earth Centered Inertial (ECI) Frame
+As the name implies, the Earth Centered Inertial (ECI) frame does not accelerate or rotate from the perspective of the universe. From this, the Earth's rotation about its spin axis is nonnegligible and coordinates can change over time despite not physically moving relative to Earth. Similarly to ECEF, ECI uses the same z-axis, making it susceptible to polar motion.
+
+#### Trade Table — Coordinate System
+
+| Coordinate System | | Determining Waypoints (0.30) | Minimal Error Propagation (0.45) | Sensor Integration (0.25) | Total (5.0) |
+|---|---|---|---|---|---|
+| GPS Enabled | Earth Centered Inertial (ECI) | 2 → 0.60 | 3 → 1.35 | 1 → 0.25 | 2.20 / 5 |
+| GPS Enabled | Earth Centered Earth Fixed (ECEF) | 4 → 1.20 | 3 → 1.35 | 3 → 0.75 | 3.30 / 5 |
+| GPS Denied | Local Level Navigation (LLN) | 4 → 1.20 | 4 → 1.80 | 2 → 0.50 | 3.50 / 5 |
+| GPS Denied | Local Tangent Plane (LTP) | 3 → 0.90 | 2 → 0.90 | 3 → 0.75 | 2.55 / 5 |
+
+The criteria used in the table above reflect important factors weighted based on their perceived impact on project completion and performance. As one of the requirements for this project is to follow successive waypoints, maintaining low error propagation is crucial to ensure CirceBot reaches its intended destination, hence its higher weight at 0.45. The Determining Waypoints category is set at a lower weight than error propagation, as mathematical transformations can be applied to convert values between coordinate systems. Based on the results, Local Level Navigation (LLN) scored highest among GPS-denied options and is selected as the primary coordinate system for CirceBot's navigation. To comply with the customer's requirement of simulating GPS-denied operation, a GPS module necessary to use ECEF will be toggleable, allowing ECEF to serve as an intermediary coordinate system when GPS simulation mode is active.
 
 ### C. Power Supply
 
@@ -118,21 +135,90 @@ CAT6 ethernet cables can support 10 Gbps and frequencies up to 250 MHz, though s
 | CAT5e | 4 → 1.00 | 3 → 0.45 | 5 → 1.75 | 3 → 0.75 | 3.95 / 5 |
 | CAT6 | 3 → 0.75 | 4 → 0.60 | 2 → 0.70 | 4 → 1.00 | 3.05 / 5 |
 
-### F. Operating System
+### F. Drivetrain Platform
+
+Three alternative platforms were evaluated alongside the Rover Robotics 4WD Rover Zero 3 to determine the most suitable drivetrain for the CIRCE system.
+
+The Rover Pro and Scout 2.0 platforms are designed for more extreme environments, offering higher durability and better terrain handling. However, both systems introduce significantly higher cost and complexity than required for CIRCE. These platforms are better suited for long-term deployment or harsh weather conditions, which are not the primary focus of this project.
+
+The Leo Rover provides a smaller and more flexible research platform, with strong software support and ease of development. However, its limited payload capacity of 5 kg and reduced terrain capability make it unsuitable for carrying and deploying Ethernet cable in contested environments.
+
+The Rover Zero 3 provides a balance between performance, cost, and simplicity. It offers sufficient payload capacity and terrain capability while maintaining a lower cost and easier integration with existing systems. It meets all requirements for the CIRCE system without adding unnecessary complexity.
+
+| Attributes | Rover Zero 3 | Rover Pro | Leo Rover | Scout 2.0 |
+|---|---|---|---|---|
+| Cost | ~$4,000 | ~$9,200 | ~$5,200 | ~$14,000 |
+| Payload Capacity | 50 kg | High | 5 kg | High |
+| Terrain Capability | Good | Excellent | Good | Excellent |
+| Drive Type | 4WD | 4WD | 4WD | 4WD |
+| Complexity | Moderate | Moderate | Low | High |
+| Durability | Moderate | High | Moderate | Very High |
+| Suitability for CIRCE | Strong | Overkill | Not suitable | Overkill |
+
+### G. Operating System
+
+Designing the operating system subsystem requires analysis to ensure the selected software, hardware, and communication protocols can successfully meet the specifications of the CIRCE platform. The analysis focuses on three critical architectures: the selection of the Single Board Computer (SBC) and microcontroller unit (MCU), and the selection of the Robot Operating System 2 (ROS 2) distribution for the SBC.
+
+#### ROS Middleware
+
+For CIRCE to operate autonomously in contested environments, the system requires an operating system capable of executing sensor fusion, spatial mapping, and path planning, alongside a middleware framework that governs inter-process communication and robotic autonomy. The middleware framework required to drive the autonomous behavior of CIRCE is Robot Operating System 2 (ROS 2). ROS 2 is a tool used to simplify the development of robotics. It provides standardized communication mechanisms, data transport, and node lifecycle management. The implementation of ROS is based on the kernel version of the SBC. Selecting the appropriate ROS 2 version is constrained by the hardware requirements of the SBC and the official target platforms defined by the ROS Enhancement Proposal 2000 (REP-2000) [16]. Different Linux kernels and ROS versions are to be evaluated for three system criteria:
+
+1. **Reliable Publisher/Subscriber Communication:** The middleware must reliably publish and subscribe nodes to topics, ensuring message delivery between sensor, planning, and control nodes that compose CIRCE's autonomy stack.
+2. **Autonomy Stack Package Support:** The middleware must reliably support the core autonomy stack required by CIRCE, including sensor fusion, robot localization, 2D mapping, path planning, and coordinate frame management.
+3. **Language Standards and Native Kernel Compatibility:** The middleware must support modern versions of C++ and Python, and the OS kernel version of the SBC must natively support the corresponding version of the middleware without the use of docker containerization or virtualization.
+
+There are two distributions of ROS 2, Humble and Jazzy. Both ROS 2 distributions are built on a publisher/subscriber messaging method, where nodes communicate by publishing messages to other nodes and subscribing nodes to topics to receive messages of interest. For CIRCE, this method governs all nodes' data flow: LiDAR drivers publish point clouds, IMU drivers publish inertial measurements, the localization node publishes pose estimates, the SLAM node publishes occupancy grids, and the navigation stack publishes velocity commands. Therefore, it must reliably handle the registration, discovery, and delivery of topic messages between concurrent nodes without loss or delivery failure.
+
+ROS 2 Humble and Jazzy use Data Distribution Service (DDS) for publisher/subscriber communication [32, 33]. Both distributions implement the ROS Middleware (RMW) abstraction layer, which sits between the ROS 2 client libraries and the actual DDS vendor implementation. The default RMW implementation in both distributions is eProsima Fast DDS [33]. The differences are in how the ROS 2 layer interacts with DDS. Humble introduced Content-Filtered Topics, a DDS feature that lets subscribers specify a filter expression so they only receive messages whose content matches the predicate — a DDS optimization where filtering happens at the publisher or in the middleware before serialization [32]. In Jazzy, the executor's interaction with DDS has improved, efficiently polling for new data or events without throttling the CPU [33]. For CIRCE to operate as intended, nearly all of its publishers/subscribers feed from multiple topics.
+
+CIRCE's software stack requires C++ for low-level control algorithms and Python for higher-level planning and integration. Both Humble and Jazzy require a minimum of C++17 as the C++ language standard [32, 33]. For Python, Humble requires Python 3.10 (default on Ubuntu 22.04 LTS), while Jazzy requires a minimum of Python 3.8 but is built and distributed for Python 3.12 (default on Ubuntu 24.04 LTS) [32, 33]. The Linux kernel version shipped with the SBC's operating system must natively support ROS 2 distribution's APT packages, eliminating the need for docker containerization, which would introduce latency overhead, real-time scheduling issues, and system complexity that could cause issues with CIRCE's autonomy.
+
+Additionally, both Humble and Jazzy offer the full package to drive the CIRCE system fully autonomously. These packages are as follows:
+
+1. **robot_localization:** A non-linear state estimation package that fuses data from multiple sensors using an Extended Kalman Filter (EKF) or Unscented Kalman Filter (UKF). [35]
+2. **slam_toolbox:** A 2D Simultaneous Localization and Mapping library that builds an occupancy grid map of the environment. [34]
+3. **nav2:** Provides path planning, obstacle avoidance, behavior trees, and waypoint following. [36]
+4. **tf2:** The coordinate frame transform library, providing time-stamped spatial relationships between all reference frames in the robot — sensor frames, body frames, odometric frames, and map frames.
+
+| Feature | ROS 2 Humble Hawksbill | ROS 2 Jazzy Jalisco |
+|---|---|---|
+| Release Date & Status | May 2022 (Stable LTS) | May 2024 (Latest LTS) |
+| End of Life (Support Lifecycle) | May 2027 | May 2029 |
+| Target Operating System (REP-2000) | Ubuntu 22.04 LTS (Jammy Jellyfish) | Ubuntu 24.04 LTS (Noble Numbat) |
+| Ubuntu Kernel | Linux 5.15 LTS | Linux 6.8 |
+| Language Standards Compliance | Python 3.10, C++17 | Python 3.12, C++20 |
+
+Both Humble and Jazzy satisfy all three criteria. However, Jazzy is preferred on the first and third criteria where its architectural improvements directly serve CIRCE's long-term operational requirements. Jazzy provides the full DDS publisher/subscriber architecture from Humble and improves executor efficiency. Data race conditions in executors that were present in prior releases have been resolved in Jazzy, improving multithreaded reliability [33]. For CIRCE's high node count, these executor improvements reduce scheduling overhead and provide more deterministic message delivery. Additionally, Jazzy's pairing with Ubuntu 24.04 LTS with Python 3.12 and the Linux 6.8 kernel provides improved real-time scheduling and broader modern SBC hardware support.
 
 #### Single Board Computer (SBC): Raspberry Pi 5 vs. NVIDIA Jetson Nano
-Selecting the primary SBC dictates the capabilities of the high-level operating system. The Pi 5 features a newer, significantly faster quad-core ARM Cortex-A76 processor operating at 2.4 GHz, capable for general-purpose computing tasks [14], managing ROS 2 node communications, and executing CPU-bound SLAM algorithms. The NVIDIA Jetson Nano's primary focus is AI and deep learning workloads, integrating a powerful 128-core NVIDIA Maxwell GPU capable of 472 GFLOPS of native AI performance [15]. However, the developer kit version does not support newer Ubuntu versions [15], which creates a bottleneck for ROS 2 requirements. Because CIRCE's primary navigational challenges are rooted in control, SLAM mapping, and path planning rather than heavy AI neural processing, the Raspberry Pi 5 is the superior choice.
+
+Selecting the primary SBC dictates the capabilities of the high-level operating system and the system's ability to process complex environmental data. For the CIRCE platform to meet its specifications, the SBC must actively manage data streams from LiDAR and Intel RealSense Depth Camera with IMU, and simultaneously manage the Robot Operating System (ROS) distribution. To determine the optimal hardware, the Raspberry Pi 5 and NVIDIA Jetson Nano are evaluated for three system criteria:
+
+1. **Computational Power:** The SBC must process CPU-bound ROS 2 packages — rplidar, realsense, slam_toolbox, nav2, and robot_localization (sensor fusion) — to make fast decisions for navigation and obstacle detection.
+2. **Software Architecture:** The SBC must support bare-metal execution of a modern OS such as Linux Ubuntu 24.04 LTS to ensure compatibility with the ROS 2 packages.
+3. **Peripheral Integration:** The board must include high-bandwidth I/O interfaces such as USB 3.0/2.0 to reliably receive depth and point cloud data from the RealSense camera and LiDAR readings without causing CPU bottlenecks.
+
+The Raspberry Pi 5 utilizes a quad-core ARM Cortex-A76 processor operating at 2.4 GHz with 8 GB of RAM. This high clock speed and memory provide single-thread and multi-thread processing power, which is required to compute complex ROS 2 algorithms such as SLAM and Nav2 since they are heavily CPU-bound. It is also equipped with a 12-core VideoCore VII GPU operating at 800 MHz, but the task required to operate the CIRCE platform is CPU-intensive. The Pi 5 natively supports modern Linux distributions like Ubuntu 24.04 LTS, allowing bare-metal installation of ROS 2 packages. It also features dual USB 3.0 ports sufficient for RealSense camera and LiDAR data streaming.
+
+The NVIDIA Jetson Nano kit focuses primarily on AI and deep learning workloads, utilizing a 128-core NVIDIA Maxwell GPU capable of 472 GFLOPS of native AI performance. However, its central processor is an older quad-core ARM Cortex-A57 operating at 1.43 GHz with 4 GB of RAM. The Jetson Nano does not support newer Ubuntu versions such as the required Ubuntu 24.04 LTS to run ROS 2. To operate ROS 2 on the Nano kit, docker containerization is required. The Jetson Nano offers better GPU performance than the Pi 5, but the Linux version required to run the ROS 2 packages is not supported unless a docker is implemented.
+
+Since ROS 2 middleware involves passing messages between nodes using DDS, managing node lifecycle, allocating memory, and handling the network stack, the core navigational capabilities of the CIRCE system rely entirely on CPU performance. The Nano's CPU is slower than the Pi 5's, which could cause a bottleneck. Not only is it slower, but the Nano has half as much RAM as the Pi 5. When processing SLAM and navigation, more memory is required for the CPU to render its environmental map and perform path planning simultaneously. The Pi 5's 8 GB of LPDDR4X RAM provides the necessary headroom. Overall, the Raspberry Pi 5 supplies the necessary raw CPU performance to run ROS 2 packages while simultaneously communicating with peripherals.
 
 | Feature | Raspberry Pi 5 | NVIDIA Jetson Nano Dev Kit |
 |---|---|---|
 | Processor (CPU) | Quad-core ARM Cortex-A76 @ 2.4 GHz | Quad-core ARM Cortex-A57 @ 1.43 GHz |
 | Graphics (GPU) | 12-core VideoCore VII @ 800 MHz | 128-core NVIDIA Maxwell @ 921 MHz |
 | Memory (RAM) | Up to 8GB LPDDR4X | 4GB 64-bit LPDDR4 |
-| Connectivity | Built-in Wi-Fi 6, Ethernet & Bluetooth 5.0 | Requires external adapters |
-| AI Performance | External Raspberry Pi AI HAT+, 13 or 26 TOPS | Up to 472 GFLOPS native |
+| Connectivity | Wi-Fi, Bluetooth, & Ethernet / 2x USB 3.0/2.0 | Ethernet, 5x USB 3.0 |
+| AI Performance | External Raspberry Pi AI HAT+ 2 / Up to 40 TOPS | Up to 472 GFLOPS native |
 
 #### Microcontroller Unit (MCU): Teensy 4.1 vs. STM32F407
-The MCU acts as the real-time system of the robot, translating velocity commands from the SBC into motor movements while reading motor encoders, handling sensor polling, and executing motor control. The STM32F407 processor runs at 168 MHz with 192 KB of SRAM, which may not be sufficient given its high bandwidth processing requirements. While cost-effective and equipped with numerous I/O ports, it lacks the processing bandwidth required to concurrently manage hardware interrupts, the motor control loop, and communication with the Pi 5 with minimal latency. The Teensy 4.1 is powered by an ARM Cortex-M7 processor operating at 600 MHz with 1024 KB of RAM and approximately 8 MB of Flash memory. The Teensy's processing capability also allows it to run `robot_localization` algorithms such as an Extended Kalman Filter (EKF) natively on the board.
+
+Motor control and active cable tension management must be properly managed by a microcontroller unit. The MCU acts as the real-time system of the robot, translating velocity commands from the SBC into motor movements while reading motor encoders, exchanging data between the SBC, and sensor polling.
+
+The STM32F407 processor runs at 168 MHz with 192 KB of SRAM, which may not be sufficient for this application given its high bandwidth processing requirements. While cost-effective and equipped with numerous I/O ports, it lacks the processing bandwidth required to concurrently manage hardware interrupts, the motor control loop, and communication with the Pi 5 with minimal latency.
+
+The Teensy 4.1 is powered by an ARM Cortex-M7 processor operating at 600 MHz and can be overclocked if necessary. It includes 1024 KB of RAM and approximately 8 MB of Flash memory. While it has fewer GPIO pins than the STM32F407, it has the right set of ports for this application and outperforms the STM32F407 in raw processing power.
 
 | Feature | Teensy 4.1 | STM32 F407 |
 |---|---|---|
@@ -145,17 +231,6 @@ The MCU acts as the real-time system of the robot, translating velocity commands
 | SPI Ports | 3 | 3 |
 | I2C Ports | 3 | 3 |
 | CAN Bus Interfaces | 3 (Includes 1 CAN FD) | 2 |
-
-#### High-Level OS and Middleware: ROS 2 Humble vs. ROS 2 Jazzy
-According to REP-2000, ROS 2 Humble Hawksbill targets Ubuntu 22.04 LTS [16]. However, the Pi 5 architecture requires the newer Ubuntu 23.10 or 24.04 kernels, meaning installing Humble forces developers to use Docker containers or virtualization, introducing network and computational latency. REP-2000 designates Ubuntu 24.04 LTS as the Tier 1 supported operating system for ROS 2 Jazzy Jalisco [17], allowing Jazzy to be installed natively on the Pi 5. Jazzy also introduces support for modern language standards (C++20 and Python 3.12) and provides extended Long-Term Support [16], making it the superior choice for the CIRCE platform.
-
-| Feature | ROS 2 Humble Hawksbill | ROS 2 Jazzy Jalisco |
-|---|---|---|
-| Release Date & Status | May 2022 (Stable LTS) | May 2024 (Latest LTS) |
-| End of Life | May 2027 | May 2029 |
-| Target OS (REP-2000) | Ubuntu 22.04 LTS (Jammy Jellyfish) | Ubuntu 24.04 LTS (Noble Numbat) |
-| Raspberry Pi 5 Native Support | Poor (Requires virtualization) | Excellent (Native, bare-metal execution) |
-| Language Standards | Python 3.10, C++17 | Python 3.12, C++20 |
 
 #### Low-Level OS: Zephyr RTOS vs. Bare Metal Execution
 Bare metal programming offers the lowest memory footprint and consistently low interrupt latency, as the application runs directly on the hardware without any intermediate abstractions. While this is ideal for simple, single-purpose applications, the complexity of scheduling concurrent tasks — such as managing communication network stacks with the Pi 5, reading sensors, and executing motor control — rapidly becomes overwhelming without an operating system. Zephyr RTOS provides a highly reusable, deterministic task scheduler and robust inter-process communication primitives such as mutexes and message queues. Because the Teensy 4.1 has 1024 KB of RAM and a 600 MHz clock speed, the minimal overhead introduced by Zephyr is negligible, and it provides the necessary structural framework to reliably run the CIRCE platform.
@@ -177,13 +252,21 @@ The CIRCE system integrates five electrical subsystems into a cohesive, semi-aut
 
 At the core of the system is the Rover Robotics 4WD Rover Zero 3, which serves as both the drivetrain and chassis for CirceBot. The platform was selected for its rugged outdoor performance, ROS 2 compatibility, and sufficient payload capacity to carry 100 meters of Cat5e Ethernet cable along with all onboard electronics. A Raspberry Pi 5 running Ubuntu 24.04 LTS and ROS 2 Jazzy Jalisco serves as the high-level computing platform, coordinating sensor fusion, SLAM-based navigation, and communication with the CirceSoft operator interface. A Teensy 4.1 microcontroller running Zephyr RTOS handles all real-time operations including motor control, cable tension management via PWM, and telemetry sensor polling.
 
-Navigation in GPS-denied environments is achieved through the fusion of LiDAR and depth camera data processed through a SLAM algorithm, enabling CirceBot to map its environment and navigate to operator-specified ECEF waypoints without reliance on satellite positioning. Obstacle detection is handled in real time, with the system autonomously rerouting around or over detected obstacles before resuming its assigned path. All navigation commands and telemetry data — including position, velocity, remaining cable length, battery status, and error codes — are transmitted at a minimum of 10 Hz via WebSocket protocol over the Cat5e Ethernet cable being deployed, ensuring jam-resistant communication throughout the mission.
+Navigation in GPS-denied environments is achieved through the fusion of LiDAR and depth camera data processed through a SLAM algorithm, enabling CirceBot to map its environment and navigate to operator-specified ECEF waypoints without reliance on satellite positioning. Obstacle detection is handled in real time, with the system autonomously rerouting around or over detected obstacles before resuming its assigned path. All navigation commands and telemetry data including position, velocity, remaining cable length, battery status, and error codes are transmitted at a minimum of 10 Hz via WebSocket protocol over the Cat5e Ethernet cable being deployed, ensuring jam-resistant communication throughout the mission.
 
 Power is supplied by two lithium-ion polymer batteries managed by a dedicated Battery Management System. The first battery powers all primary systems including the drivetrain, onboard computing, and sensors, while the second powers the cable-laying mechanism. Non-isolated buck converters regulate voltage for each subsystem, and a hardware E-STOP provides immediate power cutoff to all actuators in the event of an emergency while preserving power to the microcontroller and logging systems.
 
 The cable spool and laying mechanism are designed and fabricated by the Mechanical Engineering team, with the Teensy 4.1 providing PWM-based tension control signals to the spool motor to maintain cable tension within the 25 pounds-force maximum specified by ANSI/TIA-568.2-D. This EE and ME interface is the primary integration point between the two teams and is managed through designated liaisons to minimize the risk of cross-team communication gaps.
 
-This design minimizes risk by leveraging proven platforms — the Rover Zero 3, Raspberry Pi 5, and ROS 2 — while addressing the novel integration challenge of autonomous cable deployment in contested environments. Resource utilization is optimized by treating the Rover Zero 3 as a prior-cycle asset and concentrating new procurement within the $1,070 budget ceiling.
+This design minimizes risk by leveraging proven platforms, the Rover Zero 3, Raspberry Pi 5, and ROS 2, while addressing the novel integration challenge of autonomous cable deployment in contested environments. Resource utilization is optimized by treating the Rover Zero 3 as a prior-cycle asset and concentrating new procurement within the $1,070 budget ceiling.
+
+### Requirements Traceability
+
+The architecture directly satisfies each specification set forth by DEVCOM. The requirement for GPS-denied navigation is met by the SLAM-based Nav2 stack fusing LiDAR and depth camera data with IMU and wheel odometry, no satellite positioning is required at any point during the mission. The 10 Hz minimum telemetry frequency is satisfied by the ROS 2 Telemetry and Communication Node serializing position, velocity, cable length, battery status, and error codes via WebSocket over the deployed Cat5e cable; this path is entirely hardwired and immune to RF jamming, simultaneously satisfying the RF-contested communication requirement. The 20-minute minimum runtime is addressed by two LiPo batteries independently sized for the drivetrain and spool loads, with a dedicated BMS monitoring both. The 25 lbf maximum cable tension limit per ANSI/TIA-568.2-D is enforced in hardware through ADC feedback from a spool-mounted strain gauge to the Teensy 4.1's PWM control loop, which actively adjusts spool motor speed to stay within tolerance. The 100-meter cable capacity and tool-free reel replacement within 2 minutes are addressed at the ME/EE interface, the EE team's deliverable is a stable PWM tension signal. The ME team's deliverable is a motor-driven spool that responds to it.
+
+### Risk Mitigation
+
+Three primary integration risks have been identified and mitigated in the architecture. First, ME/EE integration risk: the cable spool mechanism is the primary physical interface between the two teams and has been flagged by DEVCOM as a historical failure point in cross-team projects. This risk is mitigated by defining a hard interface contract, PWM signal out from the Teensy 4.1, spool motor response from the ME team, and managing coordination through designated liaisons on a recurring basis. Second, SLAM reliability in outdoor GPS-denied environments: fusing LiDAR, depth camera, IMU, and wheel odometry reduces single-sensor failure exposure, and the ENU/UTM coordinate system bounds all path planning within a local frame that does not depend on satellite signals. Third, budget overrun risk: the Rover Zero 3's transfer as a prior-cycle asset removes $4,000 from the gross cost. The net budget of $986.43 sits $83.57 under the $1,070 ceiling, with power subsystem BMS and E-STOP line items still pending final confirmation, intentionally surfacing that cost uncertainty now rather than during fabrication.
 
 ### Hardware Block Diagram
 
@@ -325,11 +408,11 @@ The team will take into consideration ethics, standards, and constraints when de
 
 ### B. Standards
 
-**Standards Considerations for Ethics:** The IEEE Code of Ethics will be used to ensure our work is done with the highest ethical and professional conduct [26]. Our decisions will be made such that the safety, health, and welfare of the public is prioritized.
+**Standards Considerations for Ethics:** The IEEE Code of Ethics will be used to ensure any work performed on CirceBot is done with the highest ethical and professional conduct [26]. Decisions will be made such that the safety, health, and welfare of the public is prioritized over performance, cost, or convenience. The IEEE Code of Ethics will influence decisions regarding component selection, design choices, and the safety protocols put in place for CirceBot. All work on this project shall be done in honesty, transparency, and by following best practices, with proper credit given to all contributions.
 
-**Standards Considerations for Power Systems:** Battery systems and energy storage components shall follow IEEE standards for rechargeable battery systems [27], as well as UL 2271 and IEC 62133 guidelines for lithium-ion battery performance and safety [20, 21]. System integration, electrical wiring, and overcurrent protection shall follow NFPA 70 (National Electrical Code) [19]. The E-STOP system shall be implemented in accordance with ISO 13850 standards [22], and safety conditions shall follow ISO 12100 for risk assessment and OSHA guidelines [28, 29].
+**Standards Considerations for Power Systems:** The design of CirceBot's power system shall follow industry standards to ensure correct operation, reliability, and safety while navigating CirceBot in a Tennessee environment. Battery systems and energy storage components shall follow IEEE standards for rechargeable battery systems [27]. This ensures proper monitoring of the state of charge, state of health, and temperature. The battery management system (BMS) shall report state of charge and temperature within reasonable accuracy. The IEEE standards for rechargeable battery systems will guarantee the batteries are properly designed, tested, and integrated into CirceBot to maintain safety and reliability. Lithium-ion battery shall follow UL 2271 and IEC 62133 guidelines to protect against overcharge, over-discharge, and short-circuit conditions [20, 21]. The system shall prevent the batteries voltage exceeding manufacturer ratings and shall disconnect loads during fault conditions. Tests will be conducted to confirm automatic shutdown during controlled overcharge and short-circuit experiments. System integration, electrical wiring, and overcurrent protection shall follow NFPA 70 (National Electrical Code) to ensure safe power distribution [19]. All conductors shall be rated for at least 125% of maximum current, and each subsystem shall include appropriately rated fuses. All DC converters shall be rated at 2 times the nominal continuous power consumption. Wire gauges and fuse ratings will be implemented accordingly based on calculated load currents during system integration. The E-STOP (emergency stop) system shall be implemented to ensure immediate power removal from all motion-producing subsystems, in accordance with ISO 13850 standards, to maintain safe system performance [22]. The E-STOP shall disable all motors and high-current loads within 100 ms of activation. Response time will be measured using an oscilloscope. Also, safety conditions shall follow ISO 12100 for risk assessment and OSHA guidelines for safe operation of electrical and mechanical systems [28, 29]. All identified hazards (electrical, mechanical, thermal) shall have corresponding preventive measures implemented. Therefore, these standards shall ensure the power system of CirceBot meets implemented engineering practices for safety, performance, and reliability.
 
-**Standards Considerations for Hardwired Communication:** The standards for ethernet communication shall be defined by the IEEE 802.3 standards [30]. Additionally, the ANSI/TIA 568 standard shall be used to ensure proper wiring of the ethernet cable [31].
+**Standards Considerations for Hardwired Communication:** The standards for ethernet communication shall be defined by IEEE 802.3 and ANSI/TIA 568 [30, 31]. IEEE 802.3 defines the allowable data rates, signaling methods, and electrical characteristics that govern cable and protocol selection; it specifies bandwidths for CAT5e up to 1 Gbps at cable lengths up to 100 meters, ensuring CirceBot can sustain the required 10 Hz telemetry rate with CirceSoft in RF-contested environments. ANSI/TIA-568 shall be used to ensure correct pin layout, connector type, and cable termination; the standard specifies a maximum twisted-pair cable length of 100 meters, which matches the exact length CirceBot deploys, as cable lengths beyond this limit face signal degradation that would require additional network hardware.
 
 ### C. Constraints
 
@@ -397,12 +480,12 @@ The team will take into consideration ethics, standards, and constraints when de
 
 ## VIII. Division of Labor
 
-- **Daniel Davis:** Constraints section of ethical, professional, and standards considerations; atomic subsystem for drivetrain.
-- **Brady Harkleroad:** Introduction, comparative analysis of potential solutions, budget and flowchart for power subsystem, atomic subsystem specifications, and standards considerations for power subsystem.
-- **Summer Morris:** Comparative analysis of potential solutions, budget and flowchart for hardwired communication subsystem, atomic subsystem specifications, ethical considerations, and standards considerations for ethics and hardwired communication subsystem.
-- **Gerardo Ramirez:** High-level solution narrative, hardware block diagram, unified operational flowchart, master budget compilation and reconciliation across all subsystems, operating system subsystem co-lead alongside Sharif Zahra, project coordination and subsystem integration oversight, and overall document assembly for the conceptual design submission.
-- **Nick Romsdal:** Navigation sub system (Obstacle Avoidance and Localization methods)
-- **Sharif Zahra:** Restating the fully formulated problem, OS atomic subsystem specifications, OS comparative analysis.
+- **Daniel Davis** is responsible for the drivetrain subsystem. He was chosen due to his experience in microcontroller programming, as well as his familiarity with hardware integration and motor control. He will focus on analyzing the Rover Zero 3 platform, interfacing the motor control system with CirceBot, and implementing movement control from the navigation subsystem for path following. His contributions include the constraints section of ethical, professional, and standards considerations and the atomic subsystem specifications for the drivetrain.
+- **Brady Harkleroad** is responsible for the power subsystem for CirceBot. He was chosen due to his focus in electrical engineering being both power and control systems, and his interest in power systems. Including the classes he is taking at Tennessee Tech University and some experience as a helping hand for licensed electricians, Brady has been tasked with designing the power subsystem. His contributions include the introduction, comparative analysis of potential solutions, budget and flowchart for the power subsystem, atomic subsystem specifications, and standards considerations for the power subsystem.
+- **Summer Morris** is responsible for the hardwired communication subsystem. She was chosen due to her focus on electrical engineering in mechatronics and control systems. Due to relevant courses she is currently taking at Tennessee Tech University, Summer has been tasked to establish the hardwired communication for CirceBot. Her contributions include the comparative analysis of potential solutions, budget and flowchart for the hardwired communication subsystem, atomic subsystem specifications, ethical considerations, and standards considerations for ethics and the hardwired communication subsystem.
+- **Gerardo Ramirez** serves as project lead and is responsible for the high-level solution narrative, hardware block diagram, unified operational flowchart, master budget compilation and reconciliation across all subsystems, and overall document assembly for the conceptual design submission. He was assigned the OS subsystem co-lead role alongside Sharif Zahra due to his experience in embedded programming (C/C++ and Python), hardware-software interface design, and system integration. His project coordination background and familiarity with the full system architecture made him the natural point of contact for subsystem integration oversight and cross-team liaison management between the EE and ME teams.
+- **Nick Romsdal** is responsible for the navigation subsystem, covering obstacle avoidance and localization methods. He was chosen due to his major in electrical engineering with a focus on mechatronic systems and practical experience in GPS-denied navigation. His contributions include the comparative analysis of navigation solutions, budget and flowchart for the navigation subsystem, and the project timeline.
+- **Sharif Zahra** is responsible for the operating system subsystem. He was chosen due to his major in electrical engineering focusing on embedded/mechatronics systems. His contributions include restating the fully formulated problem, OS atomic subsystem specifications, and OS comparative analysis.
 - **M.E. Team:** Cable laying device.
 
 ---
@@ -487,3 +570,13 @@ The team will take into consideration ethics, standards, and constraints when de
 [30] "IEEE Ethernet Standards," Study-ccna.com, Jan. 2016. [Online]. Available: https://study-ccna.com/ieee-ethernet-standards/
 
 [31] "The ANSI/TIA 568 Series of Specifications: What is Most Important to Know for Copper," trueCABLE. [Online]. Available: https://www.truecable.com/blogs/cable-academy/the-ansi-tia-568-series-of-specifications-what-is-most-important-to-know-for-copper
+
+[32] Open Robotics, "Humble Hawksbill (humble)," ROS 2 Documentation, May 2022. [Online]. Available: https://docs.ros.org/en/humble/Releases/Release-Humble-Hawksbill.html
+
+[33] Open Robotics, "Jazzy Jalisco (jazzy)," ROS 2 Documentation, May 2024. [Online]. Available: https://docs.ros.org/en/jazzy/Releases/Release-Jazzy-Jalisco.html
+
+[34] S. Macenski, "slam_toolbox," GitHub repository. [Online]. Available: https://github.com/SteveMacenski/slam_toolbox
+
+[35] Open Robotics, "robot_localization," ROS Index. [Online]. Available: https://index.ros.org/p/robot_localization/
+
+[36] Open Robotics, "Navigation 2 (Nav2)," Nav2 Documentation. [Online]. Available: https://docs.nav2.org/
