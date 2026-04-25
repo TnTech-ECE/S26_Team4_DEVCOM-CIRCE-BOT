@@ -1,0 +1,53 @@
+# Detailed Design: Power Subsystem
+
+## Function of the Power Subsystem
+
+The power system serves as the skeleton of the overall design of CirceBot. Its function is the centralized source of energy distribution to all components that require power to operate. Building on the system's conceptual design, the primary role of the subsystem is to provide stable power to each subsystem of CirceBot. This includes:
+
+- Drivetrain and motors  
+- Operating system  
+- Navigation system  
+- Hard-wire communication interface  
+- Cable laying spooling mechanism  
+
+Additionally, the system is modular.
+
+The subsystem is designed with mindfulness of practicality, efficiency, and compactness, limiting the complexity of wiring while focusing on overall system reliability. To ensure clear design implementation and easy maintenance, minimizing unnecessary interconnections and maximizing efficient power distribution is critical. This is especially important given the limited space inside the robot’s platform body.
+
+Beyond simply delivering power, the system is responsible for regulating voltage across components with different requirements. For example:
+
+- The Raspberry Pi requires a regulated **5.5V supply** for continuous operation  
+- The motor drive system may experience voltage surges when transitioning from rest  
+
+The power system also functions as a smart protective layer for other subsystems within CirceBot. It incorporates:
+
+- Overcurrent protection  
+- Voltage regulation  
+- Filtering  
+- Reverse-polarity protection  
+- Brown-out prevention  
+- Short circuit protection  
+- Back EMF protection  
+
+Some protections are already integrated into existing components (e.g., drivetrain and motors), while others must be implemented for sensitive electronics and the cable laying device.
+
+This subsystem is an essential part of the robot’s architecture, enabling **robust, safe, and reliable operation** across a range of challenging conditions.
+
+---
+
+## Specifications and Constraints for the Power Subsystem
+
+- CirceBot shall have a **dedicated, independent, rechargeable DC power source**
+- The system must support a minimum of **20 minutes of runtime**
+- CirceBot shall report the following to the user interface:
+  - State of Charge (SOC)
+  - State of Health (SOH)
+  - Temperature data
+- CirceBot will be powered by a **dual battery pack** housed within the chassis
+
+---
+
+## References
+
+- https://en.wikipedia.org/wiki/American_wire_gauge?utm_source=chatgpt.com  
+- https://www.amazon.com/Connector-Compatible-Vehicles-Aircraft-Airplane/dp/B0FPQ9TFBT/ref=sr_1_10_sspa?crid=37ERISEU1SZ3A&dib=eyJ2IjoiMSJ9.i8pfN6ARdGQcRJob-t3K5iEfwl7x6LoWOk-VpATeozzWJOUrMdFhR5oqX1kbjLr3jUC1K4I8CQWPi3xDnS6YBQ.0MJ5rhMVS1zYGmpoTB4NBkV6DbIk_7oDsAXiTF2NFlQ&dib_tag=se&keywords=80wh+battery+14.8v+rechargeable&qid=1777089790&sbo=RZvfv%2F%2FHxDF%2BO5021pAnSA%3D%3D&sprefix=80wh+battery+14.8v+rechargable%2Caps%2C157&sr=8-10-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9tdGY&psc=1
