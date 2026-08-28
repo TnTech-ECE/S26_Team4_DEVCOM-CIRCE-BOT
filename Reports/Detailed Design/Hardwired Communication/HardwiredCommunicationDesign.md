@@ -8,6 +8,8 @@
 ### Communication:
 * CirceBot shall communicate with CirceSoft using a standard WebSocket Protocol (RFC 6455) that is implemented over a Transmission Control Protocol (TCP) [1]
 * CirceBot shall send and receive commands at a minimum of 10 Hz
+* Communication between CirceSoft and CirceBot shall not exceed an average latency of 20 ms from end-to-end
+* Packet loss (loss of messages) between CirceSoft and CirceBot shall be no greater than 1% of the total messages transmitted during operation
 ### Data formatting:
 * CirceSoft shall send commands in the format supplied in CirceSoft2CirceBot.proto spec to CirceBot
 * CirceBot shall transmit telemetry data in the format supplied in the CirceBot2CirceSoft.proto spec to CirceSoft
@@ -124,6 +126,9 @@ The standards regarding the hardwired communication subsystem were chosen to ens
 
 ### Error codes:
   The hardwired communication subsystem shall send error codes alongside the telemetry data to and from CirceSoft in the event of a fault. Example errors that could potentially be used include a cable dispense error, CirceBot is stuck error, or CirceBot is overheating error. These examples demonstrate the types of faults CirceBot may need to detect.  CirceSoft will record the data given by CirceBot, such as the position, in JSON formatted files that can be used for diagnosing issues. The use of error codes and adequate data collection will minimize the need for intervention by humans in the warzone, as well as establish a well-organized record of important data [5]. 
+
+### Communication performance:
+  The communication performance will be evaluated based on the average end-to-end latency, frequency of the commands, and packet loss. A smaller latency will ensure messages sent to and from CirceBot are transmitted in a timely manner. A low percentage of packet loss will help prevent important commands and data from becoming lost during communication. A high command frequency will ensure valuable data and commands are sent out frequently. These metrics will ensure the communication subsystem is able to provide fast and reliable communication between CirceSoft and CirceBot.
 
 ## References:
 
