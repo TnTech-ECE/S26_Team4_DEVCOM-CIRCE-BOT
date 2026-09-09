@@ -107,6 +107,33 @@ CIRCE's node graph consists of six to eight nodes, each responsible for a distin
 
 These nodes execute concurrently as separate processes scheduled by the Linux kernel. ROS 2 Jazzy supports both single-threaded and multi-threaded executors, allowing nodes with high callback frequency, such as the sensor drivers publishing at a rate of at least 10 Hz. The Pi 5's quad-core ARM Cortex-A76 processor at 2.4 GHz distributes this workload across four cores, and the DDS shared memory transport minimizes inter-node communication latency.
 
+### Potential Failures Handling
+
+#### Unresponsive Node
+
+For an autonomous system like CIRCE, each node should be built as Lifecycle Nodes. Unlike standard nodes that allocate resources to their constructor and start publishing immediately. Lifecycle Nodes possess a managed state machine with specific states:
+
+- **Unconfigured**: The node is instantiated but holds no state. No hardware connections are open, and no network resources are active.
+- **Inactive**: The node has allocated memory and established its parameters. It is not actively reading or publishing data to the network.
+- **Active**: The node is fully operational, reading and publishing data to the network.
+- **Finalized**: A state reached immediately before the node is safely destroyed to free memory.
+
+A software watchdog monitors these nodes continuously. The watchdog uses DDS Quality of Service (QoS) policies to track system health. If a node crashes, the watchdog detects the missed deadlines from those nodes. A supervisor script can then issue a request to the ROS2 lifecycle manager to transition dead nodes back to Unconfigured, re-initialize its parameters via a configure transition, and push it back to the Active state to resume normal operation.
+
+#### USB Disconnects
+
+When a USB disconnects and reconnects in a Linux environment, the kernel assigns it the next available device node. The motor controller, MCU, depth camera, and LiDAR will all register as generic serial-to-USB devices (ttyACM* or ttyUSB* slots). If a disconnect happens and then reconnects, the kernel will race to reassign ttyUSB0, ttyUSB1, and ttyUSB2 based on which device boots the fastest. Binding specific hardware IDs to symlinks guarantees that `/dev/circe/motor_controller` or `/dev/circe/teensy` always points to the right hardware, regardless of the order in which the kernel registers the reconnected devices.
+
+While udev handles the operating system's device mapping, it cannot detect if a device is locked up, dropping packets, or electrically overwhelmed. Causes of non-physical USB failures: brownouts, electromagnetic interference from the motors, buffer overflow and firmware hangs, and serial communication desync. To manage these scenarios, except for brownouts, these devices must be initialized as a lifecycle node. If a driver node detects a read/write error, it can autonomously transition itself from Active down to Unconfigured. It can then attempt to re-initialize the connection by reopening the `/dev/circe/` port and transitioning back to Active.
+
+---
+
+### Verification and Validation Plan
+
+To ensure the ROS2 system initializes reliably, the system needs to launch each node in a corresponding order (Base Drivers -> Sensors -> MCU -> Autonomy & Localization -> WebSocket). If an autonomy or localization node is initialized before the base drivers or sensors, they will attempt to subscribe to topics that have not yet been initialized. This can cause a crash or hang indefinitely. A Python launch script will utilize `RegisterEventHandler` and `OnProcessStart`. Where the `RegisterEventHandler` allows the system to monitor process states and the `OnProcessStart` will trigger an action when an event occurs. To verify the stability of CIRCE's OS, `ros2 doctor` is used to check the health, environment, network, and running nodes of the system for potential issues or misconfigurations.
+
+---
+
 ### Custom Python Launch Sequence
 
 CIRCE's startup is managed by a custom Python launch file built using the ROS 2 `launch` library. Rather than launching all nodes simultaneously, the script initializes subsystems in a defined sequence. Hardware drivers first, then serial communication with the Teensy 4.1, then the full autonomy stack, to prevent nodes from attempting to subscribe to topics that have not yet been published. The pseudocode below outlines the intended launch logic:
@@ -202,6 +229,18 @@ The BMS module is polled by the Teensy over I2C rather than through a direct ana
 #### Stepper Motor Control for Cable Dispensing
 
 The cable spool mechanism designed by the ME team uses a stepper motor for controlled cable dispensing. The Teensy generates step and direction pulses to the stepper motor driver via GPIO. Using a stepper rather than a brushed DC motor provides open-loop position control without requiring encoder feedback, which simplifies the ME team's mechanical design and the firmware required to manage it. The Teensy controls dispense rate by adjusting the step pulse frequency in response to commands received from the Raspberry Pi 5, which can modulate cable payout speed based on the robot's current velocity reported by the drivetrain odometry.
+
+---
+
+### Resource Utilization
+
+#### Distributed Processing via MCU
+
+To reserve the Raspberry Pi 5 for computationally expensive tasks for autonomy and navigation, all real-time hardware interfaces are offloaded to the Teensy 4.1. The MCU runs bare-metal C++ firmware. It operates a control loop that handles stepping the cable spool motor, polling the BMS via I2C, and reading ultrasonic sensors. By delegating these tasks to an MCU, the Pi 5's OS is freed from processing hardware interrupts that could disrupt ROS2 execution threads.
+
+#### USB Bus Management and Network Overhead
+
+Because the LiDAR, Depth Camera, MCU, and Dual FSESC Controller all share the Pi's USB bus, managing bandwidth is critical. Rather than allowing standard ROS2 nodes to flood the internal DDS network, Quality of Service (QoS) tuning is used for efficient resource usage. While QoS is technically a software network protocol, it has a good impact regarding the USB bandwidth and CPU utilization.
 
 ---
 
