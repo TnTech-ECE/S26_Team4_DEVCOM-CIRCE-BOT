@@ -1,0 +1,545 @@
+[0.000000] (-) TimerEvent: {}
+[0.000146] (-) JobUnselected: {'identifier': 'circe_bringup'}
+[0.000307] (-) JobUnselected: {'identifier': 'circe_control'}
+[0.000329] (-) JobUnselected: {'identifier': 'circe_description'}
+[0.000346] (-) JobUnselected: {'identifier': 'circe_diagnostics'}
+[0.000363] (-) JobUnselected: {'identifier': 'circe_gazebo'}
+[0.000379] (-) JobUnselected: {'identifier': 'circe_nav'}
+[0.000394] (-) JobUnselected: {'identifier': 'circe_perception'}
+[0.000409] (-) JobUnselected: {'identifier': 'roverrobotics_description'}
+[0.000424] (-) JobUnselected: {'identifier': 'roverrobotics_gazebo'}
+[0.000438] (-) JobUnselected: {'identifier': 'roverrobotics_input_manager'}
+[0.000453] (-) JobUnselected: {'identifier': 'sllidar_ros2'}
+[0.000472] (roverrobotics_driver) JobQueued: {'identifier': 'roverrobotics_driver', 'dependencies': OrderedDict()}
+[0.000741] (roverrobotics_driver) JobStarted: {'identifier': 'roverrobotics_driver'}
+[0.010823] (roverrobotics_driver) JobProgress: {'identifier': 'roverrobotics_driver', 'progress': 'cmake'}
+[0.011717] (roverrobotics_driver) JobProgress: {'identifier': 'roverrobotics_driver', 'progress': 'build'}
+[0.012556] (roverrobotics_driver) Command: {'cmd': ['/usr/bin/cmake', '--build', '/home/devcom/circe_ws/build/roverrobotics_driver', '--', '-j4', '-l4'], 'cwd': '/home/devcom/circe_ws/build/roverrobotics_driver', 'env': OrderedDict({'USER': 'devcom', 'GZ_CONFIG_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/share/gz:/opt/ros/jazzy/opt/sdformat_vendor/share/gz:/opt/ros/jazzy/opt/gz_gui_vendor/share/gz:/opt/ros/jazzy/opt/gz_transport_vendor/share/gz:/opt/ros/jazzy/opt/gz_rendering_vendor/share/gz:/opt/ros/jazzy/opt/gz_plugin_vendor/share/gz:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/share/gz:/opt/ros/jazzy/opt/gz_msgs_vendor/share/gz:/opt/ros/jazzy/opt/gz_common_vendor/share/gz', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/lib:/opt/ros/jazzy/opt/gz_sensors_vendor/lib:/opt/ros/jazzy/opt/gz_physics_vendor/lib:/opt/ros/jazzy/opt/sdformat_vendor/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/aarch64-linux-gnu:/opt/ros/jazzy/opt/gz_gui_vendor/lib:/opt/ros/jazzy/opt/gz_transport_vendor/lib:/opt/ros/jazzy/opt/gz_rendering_vendor/lib:/opt/ros/jazzy/opt/gz_plugin_vendor/lib:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/lib:/opt/ros/jazzy/opt/gz_msgs_vendor/lib:/opt/ros/jazzy/opt/gz_common_vendor/lib:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_tools_vendor/lib:/opt/ros/jazzy/opt/gz_ogre_next_vendor/lib:/opt/ros/jazzy/opt/gz_dartsim_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'HOME': '/home/devcom', 'ROS_PYTHON_VERSION': '3', 'LC_CTYPE': 'C.UTF-8', 'ROS_DISTRO': 'jazzy', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'PATH': '/opt/ros/jazzy/opt/gz_msgs_vendor/bin:/opt/ros/jazzy/opt/gz_tools_vendor/bin:/opt/ros/jazzy/opt/gz_ogre_next_vendor/bin:/opt/ros/jazzy/bin:/usr/local/bin:/usr/bin:/bin', 'AMENT_PREFIX_PATH': '/opt/ros/jazzy', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'PWD': '/home/devcom/circe_ws/build/roverrobotics_driver', 'PYTHONPATH': '/opt/ros/jazzy/opt/gz_sim_vendor/lib/python:/opt/ros/jazzy/opt/sdformat_vendor/lib/python:/opt/ros/jazzy/opt/gz_transport_vendor/lib/python:/opt/ros/jazzy/opt/gz_msgs_vendor/lib/python:/opt/ros/jazzy/opt/gz_math_vendor/lib/python:/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'CMAKE_PREFIX_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy'}), 'shell': False}
+[0.099774] (-) TimerEvent: {}
+[0.144253] (roverrobotics_driver) StdoutLine: {'line': b'[ 25%] Building CXX object CMakeFiles/roverrobotics_driver.dir/src/roverrobotics_ros2_driver.cpp.o\n'}
+[0.144559] (roverrobotics_driver) StdoutLine: {'line': b'[ 25%] Building CXX object CMakeFiles/roverrobotics_driver.dir/library/librover/src/protocol_pro.cpp.o\n'}
+[0.144667] (roverrobotics_driver) StdoutLine: {'line': b'[ 25%] Building CXX object CMakeFiles/roverrobotics_driver.dir/library/librover/src/comm_serial.cpp.o\n'}
+[0.144909] (roverrobotics_driver) StdoutLine: {'line': b'[ 33%] Building CXX object CMakeFiles/roverrobotics_driver.dir/library/librover/src/protocol_zero_2.cpp.o\n'}
+[0.201852] (-) TimerEvent: {}
+[0.302074] (-) TimerEvent: {}
+[0.402308] (-) TimerEvent: {}
+[0.504722] (-) TimerEvent: {}
+[0.605013] (-) TimerEvent: {}
+[0.705369] (-) TimerEvent: {}
+[0.805638] (-) TimerEvent: {}
+[0.905920] (-) TimerEvent: {}
+[1.006292] (-) TimerEvent: {}
+[1.108188] (-) TimerEvent: {}
+[1.208577] (-) TimerEvent: {}
+[1.308954] (-) TimerEvent: {}
+[1.409286] (-) TimerEvent: {}
+[1.512180] (-) TimerEvent: {}
+[1.613358] (-) TimerEvent: {}
+[1.713701] (-) TimerEvent: {}
+[1.813989] (-) TimerEvent: {}
+[1.914261] (-) TimerEvent: {}
+[2.014519] (-) TimerEvent: {}
+[2.114790] (-) TimerEvent: {}
+[2.215071] (-) TimerEvent: {}
+[2.315354] (-) TimerEvent: {}
+[2.415662] (-) TimerEvent: {}
+[2.449204] (roverrobotics_driver) StdoutLine: {'line': b'[ 41%] Building CXX object CMakeFiles/roverrobotics_driver.dir/library/librover/src/protocol_mini_2wd_serial.cpp.o\n'}
+[2.518209] (-) TimerEvent: {}
+[2.618488] (-) TimerEvent: {}
+[2.718785] (-) TimerEvent: {}
+[2.819031] (-) TimerEvent: {}
+[2.919315] (-) TimerEvent: {}
+[3.019583] (-) TimerEvent: {}
+[3.120240] (-) TimerEvent: {}
+[3.220562] (-) TimerEvent: {}
+[3.320824] (-) TimerEvent: {}
+[3.421082] (-) TimerEvent: {}
+[3.521410] (-) TimerEvent: {}
+[3.522077] (roverrobotics_driver) StdoutLine: {'line': b'[ 50%] Building CXX object CMakeFiles/roverrobotics_driver.dir/library/librover/src/differential_robot.cpp.o\n'}
+[3.621522] (-) TimerEvent: {}
+[3.723167] (-) TimerEvent: {}
+[3.823445] (-) TimerEvent: {}
+[3.923789] (-) TimerEvent: {}
+[4.024068] (-) TimerEvent: {}
+[4.124310] (-) TimerEvent: {}
+[4.224537] (-) TimerEvent: {}
+[4.324790] (-) TimerEvent: {}
+[4.425299] (-) TimerEvent: {}
+[4.528184] (-) TimerEvent: {}
+[4.628433] (-) TimerEvent: {}
+[4.728682] (-) TimerEvent: {}
+[4.828930] (-) TimerEvent: {}
+[4.929202] (-) TimerEvent: {}
+[5.031173] (-) TimerEvent: {}
+[5.131409] (-) TimerEvent: {}
+[5.231653] (-) TimerEvent: {}
+[5.331901] (-) TimerEvent: {}
+[5.432211] (-) TimerEvent: {}
+[5.532491] (-) TimerEvent: {}
+[5.632976] (-) TimerEvent: {}
+[5.733219] (-) TimerEvent: {}
+[5.833481] (-) TimerEvent: {}
+[5.933702] (-) TimerEvent: {}
+[6.033923] (-) TimerEvent: {}
+[6.134158] (-) TimerEvent: {}
+[6.235162] (-) TimerEvent: {}
+[6.335540] (-) TimerEvent: {}
+[6.435758] (-) TimerEvent: {}
+[6.535969] (-) TimerEvent: {}
+[6.636158] (-) TimerEvent: {}
+[6.736364] (-) TimerEvent: {}
+[6.836568] (-) TimerEvent: {}
+[6.936791] (-) TimerEvent: {}
+[7.037016] (-) TimerEvent: {}
+[7.137246] (-) TimerEvent: {}
+[7.237465] (-) TimerEvent: {}
+[7.337678] (-) TimerEvent: {}
+[7.437877] (-) TimerEvent: {}
+[7.538077] (-) TimerEvent: {}
+[7.638283] (-) TimerEvent: {}
+[7.738480] (-) TimerEvent: {}
+[7.838682] (-) TimerEvent: {}
+[7.938884] (-) TimerEvent: {}
+[8.039099] (-) TimerEvent: {}
+[8.139399] (-) TimerEvent: {}
+[8.239681] (-) TimerEvent: {}
+[8.339882] (-) TimerEvent: {}
+[8.440096] (-) TimerEvent: {}
+[8.540297] (-) TimerEvent: {}
+[8.640500] (-) TimerEvent: {}
+[8.740770] (-) TimerEvent: {}
+[8.841038] (-) TimerEvent: {}
+[8.941250] (-) TimerEvent: {}
+[9.041455] (-) TimerEvent: {}
+[9.141657] (-) TimerEvent: {}
+[9.241866] (-) TimerEvent: {}
+[9.342149] (-) TimerEvent: {}
+[9.442414] (-) TimerEvent: {}
+[9.542613] (-) TimerEvent: {}
+[9.642814] (-) TimerEvent: {}
+[9.743012] (-) TimerEvent: {}
+[9.843224] (-) TimerEvent: {}
+[9.943497] (-) TimerEvent: {}
+[10.043767] (-) TimerEvent: {}
+[10.143967] (-) TimerEvent: {}
+[10.244165] (-) TimerEvent: {}
+[10.344364] (-) TimerEvent: {}
+[10.444563] (-) TimerEvent: {}
+[10.544846] (-) TimerEvent: {}
+[10.645106] (-) TimerEvent: {}
+[10.745289] (-) TimerEvent: {}
+[10.845502] (-) TimerEvent: {}
+[10.945704] (-) TimerEvent: {}
+[11.045913] (-) TimerEvent: {}
+[11.146155] (-) TimerEvent: {}
+[11.246366] (-) TimerEvent: {}
+[11.346572] (-) TimerEvent: {}
+[11.446783] (-) TimerEvent: {}
+[11.547037] (-) TimerEvent: {}
+[11.647303] (-) TimerEvent: {}
+[11.747583] (-) TimerEvent: {}
+[11.847862] (-) TimerEvent: {}
+[11.948076] (-) TimerEvent: {}
+[12.048286] (-) TimerEvent: {}
+[12.148483] (-) TimerEvent: {}
+[12.248683] (-) TimerEvent: {}
+[12.348885] (-) TimerEvent: {}
+[12.449111] (-) TimerEvent: {}
+[12.549314] (-) TimerEvent: {}
+[12.649515] (-) TimerEvent: {}
+[12.749725] (-) TimerEvent: {}
+[12.849931] (-) TimerEvent: {}
+[12.950143] (-) TimerEvent: {}
+[13.050350] (-) TimerEvent: {}
+[13.150552] (-) TimerEvent: {}
+[13.250765] (-) TimerEvent: {}
+[13.350969] (-) TimerEvent: {}
+[13.451189] (-) TimerEvent: {}
+[13.551391] (-) TimerEvent: {}
+[13.651605] (-) TimerEvent: {}
+[13.751816] (-) TimerEvent: {}
+[13.852015] (-) TimerEvent: {}
+[13.952226] (-) TimerEvent: {}
+[14.052426] (-) TimerEvent: {}
+[14.152630] (-) TimerEvent: {}
+[14.252846] (-) TimerEvent: {}
+[14.353057] (-) TimerEvent: {}
+[14.453287] (-) TimerEvent: {}
+[14.555258] (-) TimerEvent: {}
+[14.655521] (-) TimerEvent: {}
+[14.755723] (-) TimerEvent: {}
+[14.855939] (-) TimerEvent: {}
+[14.956159] (-) TimerEvent: {}
+[15.056370] (-) TimerEvent: {}
+[15.156583] (-) TimerEvent: {}
+[15.256788] (-) TimerEvent: {}
+[15.356993] (-) TimerEvent: {}
+[15.457199] (-) TimerEvent: {}
+[15.557401] (-) TimerEvent: {}
+[15.657601] (-) TimerEvent: {}
+[15.757819] (-) TimerEvent: {}
+[15.858140] (-) TimerEvent: {}
+[15.958508] (-) TimerEvent: {}
+[16.058887] (-) TimerEvent: {}
+[16.159226] (-) TimerEvent: {}
+[16.259559] (-) TimerEvent: {}
+[16.359901] (-) TimerEvent: {}
+[16.460334] (-) TimerEvent: {}
+[16.560763] (-) TimerEvent: {}
+[16.661163] (-) TimerEvent: {}
+[16.761427] (-) TimerEvent: {}
+[16.861631] (-) TimerEvent: {}
+[16.961839] (-) TimerEvent: {}
+[17.062055] (-) TimerEvent: {}
+[17.162273] (-) TimerEvent: {}
+[17.262536] (-) TimerEvent: {}
+[17.362743] (-) TimerEvent: {}
+[17.462937] (-) TimerEvent: {}
+[17.563140] (-) TimerEvent: {}
+[17.663324] (-) TimerEvent: {}
+[17.763539] (-) TimerEvent: {}
+[17.863800] (-) TimerEvent: {}
+[17.964048] (-) TimerEvent: {}
+[18.064283] (-) TimerEvent: {}
+[18.164486] (-) TimerEvent: {}
+[18.264695] (-) TimerEvent: {}
+[18.364920] (-) TimerEvent: {}
+[18.465199] (-) TimerEvent: {}
+[18.565456] (-) TimerEvent: {}
+[18.665665] (-) TimerEvent: {}
+[18.765866] (-) TimerEvent: {}
+[18.866069] (-) TimerEvent: {}
+[18.966296] (-) TimerEvent: {}
+[19.066504] (-) TimerEvent: {}
+[19.166721] (-) TimerEvent: {}
+[19.266925] (-) TimerEvent: {}
+[19.367132] (-) TimerEvent: {}
+[19.467331] (-) TimerEvent: {}
+[19.567589] (-) TimerEvent: {}
+[19.667964] (-) TimerEvent: {}
+[19.768291] (-) TimerEvent: {}
+[19.868503] (-) TimerEvent: {}
+[19.968716] (-) TimerEvent: {}
+[20.068920] (-) TimerEvent: {}
+[20.169141] (-) TimerEvent: {}
+[20.269341] (-) TimerEvent: {}
+[20.369556] (-) TimerEvent: {}
+[20.469767] (-) TimerEvent: {}
+[20.569977] (-) TimerEvent: {}
+[20.670178] (-) TimerEvent: {}
+[20.770390] (-) TimerEvent: {}
+[20.870588] (-) TimerEvent: {}
+[20.970854] (-) TimerEvent: {}
+[21.071202] (-) TimerEvent: {}
+[21.171463] (-) TimerEvent: {}
+[21.271762] (-) TimerEvent: {}
+[21.372132] (-) TimerEvent: {}
+[21.472450] (-) TimerEvent: {}
+[21.572774] (-) TimerEvent: {}
+[21.672973] (-) TimerEvent: {}
+[21.773175] (-) TimerEvent: {}
+[21.873382] (-) TimerEvent: {}
+[21.973585] (-) TimerEvent: {}
+[22.073788] (-) TimerEvent: {}
+[22.174001] (-) TimerEvent: {}
+[22.274220] (-) TimerEvent: {}
+[22.374420] (-) TimerEvent: {}
+[22.474622] (-) TimerEvent: {}
+[22.574824] (-) TimerEvent: {}
+[22.675029] (-) TimerEvent: {}
+[22.775270] (-) TimerEvent: {}
+[22.875491] (-) TimerEvent: {}
+[22.975690] (-) TimerEvent: {}
+[23.075891] (-) TimerEvent: {}
+[23.176108] (-) TimerEvent: {}
+[23.276329] (-) TimerEvent: {}
+[23.376553] (-) TimerEvent: {}
+[23.476817] (-) TimerEvent: {}
+[23.577037] (-) TimerEvent: {}
+[23.677245] (-) TimerEvent: {}
+[23.777457] (-) TimerEvent: {}
+[23.877668] (-) TimerEvent: {}
+[23.977909] (-) TimerEvent: {}
+[24.078157] (-) TimerEvent: {}
+[24.178362] (-) TimerEvent: {}
+[24.278567] (-) TimerEvent: {}
+[24.378759] (-) TimerEvent: {}
+[24.478947] (-) TimerEvent: {}
+[24.579209] (-) TimerEvent: {}
+[24.679467] (-) TimerEvent: {}
+[24.779661] (-) TimerEvent: {}
+[24.879853] (-) TimerEvent: {}
+[24.980040] (-) TimerEvent: {}
+[25.080239] (-) TimerEvent: {}
+[25.180516] (-) TimerEvent: {}
+[25.280778] (-) TimerEvent: {}
+[25.380974] (-) TimerEvent: {}
+[25.481156] (-) TimerEvent: {}
+[25.581344] (-) TimerEvent: {}
+[25.681545] (-) TimerEvent: {}
+[25.781791] (-) TimerEvent: {}
+[25.882051] (-) TimerEvent: {}
+[25.982261] (-) TimerEvent: {}
+[26.082461] (-) TimerEvent: {}
+[26.182731] (-) TimerEvent: {}
+[26.282974] (-) TimerEvent: {}
+[26.383191] (-) TimerEvent: {}
+[26.483388] (-) TimerEvent: {}
+[26.583581] (-) TimerEvent: {}
+[26.683875] (-) TimerEvent: {}
+[26.784179] (-) TimerEvent: {}
+[26.884376] (-) TimerEvent: {}
+[26.984569] (-) TimerEvent: {}
+[27.084773] (-) TimerEvent: {}
+[27.184978] (-) TimerEvent: {}
+[27.285170] (-) TimerEvent: {}
+[27.385368] (-) TimerEvent: {}
+[27.485559] (-) TimerEvent: {}
+[27.585787] (-) TimerEvent: {}
+[27.685987] (-) TimerEvent: {}
+[27.786173] (-) TimerEvent: {}
+[27.886365] (-) TimerEvent: {}
+[27.986554] (-) TimerEvent: {}
+[28.086745] (-) TimerEvent: {}
+[28.186995] (-) TimerEvent: {}
+[28.287260] (-) TimerEvent: {}
+[28.387457] (-) TimerEvent: {}
+[28.487646] (-) TimerEvent: {}
+[28.587836] (-) TimerEvent: {}
+[28.688026] (-) TimerEvent: {}
+[28.788234] (-) TimerEvent: {}
+[28.888431] (-) TimerEvent: {}
+[28.988626] (-) TimerEvent: {}
+[29.088816] (-) TimerEvent: {}
+[29.189006] (-) TimerEvent: {}
+[29.289194] (-) TimerEvent: {}
+[29.389387] (-) TimerEvent: {}
+[29.489591] (-) TimerEvent: {}
+[29.589788] (-) TimerEvent: {}
+[29.689976] (-) TimerEvent: {}
+[29.790169] (-) TimerEvent: {}
+[29.890357] (-) TimerEvent: {}
+[29.990551] (-) TimerEvent: {}
+[30.090751] (-) TimerEvent: {}
+[30.190951] (-) TimerEvent: {}
+[30.291150] (-) TimerEvent: {}
+[30.391342] (-) TimerEvent: {}
+[30.491539] (-) TimerEvent: {}
+[30.591722] (-) TimerEvent: {}
+[30.691928] (-) TimerEvent: {}
+[30.792139] (-) TimerEvent: {}
+[30.892331] (-) TimerEvent: {}
+[30.992652] (-) TimerEvent: {}
+[31.092941] (-) TimerEvent: {}
+[31.193163] (-) TimerEvent: {}
+[31.293419] (-) TimerEvent: {}
+[31.393619] (-) TimerEvent: {}
+[31.493813] (-) TimerEvent: {}
+[31.594011] (-) TimerEvent: {}
+[31.694226] (-) TimerEvent: {}
+[31.794524] (-) TimerEvent: {}
+[31.894830] (-) TimerEvent: {}
+[31.995026] (-) TimerEvent: {}
+[32.095235] (-) TimerEvent: {}
+[32.195430] (-) TimerEvent: {}
+[32.295621] (-) TimerEvent: {}
+[32.395811] (-) TimerEvent: {}
+[32.496028] (-) TimerEvent: {}
+[32.596274] (-) TimerEvent: {}
+[32.696463] (-) TimerEvent: {}
+[32.796657] (-) TimerEvent: {}
+[32.896845] (-) TimerEvent: {}
+[32.997058] (-) TimerEvent: {}
+[33.097401] (-) TimerEvent: {}
+[33.197619] (-) TimerEvent: {}
+[33.297816] (-) TimerEvent: {}
+[33.398005] (-) TimerEvent: {}
+[33.498218] (-) TimerEvent: {}
+[33.598409] (-) TimerEvent: {}
+[33.698661] (-) TimerEvent: {}
+[33.798933] (-) TimerEvent: {}
+[33.899155] (-) TimerEvent: {}
+[33.999367] (-) TimerEvent: {}
+[34.099563] (-) TimerEvent: {}
+[34.199750] (-) TimerEvent: {}
+[34.300019] (-) TimerEvent: {}
+[34.400281] (-) TimerEvent: {}
+[34.500472] (-) TimerEvent: {}
+[34.600669] (-) TimerEvent: {}
+[34.700861] (-) TimerEvent: {}
+[34.801057] (-) TimerEvent: {}
+[34.901259] (-) TimerEvent: {}
+[35.001444] (-) TimerEvent: {}
+[35.101630] (-) TimerEvent: {}
+[35.201843] (-) TimerEvent: {}
+[35.302064] (-) TimerEvent: {}
+[35.402282] (-) TimerEvent: {}
+[35.502546] (-) TimerEvent: {}
+[35.602821] (-) TimerEvent: {}
+[35.703067] (-) TimerEvent: {}
+[35.803330] (-) TimerEvent: {}
+[35.903534] (-) TimerEvent: {}
+[36.004134] (-) TimerEvent: {}
+[36.104418] (-) TimerEvent: {}
+[36.204701] (-) TimerEvent: {}
+[36.305026] (-) TimerEvent: {}
+[36.405368] (-) TimerEvent: {}
+[36.505690] (-) TimerEvent: {}
+[36.605974] (-) TimerEvent: {}
+[36.706319] (-) TimerEvent: {}
+[36.806613] (-) TimerEvent: {}
+[36.906815] (-) TimerEvent: {}
+[37.007042] (-) TimerEvent: {}
+[37.107258] (-) TimerEvent: {}
+[37.207466] (-) TimerEvent: {}
+[37.307671] (-) TimerEvent: {}
+[37.407872] (-) TimerEvent: {}
+[37.508076] (-) TimerEvent: {}
+[37.608302] (-) TimerEvent: {}
+[37.708515] (-) TimerEvent: {}
+[37.808727] (-) TimerEvent: {}
+[37.908959] (-) TimerEvent: {}
+[38.009166] (-) TimerEvent: {}
+[38.109374] (-) TimerEvent: {}
+[38.209600] (-) TimerEvent: {}
+[38.309813] (-) TimerEvent: {}
+[38.410028] (-) TimerEvent: {}
+[38.510260] (-) TimerEvent: {}
+[38.610474] (-) TimerEvent: {}
+[38.710678] (-) TimerEvent: {}
+[38.810875] (-) TimerEvent: {}
+[38.911072] (-) TimerEvent: {}
+[39.011285] (-) TimerEvent: {}
+[39.111480] (-) TimerEvent: {}
+[39.211672] (-) TimerEvent: {}
+[39.311868] (-) TimerEvent: {}
+[39.412065] (-) TimerEvent: {}
+[39.512299] (-) TimerEvent: {}
+[39.612555] (-) TimerEvent: {}
+[39.712840] (-) TimerEvent: {}
+[39.813146] (-) TimerEvent: {}
+[39.913414] (-) TimerEvent: {}
+[40.013621] (-) TimerEvent: {}
+[40.113847] (-) TimerEvent: {}
+[40.214097] (-) TimerEvent: {}
+[40.314336] (-) TimerEvent: {}
+[40.414570] (-) TimerEvent: {}
+[40.514785] (-) TimerEvent: {}
+[40.614977] (-) TimerEvent: {}
+[40.715157] (-) TimerEvent: {}
+[40.815364] (-) TimerEvent: {}
+[40.870871] (roverrobotics_driver) StdoutLine: {'line': b'[ 58%] Linking CXX executable roverrobotics_driver\n'}
+[40.915501] (-) TimerEvent: {}
+[41.015824] (-) TimerEvent: {}
+[41.116232] (-) TimerEvent: {}
+[41.216566] (-) TimerEvent: {}
+[41.316906] (-) TimerEvent: {}
+[41.417263] (-) TimerEvent: {}
+[41.517613] (-) TimerEvent: {}
+[41.617980] (-) TimerEvent: {}
+[41.718399] (-) TimerEvent: {}
+[41.818806] (-) TimerEvent: {}
+[41.919262] (-) TimerEvent: {}
+[42.019645] (-) TimerEvent: {}
+[42.120031] (-) TimerEvent: {}
+[42.220527] (-) TimerEvent: {}
+[42.320927] (-) TimerEvent: {}
+[42.421264] (-) TimerEvent: {}
+[42.521614] (-) TimerEvent: {}
+[42.621852] (-) TimerEvent: {}
+[42.722154] (-) TimerEvent: {}
+[42.822448] (-) TimerEvent: {}
+[42.922669] (-) TimerEvent: {}
+[43.022929] (-) TimerEvent: {}
+[43.123288] (-) TimerEvent: {}
+[43.223549] (-) TimerEvent: {}
+[43.323763] (-) TimerEvent: {}
+[43.424056] (-) TimerEvent: {}
+[43.524350] (-) TimerEvent: {}
+[43.624553] (-) TimerEvent: {}
+[43.724764] (-) TimerEvent: {}
+[43.825063] (-) TimerEvent: {}
+[43.925281] (-) TimerEvent: {}
+[44.025536] (-) TimerEvent: {}
+[44.115377] (roverrobotics_driver) StdoutLine: {'line': b'[100%] Built target roverrobotics_driver\n'}
+[44.125675] (-) TimerEvent: {}
+[44.138701] (roverrobotics_driver) CommandEnded: {'returncode': 0}
+[44.139862] (roverrobotics_driver) JobProgress: {'identifier': 'roverrobotics_driver', 'progress': 'install'}
+[44.159463] (roverrobotics_driver) Command: {'cmd': ['/usr/bin/cmake', '--install', '/home/devcom/circe_ws/build/roverrobotics_driver'], 'cwd': '/home/devcom/circe_ws/build/roverrobotics_driver', 'env': OrderedDict({'USER': 'devcom', 'GZ_CONFIG_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/share/gz:/opt/ros/jazzy/opt/sdformat_vendor/share/gz:/opt/ros/jazzy/opt/gz_gui_vendor/share/gz:/opt/ros/jazzy/opt/gz_transport_vendor/share/gz:/opt/ros/jazzy/opt/gz_rendering_vendor/share/gz:/opt/ros/jazzy/opt/gz_plugin_vendor/share/gz:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/share/gz:/opt/ros/jazzy/opt/gz_msgs_vendor/share/gz:/opt/ros/jazzy/opt/gz_common_vendor/share/gz', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/lib:/opt/ros/jazzy/opt/gz_sensors_vendor/lib:/opt/ros/jazzy/opt/gz_physics_vendor/lib:/opt/ros/jazzy/opt/sdformat_vendor/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/aarch64-linux-gnu:/opt/ros/jazzy/opt/gz_gui_vendor/lib:/opt/ros/jazzy/opt/gz_transport_vendor/lib:/opt/ros/jazzy/opt/gz_rendering_vendor/lib:/opt/ros/jazzy/opt/gz_plugin_vendor/lib:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/lib:/opt/ros/jazzy/opt/gz_msgs_vendor/lib:/opt/ros/jazzy/opt/gz_common_vendor/lib:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_tools_vendor/lib:/opt/ros/jazzy/opt/gz_ogre_next_vendor/lib:/opt/ros/jazzy/opt/gz_dartsim_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'HOME': '/home/devcom', 'ROS_PYTHON_VERSION': '3', 'LC_CTYPE': 'C.UTF-8', 'ROS_DISTRO': 'jazzy', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'PATH': '/opt/ros/jazzy/opt/gz_msgs_vendor/bin:/opt/ros/jazzy/opt/gz_tools_vendor/bin:/opt/ros/jazzy/opt/gz_ogre_next_vendor/bin:/opt/ros/jazzy/bin:/usr/local/bin:/usr/bin:/bin', 'AMENT_PREFIX_PATH': '/opt/ros/jazzy', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'PWD': '/home/devcom/circe_ws/build/roverrobotics_driver', 'PYTHONPATH': '/opt/ros/jazzy/opt/gz_sim_vendor/lib/python:/opt/ros/jazzy/opt/sdformat_vendor/lib/python:/opt/ros/jazzy/opt/gz_transport_vendor/lib/python:/opt/ros/jazzy/opt/gz_msgs_vendor/lib/python:/opt/ros/jazzy/opt/gz_math_vendor/lib/python:/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'CMAKE_PREFIX_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy'}), 'shell': False}
+[44.176155] (roverrobotics_driver) StdoutLine: {'line': b'-- Install configuration: ""\n'}
+[44.176702] (roverrobotics_driver) StdoutLine: {'line': b'-- Execute custom install script\n'}
+[44.177557] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/accessories.launch.py\n'}
+[44.177712] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/gps.launch.py\n'}
+[44.177846] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/max.launch.py\n'}
+[44.177976] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/max_teleop.launch.py\n'}
+[44.178124] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/mega.launch.py\n'}
+[44.178317] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/mega_teleop.launch.py\n'}
+[44.178453] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/mini.launch.py\n'}
+[44.178629] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/mini_2wd.launch.py\n'}
+[44.178715] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/mini_2wd_teleop.launch.py\n'}
+[44.178844] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/mini_teleop.launch.py\n'}
+[44.178981] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/miti.launch.py\n'}
+[44.179109] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/miti_65.launch.py\n'}
+[44.179237] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/miti_65_teleop.launch.py\n'}
+[44.179389] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/miti_teleop.launch.py\n'}
+[44.179514] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/nav2_backend.py\n'}
+[44.179639] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/navigation_launch.py\n'}
+[44.179779] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/pro.launch.py\n'}
+[44.179909] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/pro_teleop.launch.py\n'}
+[44.180036] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/ps4_controller.launch.py\n'}
+[44.180249] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/ps5_controller.launch.py\n'}
+[44.180391] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/robot_localizer.launch.py\n'}
+[44.180474] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/slam_launch.py\n'}
+[44.180649] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/zero.launch.py\n'}
+[44.180756] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/zero_teleop.launch.py\n'}
+[44.181375] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/accessories.yaml\n'}
+[44.181534] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/localization_ekf.yaml\n'}
+[44.181678] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/max_130_config.yaml\n'}
+[44.181810] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/max_150_config.yaml\n'}
+[44.181940] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/mega_config.yaml\n'}
+[44.182075] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/mini_2wd_config.yaml\n'}
+[44.182228] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/mini_config.yaml\n'}
+[44.182356] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/miti_65_config.yaml\n'}
+[44.182556] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/miti_config.yaml\n'}
+[44.182685] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/nav2_params.yaml\n'}
+[44.182817] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/pro_config.yaml\n'}
+[44.182942] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/ps4_controller_config.yaml\n'}
+[44.183140] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/ps4_controller_config_jp6.yaml\n'}
+[44.183280] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/ps5_controller_config.yaml\n'}
+[44.183425] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/ps5_controller_config_jp6.yaml\n'}
+[44.183592] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/realsense_config.yaml\n'}
+[44.183740] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/route_server_params.yaml\n'}
+[44.183882] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/rviz_configs/nav2_default_view.rviz\n'}
+[44.184016] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/rviz_configs/realsense_rviz_layout.rviz\n'}
+[44.184201] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/rviz_configs/slam_rviz_layout.rviz\n'}
+[44.184365] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/slam_configs/mapper_params_lifelong.yaml\n'}
+[44.184497] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/slam_configs/mapper_params_localization.yaml\n'}
+[44.184633] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/slam_configs/mapper_params_offline.yaml\n'}
+[44.184820] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/slam_configs/mapper_params_online_async.yaml\n'}
+[44.184956] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/slam_configs/mapper_params_online_sync.yaml\n'}
+[44.185097] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/topics.yaml\n'}
+[44.185232] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/zero_config.yaml\n'}
+[44.185626] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/maps/maze_map.data\n'}
+[44.185812] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/maps/maze_map.pgm\n'}
+[44.185951] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/maps/maze_map.posegraph\n'}
+[44.186076] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/maps/maze_map.yaml\n'}
+[44.186431] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/lib/roverrobotics_driver/roverrobotics_driver\n'}
+[44.186660] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/ament_index/resource_index/package_run_dependencies/roverrobotics_driver\n'}
+[44.186889] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/ament_index/resource_index/parent_prefix_path/roverrobotics_driver\n'}
+[44.187078] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/environment/ament_prefix_path.sh\n'}
+[44.187289] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/environment/ament_prefix_path.dsv\n'}
+[44.187469] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/environment/path.sh\n'}
+[44.187645] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/environment/path.dsv\n'}
+[44.187823] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/local_setup.bash\n'}
+[44.188002] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/local_setup.sh\n'}
+[44.188184] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/local_setup.zsh\n'}
+[44.188363] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/local_setup.dsv\n'}
+[44.188495] (roverrobotics_driver) StdoutLine: {'line': b'-- Symlinking: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/package.dsv\n'}
+[44.207222] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/ament_index/resource_index/packages/roverrobotics_driver\n'}
+[44.207499] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/cmake/roverrobotics_driverConfig.cmake\n'}
+[44.207634] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/cmake/roverrobotics_driverConfig-version.cmake\n'}
+[44.207767] (roverrobotics_driver) StdoutLine: {'line': b'-- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/package.xml\n'}
+[44.210418] (roverrobotics_driver) CommandEnded: {'returncode': 0}
+[44.225761] (-) TimerEvent: {}
+[44.232619] (roverrobotics_driver) JobEnded: {'identifier': 'roverrobotics_driver', 'rc': 0}
+[44.233277] (-) EventReactorShutdown: {}

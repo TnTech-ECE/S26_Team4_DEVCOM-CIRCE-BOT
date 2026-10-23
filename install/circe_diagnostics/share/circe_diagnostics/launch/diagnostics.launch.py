@@ -1,0 +1,1 @@
+/home/devcom/circe_ws/src/circe_diagnostics/launch/diagnostics.launch.py

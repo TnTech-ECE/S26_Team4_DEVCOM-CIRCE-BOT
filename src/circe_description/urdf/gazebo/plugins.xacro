@@ -1,0 +1,147 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="circe_gazebo_plugins">
+
+    <!--
+      Model-scoped gz-sim systems for CIRCE, plus wheel friction.
+
+      Included from circe_rover.urdf.xacro only when sim_mode:=true. Do not include
+      this file directly: it references the wheel joints and links defined there.
+
+      *** NAMING ***
+      Gazebo Harmonic (gz-sim 8) removed the ignition namespace entirely. The plugin
+      directory contains only libgz-sim8-*-system.so. Filenames here are given without
+      the lib prefix or .so suffix, which is what the loader expects, and class names
+      use gz::sim::systems::. Anything spelled ignition::gazebo::systems:: or
+      ignition-gazebo-*-system will not load, and gz reports it only as a one-line
+      "Failed to load system plugin" that is easy to miss in the startup spam.
+
+      Sensors and Imu are WORLD-scoped systems in Harmonic and are therefore declared
+      in circe_gazebo/worlds/*.sdf, not here. The upstream rover package put them in
+      the model because its own worlds never declared them.
+    -->
+
+    <gazebo>
+        <!--
+          Skid-steer 4WD driven as a differential drive: both left joints on one side,
+          both right on the other. num_wheel_pairs 2 is what lets DiffDrive accept two
+          joints per side.
+        -->
+        <plugin filename="gz-sim-diff-drive-system" name="gz::sim::systems::DiffDrive">
+            <num_wheel_pairs>2</num_wheel_pairs>
+
+            <!-- Wheel Information -->
+            <left_joint>rl_wheel_to_chassis</left_joint>
+            <left_joint>fl_wheel_to_chassis</left_joint>
+            <right_joint>rr_wheel_to_chassis</right_joint>
+            <right_joint>fr_wheel_to_chassis</right_joint>
+            <wheel_separation>0.36</wheel_separation>
+            <!--
+              *** MEASURED, NOT INHERITED. ***
+              0.122 came from rover_4wd.urdf and was wrong for this model. The tyre
+              mesh rests base_link 1.7 mm above ground on a 0.125 m axle, so the true
+              rolling radius is 0.1267 m. Driving 8.4 m in a straight line on flat
+              ground and comparing /odometry/wheels against the simulator's ground
+              truth showed the cost of the old value:
+
+                  wheel_radius 0.122   ->  odometry read  -2.14 % short
+
+              A systematic 2% scale error is exactly the kind of thing that walks a
+              GPS-denied rover off its path over a long run, and it is free to fix.
+
+              This changes SIMULATION ONLY. The real robot's odometry comes from the
+              Rover Zero firmware, not this plugin, so nothing here says anything about
+              the hardware's scale - that still needs the 1 m push test. Diverging from
+              the upstream 0.122 is deliberate: sim odometry that does not match sim
+              geometry makes every localisation measurement taken here meaningless.
+            -->
+            <wheel_radius>0.1267</wheel_radius>
+
+            <!-- Limits -->
+            <max_linear_acceleration>5</max_linear_acceleration>
+            <min_linear_acceleration>-5</min_linear_acceleration>
+            <max_angular_acceleration>4</max_angular_acceleration>
+            <min_angular_acceleration>-4</min_angular_acceleration>
+
+            <!-- Output -->
+            <frame_id>odom</frame_id>
+            <child_frame_id>base_link</child_frame_id>
+            <odom_publish_frequency>50</odom_publish_frequency>
+
+            <!--
+              *** FRAME OWNERSHIP ***
+              odom -> base_link belongs to the robot_localization EKF, exactly as on
+              hardware where the motor driver runs with publish_tf: false. This plugin
+              publishes odometry as a TOPIC that the EKF consumes as odom0, and parks
+              its own TF on /tf_gazebo, which nothing subscribes to and which
+              circe_gazebo/config/gz_bridge.yaml deliberately does not bridge.
+              Bridging /tf here would put a second publisher on odom -> base_link and
+              break the contract the whole workspace is built around.
+            -->
+            <topic>/cmd_vel</topic>
+            <odom_topic>/odometry/wheels</odom_topic>
+            <tf_topic>/tf_gazebo</tf_topic>
+        </plugin>
+
+        <plugin filename="gz-sim-joint-state-publisher-system"
+                name="gz::sim::systems::JointStatePublisher">
+            <topic>/joint_states</topic>
+        </plugin>
+
+        <!--
+          GROUND TRUTH. SIMULATION ONLY, AND NOTHING IN THE NAVIGATION STACK MAY USE IT.
+
+          This is the simulator's exact pose for the rover - the one thing a GPS-denied
+          robot does not get. It exists so localisation ERROR can be measured. Without a
+          reference you cannot separate EKF dead-reckoning drift from what slam_toolbox's
+          scan matching is actually correcting, and knowing where it is without GPS is
+          this rover's entire job.
+
+          Attached to the MODEL rather than bridged from /world/<name>/dynamic_pose/info,
+          because that gz topic embeds the world name and would have to change between
+          circe_indoor.sdf and circe_outdoor.sdf. This publishes to one fixed topic
+          whatever world is loaded.
+
+          *** odom_frame IS DELIBERATELY NOT `odom`. ***
+          It is `ground_truth_odom`, a frame nothing else publishes, and tf_topic points
+          at /tf_gazebo_gt which is not bridged. If this published odom -> base_link it
+          would collide head-on with the EKF, which owns that edge.
+        -->
+        <plugin filename="gz-sim-odometry-publisher-system"
+                name="gz::sim::systems::OdometryPublisher">
+            <odom_frame>ground_truth_odom</odom_frame>
+            <robot_base_frame>base_link</robot_base_frame>
+            <odom_topic>/ground_truth/odom</odom_topic>
+            <tf_topic>/tf_gazebo_gt</tf_topic>
+            <dimensions>3</dimensions>
+            <odom_publish_frequency>20</odom_publish_frequency>
+        </plugin>
+    </gazebo>
+
+    <!--
+      Wheel friction.
+
+      circe_rover.urdf.xacro carried a <mu>5.0</mu> element as a direct child of each
+      wheel <link>. That is not valid in URDF or SDF and urdf_parser drops unknown link
+      children silently, so it never did anything - the wheels simulated on default
+      friction. Friction belongs in a <gazebo reference="..."> block, which is where it
+      is now.
+
+      A skid-steer turns by scrubbing its tyres sideways. High mu1/mu2 makes the rover
+      refuse to rotate; too low and it slides under acceleration. These are a starting
+      point, not measured values - tune them against real turning behaviour.
+    -->
+    <xacro:macro name="wheel_friction" params="link">
+        <gazebo reference="${link}">
+            <mu1>1.0</mu1>
+            <mu2>0.6</mu2>
+            <kp>1000000.0</kp>
+            <kd>100.0</kd>
+        </gazebo>
+    </xacro:macro>
+
+    <xacro:wheel_friction link="fr_wheel_link" />
+    <xacro:wheel_friction link="fl_wheel_link" />
+    <xacro:wheel_friction link="rr_wheel_link" />
+    <xacro:wheel_friction link="rl_wheel_link" />
+
+</robot>

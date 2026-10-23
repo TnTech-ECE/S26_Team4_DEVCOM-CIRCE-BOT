@@ -1,0 +1,55 @@
+# Rover Zero 4WD base -- driver: roverrobotics_driver / roverrobotics_driver
+#
+# Ported verbatim from roverrobotics_driver/config/zero_config.yaml. Node names are
+# spelled out here (rather than the `/**` wildcard used by the sensor configs) because
+# this one file configures two different nodes.
+#
+# *** WHEEL GEOMETRY IS NOT SET HERE, AND THAT IS A KNOWN TRAP ***
+# Three different wheel geometries exist for this robot:
+#   librover/include/protocol_zero_2.hpp   wheel_radius 0.2667   wheel_base 0.3683
+#   roverrobotics_driver node defaults     wheel_radius 0.08255  wheel_base 0.28575
+#   the URDF's Gazebo DiffDrive plugin     wheel_radius 0.122    wheel_separation 0.36
+# Zero2ProtocolObject is constructed WITHOUT the node's wheel parameters, so the
+# hardcoded protocol_zero_2.hpp values govern real odometry and setting wheel_radius /
+# wheel_base below would change nothing. They are therefore deliberately left unset
+# rather than set to a value that looks authoritative and is not.
+# Verify the scale empirically before trusting odometry: push the rover a measured 1 m
+# and check /odometry/filtered reports ~1 m. Scan matching cannot compensate for a
+# systematically wrong odometry scale, so fix this before SLAM.
+
+roverrobotics_driver:
+  ros__parameters:
+    robot_type: "zero2"                 # the driver's name for the Zero 4WD
+
+    # Created by udev/61-roverrobotics.rules. Without it this path does not exist.
+    device_port: "/dev/rover-control"
+    comm_type: "serial"
+
+    control_mode: "INDEPENDENT_WHEEL"   # closed loop; OPEN_LOOP is the alternative
+    motor_control_p_gain: 0.0011
+    motor_control_i_gain: 0.000
+    motor_control_d_gain: 0.00008
+
+    speed_topic: "/cmd_vel"
+    odom_topic: "/odometry/wheels"
+    odom_frame_id: "odom"
+    odom_child_frame_id: "base_link"
+    odometry_frequency: 15.0
+    diagnostics_frequency: 0.2
+
+    # *** KEEP FALSE. *** robot_localization's EKF owns odom -> base_link
+    # (see circe_nav/config/localization_ekf.yaml, publish_tf: true). Setting this
+    # true gives that edge two publishers, which fight and produce a jittering robot.
+    publish_tf: false
+
+    # Left unset intentionally, as upstream does:
+    #   robot_status_topic, robot_status_frequency, robot_info_request_topic,
+    #   robot_info_topic, estop_trigger_topic, estop_reset_topic, trim_topic,
+    #   estop_state, linear_top_speed, angular_top_speed,
+    #   angular_{a,b,c}_coef, angular_{min,max}_scale
+    # The estop_* topics are the hook for the software e-stop in circe_control.
+
+joint_state_publisher:
+  ros__parameters:
+    publish_default_positions: true
+    rate: 30

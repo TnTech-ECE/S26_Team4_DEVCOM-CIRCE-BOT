@@ -1,0 +1,4 @@
+source;share/circe_perception/local_setup.bash
+source;share/circe_perception/local_setup.dsv
+source;share/circe_perception/local_setup.sh
+source;share/circe_perception/local_setup.zsh

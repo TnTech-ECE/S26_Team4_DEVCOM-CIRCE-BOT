@@ -1,0 +1,161 @@
+[0.032s] Invoking command in '/home/devcom/circe_ws/build/circe_teensy': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/devcom/circe_ws/build/circe_teensy -- -j4 -l4
+[0.117s] -- Found ament_cmake: 2.5.6 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.621s] -- Found ament_lint_auto: 0.17.5 (/opt/ros/jazzy/share/ament_lint_auto/cmake)
+[0.853s] -- Added test 'flake8' to check Python code syntax and style conventions
+[0.853s] -- Configured 'flake8' exclude dirs and/or files: 
+[0.856s] -- Added test 'lint_cmake' to check CMake code style
+[0.858s] -- Added test 'pep257' to check Python code against some of the docstring style conventions in PEP 257
+[0.860s] -- Added test 'xmllint' to check XML markup files
+[0.861s] -- Configuring done (0.8s)
+[0.870s] -- Generating done (0.0s)
+[0.873s] -- Build files have been written to: /home/devcom/circe_ws/build/circe_teensy
+[0.938s] [100%] Building Teensy 4.0 firmware with PlatformIO
+[1.375s] Processing teensy40 (platform: teensy; board: teensy40; framework: arduino)
+[1.377s] --------------------------------------------------------------------------------
+[2.247s] Verbose mode can be enabled via `-v, --verbose` option
+[2.299s] CONFIGURATION: https://docs.platformio.org/page/boards/teensy/teensy40.html
+[2.300s] PLATFORM: Teensy (6.0.0) > Teensy 4.0
+[2.300s] HARDWARE: IMXRT1062 600MHz, 512KB RAM, 1.94MB Flash
+[2.300s] DEBUG: Current (jlink) External (jlink)
+[2.300s] PACKAGES: 
+[2.300s]  - framework-arduinoteensy @ 1.162.0 (1.62) 
+[2.300s]  - tool-teensy @ 1.162.0 (1.62) 
+[2.300s]  - toolchain-gccarmnoneeabi-teensy @ 1.150201.0 (15.2.1)
+[2.329s] LDF: Library Dependency Finder -> https://bit.ly/configure-pio-ldf
+[2.329s] LDF Modes: Finder ~ chain, Compatibility ~ soft
+[2.531s] Found 93 compatible libraries
+[2.531s] Scanning dependencies...
+[2.602s] Dependency Graph
+[2.602s] |-- TinyGPSPlus @ 1.1.0
+[2.606s] Building in release mode
+[2.655s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/src/bridge.cpp.o
+[2.662s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/src/gps.cpp.o
+[2.670s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/src/main.cpp.o
+[2.679s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/src/status_led.cpp.o
+[3.770s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/src/test_messages.cpp.o
+[4.000s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/src/ultrasonic.cpp.o
+[4.055s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/lib08e/TinyGPSPlus/TinyGPS++.cpp.o
+[4.203s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/AudioStream.cpp.o
+[5.082s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/CrashReport.cpp.o
+[5.104s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/DMAChannel.cpp.o
+[5.370s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/EventResponder.cpp.o
+[5.504s] Archiving /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/lib08e/libTinyGPSPlus.a
+[5.519s] Indexing /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/lib08e/libTinyGPSPlus.a
+[5.533s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/HardwareSerial.cpp.o
+[5.644s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/HardwareSerial1.cpp.o
+[6.571s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/HardwareSerial2.cpp.o
+[6.923s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/HardwareSerial3.cpp.o
+[7.162s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/HardwareSerial4.cpp.o
+[7.496s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/HardwareSerial5.cpp.o
+[8.237s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/HardwareSerial6.cpp.o
+[8.440s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/HardwareSerial7.cpp.o
+[8.639s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/HardwareSerial8.cpp.o
+[8.905s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/IPAddress.cpp.o
+[9.922s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/IntervalTimer.cpp.o
+[10.089s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/MTP_Storage.cpp.o
+[10.148s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/MTP_Teensy.cpp.o
+[10.197s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/Print.cpp.o
+[10.230s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/Stream.cpp.o
+[10.347s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/Time.cpp.o
+[10.914s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/Tone.cpp.o
+[11.732s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/WMath.cpp.o
+[11.942s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/WString.cpp.o
+[12.071s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/analog.c.o
+[12.094s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/bootdata.c.o
+[12.156s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/clockspeed.c.o
+[12.322s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/debugprintf.c.o
+[12.417s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/delay.c.o
+[12.468s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/digital.c.o
+[12.502s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/eeprom.c.o
+[12.578s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/extmem.c.o
+[12.683s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/fuse.c.o
+[12.787s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/interrupt.c.o
+[12.821s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/keylayouts.c.o
+[12.884s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/main.cpp.o
+[12.899s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/memcpy-armv7m.S.o
+[12.940s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/memset.S.o
+[12.962s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/new.cpp.o
+[12.975s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/nonstd.c.o
+[13.073s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/pwm.c.o
+[13.290s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/rtc.c.o
+[13.337s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/serialEvent.cpp.o
+[13.400s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/serialEvent1.cpp.o
+[13.424s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/serialEvent2.cpp.o
+[13.460s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/serialEvent3.cpp.o
+[13.509s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/serialEvent4.cpp.o
+[13.534s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/serialEvent5.cpp.o
+[13.558s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/serialEvent6.cpp.o
+[13.583s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/serialEvent7.cpp.o
+[13.622s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/serialEvent8.cpp.o
+[13.643s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/serialEventUSB1.cpp.o
+[13.685s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/serialEventUSB2.cpp.o
+[13.694s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/sm_alloc_valid.c.o
+[13.778s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/sm_calloc.c.o
+[13.792s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/sm_free.c.o
+[13.852s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/sm_hash.c.o
+[13.881s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/sm_malloc.c.o
+[13.925s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/sm_malloc_stats.c.o
+[13.960s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/sm_pool.c.o
+[13.978s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/sm_realloc.c.o
+[13.992s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/sm_realloc_i.c.o
+[14.019s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/sm_realloc_move.c.o
+[14.058s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/sm_szalloc.c.o
+[14.101s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/sm_util.c.o
+[14.113s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/sm_zalloc.c.o
+[14.139s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/startup.c.o
+[14.149s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/tempmon.c.o
+[14.194s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/usb.c.o
+[14.237s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/usb_audio.cpp.o
+[14.288s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/usb_desc.c.o
+[14.394s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/usb_flightsim.cpp.o
+[14.482s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/usb_inst.cpp.o
+[14.536s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/usb_joystick.c.o
+[14.692s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/usb_keyboard.c.o
+[14.824s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/usb_midi.c.o
+[14.868s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/usb_mouse.c.o
+[14.999s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/usb_mtp.c.o
+[15.010s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/usb_rawhid.c.o
+[15.113s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/usb_seremu.c.o
+[15.154s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/usb_serial.c.o
+[15.216s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/usb_serial2.c.o
+[15.315s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/usb_serial3.c.o
+[15.409s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/usb_touch.c.o
+[15.454s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/yield.cpp.o
+[16.119s] Archiving /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/libFrameworkArduino.a
+[16.168s] Indexing /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/libFrameworkArduino.a
+[16.214s] Linking /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/firmware.elf
+[16.266s] Checking size /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/firmware.elf
+[16.266s] Advanced Memory Usage is available via "PlatformIO Home > Project Inspect"
+[16.267s] Calculating size /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/firmware.elf
+[16.270s] teensy_size: Memory Usage on Teensy 4.0:
+[16.270s] teensy_size:   FLASH: code:43600, data:7112, headers:8676   free for files:1972228
+[16.270s] teensy_size:    RAM1: variables:9120, code:41880, padding:23656   free for local variables:449632
+[16.271s] teensy_size:    RAM2: variables:12416  free for malloc/new:511872
+[16.273s] Building /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/firmware.hex
+[16.517s] ========================= [SUCCESS] Took 15.15 seconds =========================
+[16.637s] [100%] Built target firmware
+[16.660s] Invoked command in '/home/devcom/circe_ws/build/circe_teensy' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/devcom/circe_ws/build/circe_teensy -- -j4 -l4
+[16.680s] Invoking command in '/home/devcom/circe_ws/build/circe_teensy': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/devcom/circe_ws/build/circe_teensy
+[16.696s] -- Install configuration: ""
+[16.696s] -- Installing: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/firmware/firmware.hex
+[16.697s] -- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/launch
+[16.697s] -- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/launch/teensy_bridge.launch.py
+[16.697s] -- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/config
+[16.697s] -- Installing: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/config/teensy_bridge.yaml
+[16.697s] -- Installing: /home/devcom/circe_ws/install/circe_teensy/lib/circe_teensy/teensy_bridge.py
+[16.698s] -- Installing: /home/devcom/circe_ws/install/circe_teensy/share/ament_index/resource_index/package_run_dependencies/circe_teensy
+[16.698s] -- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/ament_index/resource_index/parent_prefix_path/circe_teensy
+[16.698s] -- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/environment/ament_prefix_path.sh
+[16.698s] -- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/environment/ament_prefix_path.dsv
+[16.698s] -- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/environment/path.sh
+[16.699s] -- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/environment/path.dsv
+[16.699s] -- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/local_setup.bash
+[16.699s] -- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/local_setup.sh
+[16.699s] -- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/local_setup.zsh
+[16.699s] -- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/local_setup.dsv
+[16.699s] -- Installing: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/package.dsv
+[16.699s] -- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/ament_index/resource_index/packages/circe_teensy
+[16.699s] -- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/cmake/circe_teensyConfig.cmake
+[16.699s] -- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/cmake/circe_teensyConfig-version.cmake
+[16.699s] -- Installing: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/package.xml
+[16.702s] Invoked command in '/home/devcom/circe_ws/build/circe_teensy' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/devcom/circe_ws/build/circe_teensy

@@ -1,0 +1,101 @@
+[0.028s] Invoking command in '/home/devcom/circe_ws/build/roverrobotics_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/devcom/circe_ws/src/roverrobotics_ros2/roverrobotics_description -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/devcom/circe_ws/install/roverrobotics_description
+[0.282s] -- The C compiler identification is GNU 13.3.0
+[0.481s] -- The CXX compiler identification is GNU 13.3.0
+[0.526s] -- Detecting C compiler ABI info
+[0.786s] -- Detecting C compiler ABI info - done
+[0.802s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.802s] -- Detecting C compile features
+[0.803s] -- Detecting C compile features - done
+[0.826s] -- Detecting CXX compiler ABI info
+[1.098s] -- Detecting CXX compiler ABI info - done
+[1.111s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[1.111s] -- Detecting CXX compile features
+[1.112s] -- Detecting CXX compile features - done
+[1.125s] -- Found ament_cmake: 2.5.6 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[1.510s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+[1.682s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[2.023s] -- Configuring done (1.9s)
+[2.029s] -- Generating done (0.0s)
+[2.031s] -- Build files have been written to: /home/devcom/circe_ws/build/roverrobotics_description
+[2.047s] Invoked command in '/home/devcom/circe_ws/build/roverrobotics_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/devcom/circe_ws/src/roverrobotics_ros2/roverrobotics_description -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/devcom/circe_ws/install/roverrobotics_description
+[2.050s] Invoking command in '/home/devcom/circe_ws/build/roverrobotics_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/devcom/circe_ws/build/roverrobotics_description -- -j4 -l4
+[2.166s] Invoked command in '/home/devcom/circe_ws/build/roverrobotics_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/devcom/circe_ws/build/roverrobotics_description -- -j4 -l4
+[2.167s] Invoking command in '/home/devcom/circe_ws/build/roverrobotics_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/devcom/circe_ws/build/roverrobotics_description
+[2.187s] -- Install configuration: ""
+[2.187s] -- Execute custom install script
+[2.188s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/rviz/urdf.rviz
+[2.208s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/launch/display_2wd_rover.launch.py
+[2.227s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/launch/display_4wd_rover.launch.py
+[2.246s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/launch/display_flipper.launch.py
+[2.268s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/launch/display_max.launch.py
+[2.287s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/launch/display_mega.launch.py
+[2.305s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/launch/display_mini.launch.py
+[2.323s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/launch/display_mini_2wd.launch.py
+[2.342s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/launch/display_miti.launch.py
+[2.365s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/launch/display_miti_65.launch.py
+[2.384s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/meshes/65wheels.dae
+[2.403s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/meshes/castor.dae
+[2.426s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/meshes/castor_housing.dae
+[2.448s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/meshes/flipper.dae
+[2.469s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/meshes/flipper_chassis.dae
+[2.488s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/meshes/flipper_track.dae
+[2.506s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/meshes/hub_10in.dae
+[2.525s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/meshes/hub_6.5in.dae
+[2.549s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/meshes/max_chassis.dae
+[2.572s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/meshes/max_chassis_neo.dae
+[2.591s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/meshes/max_wheels_13in.dae
+[2.610s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/meshes/max_wheels_15in.dae
+[2.629s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/meshes/max_wheels_15in_neo.dae
+[2.650s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/meshes/mega_chassis.dae
+[2.727s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/meshes/mega_payload.dae
+[2.727s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/meshes/mega_wheels.dae
+[2.741s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/meshes/mini_2wd_chassis.dae
+[2.766s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/meshes/mini_chassis.dae
+[2.790s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/meshes/mini_chassis_new.dae
+[2.811s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/meshes/miti_chassis.dae
+[2.833s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/meshes/miti_chassis_neo.dae
+[2.856s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/meshes/miti_chassis_new.dae
+[2.880s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/meshes/miti_payload.dae
+[2.904s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/meshes/pro_tire.dae
+[2.926s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/meshes/rover_2wd_core.dae
+[2.949s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/meshes/rover_payload.dae
+[2.974s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/meshes/rplidar_s2.dae
+[2.994s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/meshes/sick_multiscan136_body.stl
+[3.014s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/meshes/sick_multiscan136_rings.stl
+[3.034s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/urdf/accessories/gps.urdf
+[3.057s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/urdf/accessories/imu.urdf
+[3.077s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/urdf/accessories/mega_payload.urdf
+[3.098s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/urdf/accessories/miti_payload.urdf
+[3.117s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/urdf/accessories/rover_dev_payload.urdf
+[3.137s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/urdf/accessories/rplidar_s2.urdf
+[3.167s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/urdf/accessories/sick_multiscan136.urdf
+[3.189s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/urdf/flipper.urdf
+[3.212s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/urdf/max.urdf
+[3.234s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/urdf/max_130.urdf
+[3.264s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/urdf/max_130_neo.urdf
+[3.292s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/urdf/max_150.urdf
+[3.319s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/urdf/max_150_neo.urdf
+[3.345s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/urdf/mega.urdf
+[3.375s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/urdf/mini.urdf
+[3.404s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/urdf/mini_2wd.urdf
+[3.430s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/urdf/miti.urdf
+[3.459s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/urdf/miti_65.urdf
+[3.496s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/urdf/miti_neo.urdf
+[3.529s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/urdf/rover_2wd.urdf
+[3.558s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/urdf/rover_4wd.urdf
+[3.586s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/ament_index/resource_index/package_run_dependencies/roverrobotics_description
+[3.614s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/ament_index/resource_index/parent_prefix_path/roverrobotics_description
+[3.647s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/environment/ament_prefix_path.sh
+[3.678s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/environment/ament_prefix_path.dsv
+[3.708s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/environment/path.sh
+[3.738s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/environment/path.dsv
+[3.770s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/local_setup.bash
+[3.800s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/local_setup.sh
+[3.829s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/local_setup.zsh
+[3.869s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/local_setup.dsv
+[3.900s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/package.dsv
+[3.930s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/ament_index/resource_index/packages/roverrobotics_description
+[3.960s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/cmake/roverrobotics_descriptionConfig.cmake
+[3.994s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/cmake/roverrobotics_descriptionConfig-version.cmake
+[4.022s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_description/share/roverrobotics_description/package.xml
+[4.055s] Invoked command in '/home/devcom/circe_ws/build/roverrobotics_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/devcom/circe_ws/build/roverrobotics_description

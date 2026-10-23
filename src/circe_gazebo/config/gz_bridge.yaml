@@ -1,0 +1,174 @@
+# ros_gz_bridge configuration for CIRCE under Gazebo Harmonic.
+#
+# Loaded by circe_sim.launch.py as the parameter_bridge's config_file.
+#
+# *** THE ONE RULE: DO NOT BRIDGE /tf ***
+# The upstream roverrobotics_gazebo bridge has a
+#   "/tf@tf2_msgs/msg/TFMessage[ignition.msgs.Pose_V"
+# line. Copying it would put the gz DiffDrive plugin's odom -> base_link onto /tf
+# alongside the robot_localization EKF, giving that edge two publishers. The whole
+# workspace is organised around one publisher per edge (see the frame ownership table
+# in the README), and two publishers on odom -> base_link is exactly the bug the old
+# circe_tf package caused. The plugin's TF is parked on /tf_gazebo instead and is
+# intentionally absent from this file. If TF starts jittering in sim, check here first.
+#
+# *** MESSAGE TYPE NAMES ***
+# Jazzy's bridge knows gz.msgs.* only. The upstream config is half-migrated and still
+# says ignition.msgs.Twist / .Clock / .Odometry / .Pose_V; those rows are silently
+# rejected and the topic simply never appears.
+#
+# *** CAMERA TOPIC RENAMING ***
+# gz derives four topics from the rgbd_camera's single <topic>camera/camera</topic>
+# root, and none of them match the realsense2_camera driver's names. The rows below use
+# a different ros_topic_name from gz_topic_name so that what lands in ROS is
+# byte-identical in naming to the hardware, and RViz configs, costmap params and bag
+# files all work either way. Change the xacro's <topic> and you must change these.
+
+# ---------------------------------------------------------------------------
+# Clock. Bridge this first: use_sim_time is meaningless without it, and every
+# downstream node will sit at time zero waiting.
+# ---------------------------------------------------------------------------
+- ros_topic_name: "/clock"
+  gz_topic_name: "/clock"
+  ros_type_name: "rosgraph_msgs/msg/Clock"
+  gz_type_name: "gz.msgs.Clock"
+  direction: GZ_TO_ROS
+
+# ---------------------------------------------------------------------------
+# Base. Unstamped Twist, matching both the gz DiffDrive plugin and the real
+# roverrobotics_driver; nav2's enable_stamped_cmd_vel is pinned false to agree.
+# ---------------------------------------------------------------------------
+- ros_topic_name: "/cmd_vel"
+  gz_topic_name: "/cmd_vel"
+  ros_type_name: "geometry_msgs/msg/Twist"
+  gz_type_name: "gz.msgs.Twist"
+  direction: ROS_TO_GZ
+
+# Consumed by the EKF as odom0. This is the sim stand-in for what
+# roverrobotics_driver publishes on hardware.
+- ros_topic_name: "/odometry/wheels"
+  gz_topic_name: "/odometry/wheels"
+  ros_type_name: "nav_msgs/msg/Odometry"
+  gz_type_name: "gz.msgs.Odometry"
+  direction: GZ_TO_ROS
+
+# gz publishes joint state as a Model message, not a JointState.
+- ros_topic_name: "/joint_states"
+  gz_topic_name: "/joint_states"
+  ros_type_name: "sensor_msgs/msg/JointState"
+  gz_type_name: "gz.msgs.Model"
+  direction: GZ_TO_ROS
+
+# ---------------------------------------------------------------------------
+# Lidar. Bridged as /scan_raw, NOT /scan.
+#
+# circe_perception/config/scan_sector_filter.yaml masks the rear half of the sweep --
+# the cable spool and the trailing tether stand straight through the scan plane -- and
+# republishes the result as /scan, which is what slam_toolbox and both Nav2 costmaps
+# actually consume. The filter node starts alongside this bridge in circe_sim.launch.py.
+# If it is not running, /scan is SILENT and the rover is blind; /scan_raw is still there
+# to confirm the bridge itself is alive.
+#
+# Masking here rather than narrowing the gpu_lidar's min_angle/max_angle in
+# rplidar_a1.urdf.xacro is deliberate: the real A1 always sweeps 360 deg and the driver
+# has no angular parameters, so narrowing the simulated sensor would make sim scans
+# structurally different from hardware ones (fewer beams over a shorter arc) and hide
+# exactly the class of bug this bridge exists to expose.
+# ---------------------------------------------------------------------------
+- ros_topic_name: "/scan_raw"
+  gz_topic_name: "/scan"
+  ros_type_name: "sensor_msgs/msg/LaserScan"
+  gz_type_name: "gz.msgs.LaserScan"
+  direction: GZ_TO_ROS
+
+# ---------------------------------------------------------------------------
+# IMU. Publishes /imu/data directly, because gz's IMU sensor supplies a real
+# orientation quaternion and needs nothing in between.
+#
+# *** THIS IS A SIM/HARDWARE DIVERGENCE WORTH KNOWING ABOUT. ***
+# On the real robot /imu/data comes from the D456's 6-axis IMU, which has no
+# magnetometer and no on-chip fusion, so circe_perception/imu_fusion.py has to
+# synthesise the attitude from gyro + accel (see circe_bringup/config/imu_d456.yaml).
+# Consequences that do not exist here:
+#   * hardware yaw in the quaternion is always ZERO and flagged untrusted -- there is
+#     no absolute heading reference without a magnetometer. Sim yaw is truth.
+#   * hardware roll/pitch carry ~0.3 deg of filter error and lag a fast attitude
+#     change by the filter's time constant. Sim is exact and instantaneous.
+#   * hardware gyro rates are bias-corrected only after the rover has stood still
+#     for a second or so. Sim has no bias.
+# So a ramp behaviour that depends on precise attitude will look better here than it
+# will outdoors. Do not tune scan_pitch_filter's margins against sim alone.
+# ---------------------------------------------------------------------------
+- ros_topic_name: "/imu/data"
+  gz_topic_name: "/imu/data"
+  ros_type_name: "sensor_msgs/msg/Imu"
+  gz_type_name: "gz.msgs.IMU"
+  direction: GZ_TO_ROS
+
+# ---------------------------------------------------------------------------
+# Camera. Visualisation only: no Nav2 costmap subscribes to any of these.
+# ROS names deliberately mirror realsense2_camera's.
+# ---------------------------------------------------------------------------
+- ros_topic_name: "/camera/camera/color/image_raw"
+  gz_topic_name: "/camera/camera/image"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/camera/camera/color/camera_info"
+  gz_topic_name: "/camera/camera/camera_info"
+  ros_type_name: "sensor_msgs/msg/CameraInfo"
+  gz_type_name: "gz.msgs.CameraInfo"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/camera/camera/depth/image_rect_raw"
+  gz_topic_name: "/camera/camera/depth_image"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+  direction: GZ_TO_ROS
+
+# circe_perception's terrain node needs the DEPTH camera_info for deprojection, and on
+# hardware that is what realsense2_camera publishes -- /camera/camera/depth/camera_info.
+# The colour variant above does not exist on the real robot at all now that
+# enable_color is false. gz has only one camera_info for the rgbd sensor, so it is
+# bridged twice under both names: colour for RViz, depth for the terrain node. The
+# intrinsics are identical because both streams come from the same simulated sensor,
+# which is NOT true of the real D456 -- there the two streams have their own intrinsics.
+- ros_topic_name: "/camera/camera/depth/camera_info"
+  gz_topic_name: "/camera/camera/camera_info"
+  ros_type_name: "sensor_msgs/msg/CameraInfo"
+  gz_type_name: "gz.msgs.CameraInfo"
+  direction: GZ_TO_ROS
+
+# On hardware this cloud is DISABLED (realsense_d456.yaml sets pointcloud.enable
+# false). It is bridged here because it is the most useful thing to look at in RViz
+# when checking camera mounting, and because nothing consumes it, it costs only
+# bandwidth. The name matches what the driver would publish if enabled.
+- ros_topic_name: "/camera/camera/depth/color/points"
+  gz_topic_name: "/camera/camera/points"
+  ros_type_name: "sensor_msgs/msg/PointCloud2"
+  gz_type_name: "gz.msgs.PointCloudPacked"
+  direction: GZ_TO_ROS
+
+# ---- GROUND TRUTH, SIMULATION ONLY -------------------------------------------------
+#
+# *** THIS TOPIC HAS NO HARDWARE EQUIVALENT AND MUST NEVER REACH /tf. ***
+# It is the simulator's exact pose for every model in the world, which is precisely the
+# information a GPS-denied robot does not have. Nothing in the navigation stack may
+# subscribe to it. It exists so that localisation ERROR can be measured: without a
+# reference you cannot tell EKF drift from SLAM correction, and CIRCE's whole job is to
+# know where it is without GPS.
+#
+# Published by the gz OdometryPublisher in circe_description/urdf/gazebo/plugins.xacro,
+# whose odom_frame is `ground_truth_odom` and whose tf_topic is not bridged - so this
+# adds no publisher to any edge of the real TF tree and leaves the frame-ownership
+# contract in circe_sim_nav.launch.py intact.
+#
+# To measure error: compare the rover's pose here against TF map -> base_link (what
+# SLAM plus the EKF believe) and against odom -> base_link (dead reckoning alone). The
+# difference between those two is what scan matching is buying you.
+- ros_topic_name: "/ground_truth/odom"
+  gz_topic_name: "/ground_truth/odom"
+  ros_type_name: "nav_msgs/msg/Odometry"
+  gz_type_name: "gz.msgs.Odometry"
+  direction: GZ_TO_ROS

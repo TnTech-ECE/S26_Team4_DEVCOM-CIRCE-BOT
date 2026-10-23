@@ -1,0 +1,22 @@
+# /dev/rplidar -> the RPLidar A1's USB-serial bridge (Silicon Labs CP2102).
+#
+# From sllidar_ros2/scripts/rplidar.rules, unchanged. Install with:
+#   sudo cp 60-rplidar.rules /etc/udev/rules.d/
+#   sudo udevadm control --reload-rules && sudo udevadm trigger
+#
+# Do NOT run sllidar_ros2/scripts/create_udev_rules.sh instead. It does
+# `colcon_cd rplidar_ros2`, which is not the name of any package here, so the
+# `sudo cp` that follows runs from whatever directory you happened to be in.
+#
+# *** KNOWN COLLISION ON THIS MACHINE ***
+# 10c4:ea60 is a generic CP2102 ID, not an RPLidar-specific one. The existing
+# /etc/udev/rules.d/99-usb-serial.rules already claims the same vendor/product pair
+# twice, for SYMLINK "imu" and SYMLINK "CL86RS". Rules are applied in lexical filename
+# order and SYMLINK+= accumulates, so all three symlinks get created and /dev/rplidar
+# does survive -- but if a second CP2102 device is ever plugged in, whichever one
+# enumerates first wins /dev/rplidar and the lidar silently talks to the wrong port.
+# If that becomes possible, disambiguate by serial:
+#   udevadm info -a -n /dev/ttyUSB0 | grep -m1 ATTRS{serial}
+# and add ATTRS{serial}=="<value>" to the rule below.
+
+KERNEL=="ttyUSB*", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", MODE:="0777", SYMLINK+="rplidar"

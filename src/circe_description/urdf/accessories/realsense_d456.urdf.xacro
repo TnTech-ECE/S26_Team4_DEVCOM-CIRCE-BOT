@@ -1,0 +1,138 @@
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="realsense_d456">
+
+    <!--
+      Intel RealSense D456 accessory for the CIRCE rover.
+
+      The D456 is the IP65 / M12-connector variant of the D455, with identical
+      optics, baseline and IMU, so realsense2_description's sensor_d455 macro is
+      the correct model. There is deliberately no _d456.urdf.xacro upstream.
+
+      use_nominal_extrinsics is FALSE on hardware and TRUE in sim - it is wired to
+      $(arg sim_mode) below. False means this macro emits only
+      camera_bottom_screw_frame and camera_link; realsense2_camera then publishes
+      camera_link -> camera_{depth,color,accel,gyro}_* itself, using the device's real
+      factory calibration. Setting it true on hardware would have both this URDF and
+      the driver publishing the same edges, producing TF_REPEATED_DATA spam and a
+      nondeterministic tree.
+
+      Under Gazebo there is no driver, so nothing else publishes those edges and the
+      objection above does not apply - and the simulated camera below has to attach to
+      an optical frame, which only exists when the macro emits it. Hence the arg rather
+      than a constant. The consequence to remember: sim camera extrinsics are the
+      datasheet's NOMINAL values, while the real robot uses its own factory
+      calibration, so depth-to-base transforms differ slightly between the two by
+      design.
+
+      Mounted on sensor_shelf_link, the deck above the lidar defined in
+      circe_sensor_mast.urdf.xacro. That link sits at the deck's TOP surface, so the
+      default offsets below are all zero: the camera bolts flat to the shelf,
+      centred over the lidar. Must be included AFTER circe_sensor_mast.urdf.xacro.
+
+      Driver-side params live in circe_bringup/config/realsense_d456.yaml. The
+      camera_name there ("camera") is what composes camera_link, so it must agree
+      with the name= passed to sensor_d455 below.
+
+      *** MEASURE BEFORE DRIVING ***
+      camera_mount_* are offsets from the deck surface to the camera's tripod mount
+      (the macro's origin is the bottom screw mount, not the lens). A wrong pitch
+      here tilts the entire depth cloud and will make flat floor read as an obstacle.
+
+      *** NOTE ON THE y OFFSET ***
+      With camera_mount_y = 0 the camera BODY is centred, but camera_link is not:
+      the d455 macro puts camera_link at the left imager, 47.5 mm off the case
+      centreline (half the 95 mm stereo baseline). So the depth origin sits at
+      y = +0.0475. That is physically correct. If you would rather have the depth
+      origin on the robot centreline than the camera body, set
+      camera_mount_y = -0.0475 instead.
+    -->
+    <xacro:include filename="$(find realsense2_description)/urdf/_d455.urdf.xacro" />
+
+    <xacro:property name="camera_mount_x" value="0.0" />
+    <xacro:property name="camera_mount_y" value="0.0" />
+    <xacro:property name="camera_mount_z" value="0.0" />
+    <xacro:property name="camera_mount_roll" value="0.0" />
+    <!-- Slight downward pitch helps see near obstacles; positive pitch tilts down. -->
+    <xacro:property name="camera_mount_pitch" value="0.0" />
+    <xacro:property name="camera_mount_yaw" value="0.0" />
+
+    <xacro:arg name="sim_mode" default="false" />
+
+    <xacro:sensor_d455 parent="sensor_shelf_link" name="camera"
+                       use_nominal_extrinsics="$(arg sim_mode)">
+        <origin xyz="${camera_mount_x} ${camera_mount_y} ${camera_mount_z}"
+                rpy="${camera_mount_roll} ${camera_mount_pitch} ${camera_mount_yaw}"/>
+    </xacro:sensor_d455>
+
+    <!--
+      Simulated D456. Sim only.
+
+      One rgbd_camera rather than separate camera + depth_camera sensors: it emits
+      colour, depth and the registered cloud from a single pose, which is what the real
+      D456 does and what keeps them mutually consistent.
+
+      *** TOPIC NAMING ***
+      gz derives four topics from the single <topic> root below:
+          camera/camera/image         camera/camera/depth_image
+          camera/camera/points        camera/camera/camera_info
+      Those are NOT the driver's names. circe_gazebo/config/gz_bridge.yaml renames each
+      onto the hardware-identical ROS name (/camera/camera/color/image_raw and friends)
+      by giving different ros_topic_name and gz_topic_name. Change one side and you
+      must change the other.
+
+      *** FRAME CONVENTION: VERIFY THIS VISUALLY ***
+      gz renders along the sensor's +X, while ROS optical frames are +Z-forward. The
+      sensor is attached to camera_link and tagged with the optical frame, which is the
+      usual arrangement, but if the cloud shows up rotated ~90 degrees in RViz that is
+      the cause. Check it before trusting depth geometry.
+
+      *** RESOLUTION AND RATE ARE DELIBERATELY LOW ***
+      The real D456 does 1280x720 at 30 Hz. This runs 424x240 at 10 Hz, and that is a
+      deliberate throttle, not an oversight.
+
+      Gazebo renders camera and gpu_lidar sensors on the GPU via EGL. On this machine
+      EGL fails in a headless session ("libEGL warning: failed to create dri2 screen")
+      and gz silently falls back to a SOFTWARE rasteriser. At 848x480x30 that ate
+      enough CPU to starve the rest of the graph: Nav2 lifecycle service calls timed
+      out, the EKF logged "Failed to meet update rate", and slam_toolbox hung unable to
+      read its own parameters over a service. Nothing looked like a rendering problem;
+      it all looked like broken configuration.
+
+      Nothing consumes depth in the costmaps (lidar-only by design), so this costs
+      nothing real. Raise it if you fix EGL or only need the camera without Nav2.
+    -->
+    <xacro:if value="$(arg sim_mode)">
+    <gazebo reference="camera_link">
+        <sensor name="rgbd_camera" type="rgbd_camera">
+            <topic>camera/camera</topic>
+            <gz_frame_id>camera_depth_optical_frame</gz_frame_id>
+            <update_rate>10</update_rate>
+            <always_on>1</always_on>
+            <visualize>false</visualize>
+            <camera>
+                <horizontal_fov>1.518</horizontal_fov>
+                <image>
+                    <width>424</width>
+                    <height>240</height>
+                    <format>R8G8B8</format>
+                </image>
+                <clip>
+                    <near>0.2</near>
+                    <far>20.0</far>
+                </clip>
+                <depth_camera>
+                    <clip>
+                        <near>0.4</near>
+                        <far>20.0</far>
+                    </clip>
+                </depth_camera>
+                <noise>
+                    <type>gaussian</type>
+                    <mean>0.0</mean>
+                    <stddev>0.007</stddev>
+                </noise>
+            </camera>
+        </sensor>
+    </gazebo>
+    </xacro:if>
+
+</robot>

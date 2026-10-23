@@ -1,0 +1,195 @@
+CIRCE TEENSY I/O BOARD - STATUS REPORT
+Date: 2026-10-23
+Scope: Teensy 4.0 firmware + Pi bridge node (circe_teensy package).
+       The JK BMS is excluded from this report and tracked separately.
+
+==========================================================================================
+1. SUMMARY
+==========================================================================================
+
+Overall: about 50% of minimal system functionality.
+
+Most of the firmware is written, but very little of it has been tested on hardware.
+The Teensy is currently not connected. Everything added since 2026-10-19 has only
+been tested in software (on the Pi, with simulated inputs), not on the board.
+
+"Minimal system functionality" means:
+  1. The Teensy and the Pi exchange data reliably over USB.
+  2. The ultrasonic sensors publish distances to ROS.
+  3. The GPS publishes a position fix to ROS.
+  4. The e-stop button stops the rover and the cable spool.
+  5. The spool pays cable out as the rover drives forward and winds it back in when
+     the rover reverses, matched to the rover's speed, with safety cut-outs.
+  6. All of the above wired, mounted and started with the rover's normal bringup.
+
+==========================================================================================
+2. STATUS BY SUBSYSTEM
+==========================================================================================
+
+Subsystem            Weight  Done   Evidence
+-------------------  ------  -----  -------------------------------------------------------
+Teensy <-> Pi link     15%    90%   Proven on hardware 2026-10-19: data flowing both
+                                    ways, zero bad or dropped messages. Has changed since
+                                    then; the new version has not run on the board yet.
+Ultrasonic (x2)        15%    75%   Code complete. Each sensor gave good readings on the
+                                    bench, but only one at a time. Not mounted. Their
+                                    positions are not yet in the robot model (URDF).
+GPS                    15%    65%   Code complete (TinyGPS++). GPS data arrives, but no
+                                    position fix yet (only tested indoors). Antenna
+                                    position not in the robot model.
+E-stop                 15%    50%   Code complete and software-tested: latching,
+                                    debounce, reset rules, and forwarding to the rover
+                                    driver's stop. No button wired yet. No hardware
+                                    power cut yet.
+Spool motor control    30%    25%   Done: safety cut-outs, speed-vs-radius model, out-of-
+                                    cable and full-spool limits. Missing: motor controller
+                                    driver, encoder, speed control loop, remembering the
+                                    cable count across restarts, calibration.
+Rover integration      10%    10%   Teensy not connected or mounted. The Pi node is not
+                                    started by the rover's bringup yet.
+-------------------  ------  -----
+Weighted total               ~50%
+
+Software tests run (2026-10-23, all passing):
+  - Pi node end-to-end against a simulated Teensy: 11/11 checks.
+  - E-stop and spool safety cut-outs, simulated pin and clock: 17/17 checks.
+  - Spool speed/radius model: 12/12 checks.
+  - Firmware builds with no warnings; uses 3% of the Teensy's flash.
+  Note: these test programs live in a temporary folder, not in the package yet.
+
+==========================================================================================
+3. WHAT WAS DONE THIS SESSION
+==========================================================================================
+
+- Code review of the whole package. The main finding was that the spool had no
+  shutdown if the Pi stopped talking; that is now fixed.
+- Pi watchdog: the Pi now sends a heartbeat 5 times a second. If the Teensy hears
+  nothing for 0.75 s, it stops the spool and keeps it off until it is told to start
+  again.
+- E-stop on pin 2:
+  - Wired normally-closed, so a pressed button or a broken wire both read as STOP.
+  - A press latches. The stop clears only on a reset, and only once the button is up.
+  - The Pi forwards the e-stop to the rover driver's software stop, so the drive
+    motors stop too.
+  - One reset (joystick B button) clears both the rover and the Teensy.
+- Spool safety cut-outs. The spool may run only if:
+  - it has been commanded on,
+  - the Pi is alive,
+  - the e-stop is clear,
+  - the rover's speed reading is less than 0.3 s old.
+- Spool speed model:
+  - Spool speed = rover speed / current wound radius, plus 3% so any error leaves
+    slack rather than pulling on the cable.
+  - At the rover's 0.4 m/s cap that is about 43 rpm with a full spool, 57 rpm at
+    half, and 96 rpm near the core.
+  - It stops paying out with 3 m of cable left.
+  - It will not wind in past a full spool.
+  - It flags when the rover is faster than the motor can follow.
+- The Pi now reports the Teensy as connected only while it is actually sending
+  heartbeats, not just while the USB port is open.
+- The Teensy now counts messages it had to drop and reports the count.
+
+==========================================================================================
+4. ASSUMPTIONS (replace when real values are known)
+==========================================================================================
+
+Measured from the spool's CAD model (spool_drum.stl):
+  - Core diameter                       76.2 mm (3 in)
+  - Flange diameter                     228.6 mm (9 in)
+  - Width between flanges               154 mm (about 6 in)
+
+Assumed - need real values:
+  - Cable outer diameter                6.0 mm (typical Cat6)
+  - Cable on a full spool               100 m
+  - Motor top speed at the spool        150 rpm
+  - Motor controller                    unknown; planned to connect by UART (Serial2,
+                                        pins 7/8)
+  - Encoder                             present; counts per revolution, gear ratio and
+                                        whether it connects to the controller or the
+                                        Teensy are unknown
+
+==========================================================================================
+5. NEXT STEPS (in order)
+==========================================================================================
+
+1. Connect and flash the Teensy.
+   - Install the USB rule (circe_bringup/udev/63-teensy.rules).
+   - Upload the new firmware.
+   - Rebuild the Pi package. The firmware and the Pi node must be updated together,
+     because the message format changed.
+   - On the bench, jumper pin 2 to GND (stands in for the e-stop button), or the
+     board starts in e-stop.
+2. Fit the e-stop button.
+   - Use a button with two normally-closed contacts: one to the Teensy, one breaking
+     motor power.
+   - Test that pressing it stops the rover through the driver, and that the reset
+     works.
+3. Ultrasonics: run both sensors at once on their real mounts, check whether they
+   interfere with each other, and add their positions to the robot model.
+4. GPS: get a fix outdoors, check how accurate it is, and add the antenna position
+   to the robot model.
+5. Spool motor (once the controller model is known):
+   a. Write the controller code on Serial2 and read the encoder.
+   b. Speed control loop, tested on the bench with no cable on the spool.
+   c. Remember how much cable is on the spool across Teensy restarts, or have the Pi
+      set it.
+   d. Have the Pi stop the rover when the spool runs out of cable or cannot keep up.
+   e. Measure the real cable diameter and length, then test on the rover with cable.
+6. Start the Pi bridge node from the rover's normal bringup.
+7. Put the workspace under version control (see concern 13).
+
+==========================================================================================
+6. CONCERNS AND RISKS
+==========================================================================================
+
+Safety
+  1. The e-stop only stops the drive motors through software (Teensy -> USB -> Pi ->
+     rover driver). If the Pi hangs, the drive motors do not stop. A second
+     normally-closed contact on the button must cut motor power directly.
+  2. Running out of cable: the spool stops paying out at 3 m left, but nothing stops
+     the rover yet. If the rover keeps driving, it pulls on the cable's anchored end.
+     The Pi must stop the rover when this happens (next step 5d).
+  3. The Teensy's pins are 3.3 V only. Any 5 V signal can damage it. Check the
+     signal voltage of the ultrasonics (when powered at 5 V) and of the motor
+     controller before wiring.
+
+Spool accuracy
+  4. The cable count resets to "full" whenever the Teensy restarts. After a restart
+     partway through a run, every spool speed is wrong until the spool is reloaded.
+  5. The radius model is an estimate based on assumed cable diameter and length.
+     Without a tension sensor, errors build up over a long run. The 3% overspeed
+     means errors leave slack rather than pulling on the cable, but a dancer arm or
+     motor-current monitoring would make it self-correcting.
+  6. The spool follows the rover's speed estimate (/odometry/filtered), so wheel slip
+     shows up directly as spool speed error. The spool cannot run while localization
+     is off (deliberately).
+  7. Winding in: if the spool falls behind a reversing rover, slack builds up under
+     the rover. The 3% overspeed also applies when winding in, but this needs
+     testing.
+
+System
+  8. All five easily reachable serial ports are spoken for once the motor controller
+     is added (BMS, motor, GPS, 2 ultrasonics). There is no spare for future serial
+     devices without soldering to pads on the underside of the board.
+  9. While the GPS is unplugged or silent, the Teensy pauses for about 25 ms every
+     3 s to resend its settings. This must be removed before the motor control loop
+     goes in, or the spool will stutter.
+ 10. The Pi's heartbeat rate and the Teensy's timeout are linked. If the heartbeat
+     drops below about 4 per second, the spool will cut out even though nothing is
+     wrong.
+ 11. The two ultrasonic sensors may interfere with each other if they face the same
+     way. They have only been tested one at a time.
+ 12. The message format is defined twice (Teensy C++ and Pi Python). The firmware
+     build checks message sizes, but nothing checks automatically that the two
+     sides agree.
+ 13. The workspace is not in version control (git). There is no history and no
+     backup. A bad edit or a lost SD card loses the work.
+
+==========================================================================================
+7. INFORMATION NEEDED
+==========================================================================================
+
+  - Spool motor controller model and its serial protocol.
+  - Encoder counts per revolution, gear ratio, and the motor's top speed at the spool.
+  - Cable outer diameter and length loaded on the spool.
+  - E-stop button model (does it have two normally-closed contacts?).

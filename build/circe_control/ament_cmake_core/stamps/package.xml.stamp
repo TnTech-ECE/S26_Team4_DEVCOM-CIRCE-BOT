@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>circe_control</name>
+  <version>0.1.0</version>
+  <description>
+    Command plumbing for CIRCE: gamepad teleop today; twist_mux arbitration and the
+    software e-stop when those land (IMPLEMENTATION_PLAN.md Phase 5).
+  </description>
+  <maintainer email="sz1305568@gmail.com">sharif</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <!-- Maps /joy to /cmd_vel using config/{ps4,ps5}_controller.yaml + joy_topics.yaml. -->
+  <exec_depend>roverrobotics_input_manager</exec_depend>
+
+  <!-- `joy`, not `joy_linux`. Upstream's launch file used joy_linux, which is not
+       installed here and not in circe.repos; joy is the maintained driver and
+       publishes the same sensor_msgs/Joy on /joy. -->
+  <exec_depend>joy</exec_depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

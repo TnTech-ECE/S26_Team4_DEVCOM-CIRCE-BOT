@@ -1,0 +1,285 @@
+[0.211s] DEBUG:colcon:Command line arguments: ['/usr/bin/colcon', 'build', '--packages-select', 'circe_diagnostics']
+[0.211s] DEBUG:colcon:Parsed command line arguments: Namespace(log_base=None, log_level=None, verb_name='build', build_base='build', install_base='install', merge_install=False, symlink_install=False, test_result_base=None, continue_on_error=False, executor='parallel', parallel_workers=4, event_handlers=None, ignore_user_meta=False, metas=['./colcon.meta'], base_paths=['.'], packages_ignore=None, packages_ignore_regex=None, paths=None, packages_up_to=None, packages_up_to_regex=None, packages_above=None, packages_above_and_dependencies=None, packages_above_depth=None, packages_select_by_dep=None, packages_skip_by_dep=None, packages_skip_up_to=None, packages_select_build_failed=False, packages_skip_build_finished=False, packages_select_test_failures=False, packages_skip_test_passed=False, packages_select=['circe_diagnostics'], packages_skip=None, packages_select_regex=None, packages_skip_regex=None, packages_start=None, packages_end=None, allow_overriding=[], cmake_args=None, cmake_target=None, cmake_target_skip_unavailable=False, cmake_clean_cache=False, cmake_clean_first=False, cmake_force_configure=False, ament_cmake_args=None, catkin_cmake_args=None, catkin_skip_building_tests=False, mixin_files=None, mixin=None, verb_parser=<colcon_mixin.mixin.mixin_argument.MixinArgumentDecorator object at 0xffff9b927aa0>, verb_extension=<colcon_core.verb.build.BuildVerb object at 0xffff9adae840>, main=<bound method BuildVerb.main of <colcon_core.verb.build.BuildVerb object at 0xffff9adae840>>, mixin_verb=('build',))
+[0.283s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) check parameters
+[0.283s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) check parameters
+[0.283s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) check parameters
+[0.283s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) check parameters
+[0.283s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) discover
+[0.283s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) discover
+[0.283s] INFO:colcon.colcon_core.package_discovery:Crawling recursively for packages in '/home/devcom/circe_ws'
+[0.284s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ignore', 'ignore_ament_install']
+[0.284s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore'
+[0.284s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore_ament_install'
+[0.284s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_pkg']
+[0.284s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_pkg'
+[0.284s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_meta']
+[0.284s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_meta'
+[0.284s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ros']
+[0.284s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ros'
+[0.327s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['cmake', 'python']
+[0.327s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'cmake'
+[0.327s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python'
+[0.327s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['python_setup_py']
+[0.327s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python_setup_py'
+[0.327s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extensions ['ignore', 'ignore_ament_install']
+[0.328s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extension 'ignore'
+[0.328s] Level 1:colcon.colcon_core.package_identification:_identify(build) ignored
+[0.328s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extensions ['ignore', 'ignore_ament_install']
+[0.328s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extension 'ignore'
+[0.328s] Level 1:colcon.colcon_core.package_identification:_identify(install) ignored
+[0.328s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extensions ['ignore', 'ignore_ament_install']
+[0.328s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extension 'ignore'
+[0.328s] Level 1:colcon.colcon_core.package_identification:_identify(log) ignored
+[0.328s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ignore', 'ignore_ament_install']
+[0.328s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore'
+[0.328s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore_ament_install'
+[0.329s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_pkg']
+[0.329s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_pkg'
+[0.329s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_meta']
+[0.329s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_meta'
+[0.329s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ros']
+[0.329s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ros'
+[0.329s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['cmake', 'python']
+[0.329s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'cmake'
+[0.329s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python'
+[0.329s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['python_setup_py']
+[0.329s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python_setup_py'
+[0.329s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_bringup) by extensions ['ignore', 'ignore_ament_install']
+[0.329s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_bringup) by extension 'ignore'
+[0.329s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_bringup) by extension 'ignore_ament_install'
+[0.329s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_bringup) by extensions ['colcon_pkg']
+[0.329s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_bringup) by extension 'colcon_pkg'
+[0.329s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_bringup) by extensions ['colcon_meta']
+[0.329s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_bringup) by extension 'colcon_meta'
+[0.330s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_bringup) by extensions ['ros']
+[0.330s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_bringup) by extension 'ros'
+[0.334s] DEBUG:colcon.colcon_core.package_identification:Package 'src/circe_bringup' with type 'ros.ament_cmake' and name 'circe_bringup'
+[0.334s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_control) by extensions ['ignore', 'ignore_ament_install']
+[0.334s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_control) by extension 'ignore'
+[0.334s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_control) by extension 'ignore_ament_install'
+[0.334s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_control) by extensions ['colcon_pkg']
+[0.334s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_control) by extension 'colcon_pkg'
+[0.334s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_control) by extensions ['colcon_meta']
+[0.334s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_control) by extension 'colcon_meta'
+[0.335s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_control) by extensions ['ros']
+[0.335s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_control) by extension 'ros'
+[0.335s] DEBUG:colcon.colcon_core.package_identification:Package 'src/circe_control' with type 'ros.ament_cmake' and name 'circe_control'
+[0.335s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_description) by extensions ['ignore', 'ignore_ament_install']
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_description) by extension 'ignore'
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_description) by extension 'ignore_ament_install'
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_description) by extensions ['colcon_pkg']
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_description) by extension 'colcon_pkg'
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_description) by extensions ['colcon_meta']
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_description) by extension 'colcon_meta'
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_description) by extensions ['ros']
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_description) by extension 'ros'
+[0.337s] DEBUG:colcon.colcon_core.package_identification:Package 'src/circe_description' with type 'ros.ament_cmake' and name 'circe_description'
+[0.337s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_diagnostics) by extensions ['ignore', 'ignore_ament_install']
+[0.337s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_diagnostics) by extension 'ignore'
+[0.337s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_diagnostics) by extension 'ignore_ament_install'
+[0.337s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_diagnostics) by extensions ['colcon_pkg']
+[0.337s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_diagnostics) by extension 'colcon_pkg'
+[0.337s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_diagnostics) by extensions ['colcon_meta']
+[0.337s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_diagnostics) by extension 'colcon_meta'
+[0.337s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_diagnostics) by extensions ['ros']
+[0.337s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_diagnostics) by extension 'ros'
+[0.338s] DEBUG:colcon.colcon_core.package_identification:Package 'src/circe_diagnostics' with type 'ros.ament_cmake' and name 'circe_diagnostics'
+[0.338s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_gazebo) by extensions ['ignore', 'ignore_ament_install']
+[0.338s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_gazebo) by extension 'ignore'
+[0.338s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_gazebo) by extension 'ignore_ament_install'
+[0.338s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_gazebo) by extensions ['colcon_pkg']
+[0.338s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_gazebo) by extension 'colcon_pkg'
+[0.338s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_gazebo) by extensions ['colcon_meta']
+[0.338s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_gazebo) by extension 'colcon_meta'
+[0.339s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_gazebo) by extensions ['ros']
+[0.339s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_gazebo) by extension 'ros'
+[0.339s] DEBUG:colcon.colcon_core.package_identification:Package 'src/circe_gazebo' with type 'ros.ament_cmake' and name 'circe_gazebo'
+[0.339s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_nav) by extensions ['ignore', 'ignore_ament_install']
+[0.340s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_nav) by extension 'ignore'
+[0.340s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_nav) by extension 'ignore_ament_install'
+[0.340s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_nav) by extensions ['colcon_pkg']
+[0.340s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_nav) by extension 'colcon_pkg'
+[0.340s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_nav) by extensions ['colcon_meta']
+[0.340s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_nav) by extension 'colcon_meta'
+[0.340s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_nav) by extensions ['ros']
+[0.340s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_nav) by extension 'ros'
+[0.341s] DEBUG:colcon.colcon_core.package_identification:Package 'src/circe_nav' with type 'ros.ament_cmake' and name 'circe_nav'
+[0.341s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_perception) by extensions ['ignore', 'ignore_ament_install']
+[0.341s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_perception) by extension 'ignore'
+[0.341s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_perception) by extension 'ignore_ament_install'
+[0.341s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_perception) by extensions ['colcon_pkg']
+[0.341s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_perception) by extension 'colcon_pkg'
+[0.341s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_perception) by extensions ['colcon_meta']
+[0.341s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_perception) by extension 'colcon_meta'
+[0.341s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_perception) by extensions ['ros']
+[0.341s] Level 1:colcon.colcon_core.package_identification:_identify(src/circe_perception) by extension 'ros'
+[0.342s] DEBUG:colcon.colcon_core.package_identification:Package 'src/circe_perception' with type 'ros.ament_cmake' and name 'circe_perception'
+[0.342s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2) by extensions ['ignore', 'ignore_ament_install']
+[0.342s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2) by extension 'ignore'
+[0.342s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2) by extension 'ignore_ament_install'
+[0.342s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2) by extensions ['colcon_pkg']
+[0.342s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2) by extension 'colcon_pkg'
+[0.342s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2) by extensions ['colcon_meta']
+[0.342s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2) by extension 'colcon_meta'
+[0.342s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2) by extensions ['ros']
+[0.342s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2) by extension 'ros'
+[0.342s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2) by extensions ['cmake', 'python']
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2) by extension 'cmake'
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2) by extension 'python'
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2) by extensions ['python_setup_py']
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2) by extension 'python_setup_py'
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2/roverrobotics_description) by extensions ['ignore', 'ignore_ament_install']
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2/roverrobotics_description) by extension 'ignore'
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2/roverrobotics_description) by extension 'ignore_ament_install'
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2/roverrobotics_description) by extensions ['colcon_pkg']
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2/roverrobotics_description) by extension 'colcon_pkg'
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2/roverrobotics_description) by extensions ['colcon_meta']
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2/roverrobotics_description) by extension 'colcon_meta'
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2/roverrobotics_description) by extensions ['ros']
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2/roverrobotics_description) by extension 'ros'
+[0.344s] DEBUG:colcon.colcon_core.package_identification:Package 'src/roverrobotics_ros2/roverrobotics_description' with type 'ros.ament_cmake' and name 'roverrobotics_description'
+[0.344s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2/roverrobotics_driver) by extensions ['ignore', 'ignore_ament_install']
+[0.344s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2/roverrobotics_driver) by extension 'ignore'
+[0.344s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2/roverrobotics_driver) by extension 'ignore_ament_install'
+[0.344s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2/roverrobotics_driver) by extensions ['colcon_pkg']
+[0.344s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2/roverrobotics_driver) by extension 'colcon_pkg'
+[0.344s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2/roverrobotics_driver) by extensions ['colcon_meta']
+[0.344s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2/roverrobotics_driver) by extension 'colcon_meta'
+[0.345s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2/roverrobotics_driver) by extensions ['ros']
+[0.345s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2/roverrobotics_driver) by extension 'ros'
+[0.346s] DEBUG:colcon.colcon_core.package_identification:Package 'src/roverrobotics_ros2/roverrobotics_driver' with type 'ros.ament_cmake' and name 'roverrobotics_driver'
+[0.346s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2/roverrobotics_gazebo) by extensions ['ignore', 'ignore_ament_install']
+[0.346s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2/roverrobotics_gazebo) by extension 'ignore'
+[0.346s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2/roverrobotics_gazebo) by extension 'ignore_ament_install'
+[0.346s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2/roverrobotics_gazebo) by extensions ['colcon_pkg']
+[0.346s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2/roverrobotics_gazebo) by extension 'colcon_pkg'
+[0.346s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2/roverrobotics_gazebo) by extensions ['colcon_meta']
+[0.346s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2/roverrobotics_gazebo) by extension 'colcon_meta'
+[0.346s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2/roverrobotics_gazebo) by extensions ['ros']
+[0.346s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2/roverrobotics_gazebo) by extension 'ros'
+[0.347s] DEBUG:colcon.colcon_core.package_identification:Package 'src/roverrobotics_ros2/roverrobotics_gazebo' with type 'ros.ament_cmake' and name 'roverrobotics_gazebo'
+[0.347s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2/roverrobotics_input_manager) by extensions ['ignore', 'ignore_ament_install']
+[0.347s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2/roverrobotics_input_manager) by extension 'ignore'
+[0.347s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2/roverrobotics_input_manager) by extension 'ignore_ament_install'
+[0.347s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2/roverrobotics_input_manager) by extensions ['colcon_pkg']
+[0.347s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2/roverrobotics_input_manager) by extension 'colcon_pkg'
+[0.347s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2/roverrobotics_input_manager) by extensions ['colcon_meta']
+[0.347s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2/roverrobotics_input_manager) by extension 'colcon_meta'
+[0.347s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2/roverrobotics_input_manager) by extensions ['ros']
+[0.347s] Level 1:colcon.colcon_core.package_identification:_identify(src/roverrobotics_ros2/roverrobotics_input_manager) by extension 'ros'
+[0.348s] DEBUG:colcon.colcon_core.package_identification:Package 'src/roverrobotics_ros2/roverrobotics_input_manager' with type 'ros.ament_cmake' and name 'roverrobotics_input_manager'
+[0.348s] Level 1:colcon.colcon_core.package_identification:_identify(src/sllidar_ros2) by extensions ['ignore', 'ignore_ament_install']
+[0.348s] Level 1:colcon.colcon_core.package_identification:_identify(src/sllidar_ros2) by extension 'ignore'
+[0.348s] Level 1:colcon.colcon_core.package_identification:_identify(src/sllidar_ros2) by extension 'ignore_ament_install'
+[0.348s] Level 1:colcon.colcon_core.package_identification:_identify(src/sllidar_ros2) by extensions ['colcon_pkg']
+[0.348s] Level 1:colcon.colcon_core.package_identification:_identify(src/sllidar_ros2) by extension 'colcon_pkg'
+[0.349s] Level 1:colcon.colcon_core.package_identification:_identify(src/sllidar_ros2) by extensions ['colcon_meta']
+[0.349s] Level 1:colcon.colcon_core.package_identification:_identify(src/sllidar_ros2) by extension 'colcon_meta'
+[0.349s] Level 1:colcon.colcon_core.package_identification:_identify(src/sllidar_ros2) by extensions ['ros']
+[0.349s] Level 1:colcon.colcon_core.package_identification:_identify(src/sllidar_ros2) by extension 'ros'
+[0.349s] DEBUG:colcon.colcon_core.package_identification:Package 'src/sllidar_ros2' with type 'ros.ament_cmake' and name 'sllidar_ros2'
+[0.349s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) using defaults
+[0.350s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) discover
+[0.350s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) using defaults
+[0.350s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) discover
+[0.350s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) using defaults
+[0.383s] INFO:colcon.colcon_core.package_selection:Skipping not selected package 'circe_nav' in 'src/circe_nav'
+[0.383s] INFO:colcon.colcon_core.package_selection:Skipping not selected package 'circe_perception' in 'src/circe_perception'
+[0.383s] INFO:colcon.colcon_core.package_selection:Skipping not selected package 'roverrobotics_description' in 'src/roverrobotics_ros2/roverrobotics_description'
+[0.383s] INFO:colcon.colcon_core.package_selection:Skipping not selected package 'roverrobotics_driver' in 'src/roverrobotics_ros2/roverrobotics_driver'
+[0.383s] INFO:colcon.colcon_core.package_selection:Skipping not selected package 'roverrobotics_input_manager' in 'src/roverrobotics_ros2/roverrobotics_input_manager'
+[0.383s] INFO:colcon.colcon_core.package_selection:Skipping not selected package 'sllidar_ros2' in 'src/sllidar_ros2'
+[0.383s] INFO:colcon.colcon_core.package_selection:Skipping not selected package 'circe_control' in 'src/circe_control'
+[0.383s] INFO:colcon.colcon_core.package_selection:Skipping not selected package 'circe_description' in 'src/circe_description'
+[0.383s] INFO:colcon.colcon_core.package_selection:Skipping not selected package 'roverrobotics_gazebo' in 'src/roverrobotics_ros2/roverrobotics_gazebo'
+[0.383s] INFO:colcon.colcon_core.package_selection:Skipping not selected package 'circe_bringup' in 'src/circe_bringup'
+[0.383s] INFO:colcon.colcon_core.package_selection:Skipping not selected package 'circe_gazebo' in 'src/circe_gazebo'
+[0.384s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) check parameters
+[0.384s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) discover
+[0.388s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 12 installed packages in /home/devcom/circe_ws/install
+[0.391s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 392 installed packages in /opt/ros/jazzy
+[0.392s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) using defaults
+[0.491s] WARNING:colcon.colcon_core.package_selection:Some selected packages are already built in one or more underlay workspaces:
+	'circe_diagnostics' is in: /home/devcom/circe_ws/install/circe_diagnostics
+If a package in a merged underlay workspace is overridden and it installs headers, then all packages in the overlay must sort their include directories by workspace order. Failure to do so may result in build failures or undefined behavior at run time.
+If the overridden package is used by another package in any underlay, then the overriding package in the overlay must be API and ABI compatible or undefined behavior at run time may occur.
+
+If you understand the risks and want to override a package anyways, add the following to the command line:
+	--allow-overriding circe_diagnostics
+
+This may be promoted to an error in a future release of colcon-override-check.
+[0.493s] Level 5:colcon.colcon_core.verb:set package 'circe_diagnostics' build argument 'cmake_args' from command line to 'None'
+[0.493s] Level 5:colcon.colcon_core.verb:set package 'circe_diagnostics' build argument 'cmake_target' from command line to 'None'
+[0.493s] Level 5:colcon.colcon_core.verb:set package 'circe_diagnostics' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.493s] Level 5:colcon.colcon_core.verb:set package 'circe_diagnostics' build argument 'cmake_clean_cache' from command line to 'False'
+[0.493s] Level 5:colcon.colcon_core.verb:set package 'circe_diagnostics' build argument 'cmake_clean_first' from command line to 'False'
+[0.493s] Level 5:colcon.colcon_core.verb:set package 'circe_diagnostics' build argument 'cmake_force_configure' from command line to 'False'
+[0.493s] Level 5:colcon.colcon_core.verb:set package 'circe_diagnostics' build argument 'ament_cmake_args' from command line to 'None'
+[0.493s] Level 5:colcon.colcon_core.verb:set package 'circe_diagnostics' build argument 'catkin_cmake_args' from command line to 'None'
+[0.493s] Level 5:colcon.colcon_core.verb:set package 'circe_diagnostics' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.493s] DEBUG:colcon.colcon_core.verb:Building package 'circe_diagnostics' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/devcom/circe_ws/build/circe_diagnostics', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/devcom/circe_ws/install/circe_diagnostics', 'merge_install': False, 'path': '/home/devcom/circe_ws/src/circe_diagnostics', 'symlink_install': False, 'test_result_base': None}
+[0.493s] INFO:colcon.colcon_core.executor:Executing jobs using 'parallel' executor
+[0.495s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete
+[0.495s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/devcom/circe_ws/src/circe_diagnostics' with build type 'ament_cmake'
+[0.495s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/devcom/circe_ws/src/circe_diagnostics'
+[0.499s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_core.shell.bat': Not used on non-Windows systems
+[0.499s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.499s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.512s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/devcom/circe_ws/build/circe_diagnostics': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/devcom/circe_ws/build/circe_diagnostics -- -j4 -l4
+[1.235s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/devcom/circe_ws/build/circe_diagnostics' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/devcom/circe_ws/build/circe_diagnostics -- -j4 -l4
+[1.256s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/devcom/circe_ws/build/circe_diagnostics': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/devcom/circe_ws/build/circe_diagnostics
+[1.308s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(circe_diagnostics)
+[1.309s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/devcom/circe_ws/build/circe_diagnostics' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/devcom/circe_ws/build/circe_diagnostics
+[1.313s] Level 1:colcon.colcon_core.environment:checking '/home/devcom/circe_ws/install/circe_diagnostics' for CMake module files
+[1.314s] Level 1:colcon.colcon_core.environment:checking '/home/devcom/circe_ws/install/circe_diagnostics' for CMake config files
+[1.314s] Level 1:colcon.colcon_core.shell:create_environment_hook('circe_diagnostics', 'cmake_prefix_path')
+[1.315s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/devcom/circe_ws/install/circe_diagnostics/share/circe_diagnostics/hook/cmake_prefix_path.ps1'
+[1.316s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/devcom/circe_ws/install/circe_diagnostics/share/circe_diagnostics/hook/cmake_prefix_path.dsv'
+[1.317s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/devcom/circe_ws/install/circe_diagnostics/share/circe_diagnostics/hook/cmake_prefix_path.sh'
+[1.318s] Level 1:colcon.colcon_core.environment:checking '/home/devcom/circe_ws/install/circe_diagnostics/lib'
+[1.319s] Level 1:colcon.colcon_core.environment:checking '/home/devcom/circe_ws/install/circe_diagnostics/bin'
+[1.319s] Level 1:colcon.colcon_core.environment:checking '/home/devcom/circe_ws/install/circe_diagnostics/lib/pkgconfig/circe_diagnostics.pc'
+[1.319s] Level 1:colcon.colcon_core.environment:checking '/home/devcom/circe_ws/install/circe_diagnostics/lib/python3.12/site-packages'
+[1.320s] Level 1:colcon.colcon_core.environment:checking '/home/devcom/circe_ws/install/circe_diagnostics/bin'
+[1.320s] INFO:colcon.colcon_core.shell:Creating package script '/home/devcom/circe_ws/install/circe_diagnostics/share/circe_diagnostics/package.ps1'
+[1.322s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/devcom/circe_ws/install/circe_diagnostics/share/circe_diagnostics/package.dsv'
+[1.323s] INFO:colcon.colcon_core.shell:Creating package script '/home/devcom/circe_ws/install/circe_diagnostics/share/circe_diagnostics/package.sh'
+[1.324s] INFO:colcon.colcon_core.shell:Creating package script '/home/devcom/circe_ws/install/circe_diagnostics/share/circe_diagnostics/package.bash'
+[1.325s] INFO:colcon.colcon_core.shell:Creating package script '/home/devcom/circe_ws/install/circe_diagnostics/share/circe_diagnostics/package.zsh'
+[1.326s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/devcom/circe_ws/install/circe_diagnostics/share/colcon-core/packages/circe_diagnostics)
+[1.327s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(circe_diagnostics)
+[1.327s] Level 1:colcon.colcon_core.environment:checking '/home/devcom/circe_ws/install/circe_diagnostics' for CMake module files
+[1.328s] Level 1:colcon.colcon_core.environment:checking '/home/devcom/circe_ws/install/circe_diagnostics' for CMake config files
+[1.328s] Level 1:colcon.colcon_core.shell:create_environment_hook('circe_diagnostics', 'cmake_prefix_path')
+[1.328s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/devcom/circe_ws/install/circe_diagnostics/share/circe_diagnostics/hook/cmake_prefix_path.ps1'
+[1.329s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/devcom/circe_ws/install/circe_diagnostics/share/circe_diagnostics/hook/cmake_prefix_path.dsv'
+[1.329s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/devcom/circe_ws/install/circe_diagnostics/share/circe_diagnostics/hook/cmake_prefix_path.sh'
+[1.330s] Level 1:colcon.colcon_core.environment:checking '/home/devcom/circe_ws/install/circe_diagnostics/lib'
+[1.330s] Level 1:colcon.colcon_core.environment:checking '/home/devcom/circe_ws/install/circe_diagnostics/bin'
+[1.330s] Level 1:colcon.colcon_core.environment:checking '/home/devcom/circe_ws/install/circe_diagnostics/lib/pkgconfig/circe_diagnostics.pc'
+[1.330s] Level 1:colcon.colcon_core.environment:checking '/home/devcom/circe_ws/install/circe_diagnostics/lib/python3.12/site-packages'
+[1.331s] Level 1:colcon.colcon_core.environment:checking '/home/devcom/circe_ws/install/circe_diagnostics/bin'
+[1.331s] INFO:colcon.colcon_core.shell:Creating package script '/home/devcom/circe_ws/install/circe_diagnostics/share/circe_diagnostics/package.ps1'
+[1.332s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/devcom/circe_ws/install/circe_diagnostics/share/circe_diagnostics/package.dsv'
+[1.332s] INFO:colcon.colcon_core.shell:Creating package script '/home/devcom/circe_ws/install/circe_diagnostics/share/circe_diagnostics/package.sh'
+[1.333s] INFO:colcon.colcon_core.shell:Creating package script '/home/devcom/circe_ws/install/circe_diagnostics/share/circe_diagnostics/package.bash'
+[1.333s] INFO:colcon.colcon_core.shell:Creating package script '/home/devcom/circe_ws/install/circe_diagnostics/share/circe_diagnostics/package.zsh'
+[1.334s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/devcom/circe_ws/install/circe_diagnostics/share/colcon-core/packages/circe_diagnostics)
+[1.334s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:closing loop
+[1.334s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:loop closed
+[1.335s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete finished with '0'
+[1.335s] DEBUG:colcon.colcon_core.event_reactor:joining thread
+[1.343s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.terminal_notifier': Not used on non-Darwin systems
+[1.344s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.win32': Not used on non-Windows systems
+[1.344s] INFO:colcon.colcon_notification.desktop_notification:Sending desktop notification using 'notify2'
+[1.375s] DEBUG:colcon.colcon_core.event_reactor:joined thread
+[1.375s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/devcom/circe_ws/install/local_setup.ps1'
+[1.377s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/devcom/circe_ws/install/_local_setup_util_ps1.py'
+[1.379s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/devcom/circe_ws/install/setup.ps1'
+[1.383s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/devcom/circe_ws/install/local_setup.sh'
+[1.386s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/devcom/circe_ws/install/_local_setup_util_sh.py'
+[1.388s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/devcom/circe_ws/install/setup.sh'
+[1.392s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/devcom/circe_ws/install/local_setup.bash'
+[1.393s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/devcom/circe_ws/install/setup.bash'
+[1.396s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/devcom/circe_ws/install/local_setup.zsh'
+[1.397s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/devcom/circe_ws/install/setup.zsh'

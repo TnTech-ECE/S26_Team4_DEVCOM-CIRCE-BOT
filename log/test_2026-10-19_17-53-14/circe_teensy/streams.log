@@ -1,0 +1,53 @@
+[0.065s] Invoking command in '/home/devcom/circe_ws/build/circe_teensy': AMENT_PREFIX_PATH=/home/devcom/circe_ws/install/circe_teensy:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/devcom/circe_ws/install/circe_teensy:${CMAKE_PREFIX_PATH} DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/ctest -C Release -D ExperimentalTest --no-compress-output -V --force-new-ctest-process
+[0.081s] UpdateCTestConfiguration  from :/home/devcom/circe_ws/build/circe_teensy/CTestConfiguration.ini
+[0.082s] Parse Config file:/home/devcom/circe_ws/build/circe_teensy/CTestConfiguration.ini
+[0.082s]    Site: circe-desktop
+[0.082s]    Build name: (empty)
+[0.082s]  Add coverage exclude regular expressions.
+[0.082s] Create new tag: 20261019-2253 - Experimental
+[0.082s] UpdateCTestConfiguration  from :/home/devcom/circe_ws/build/circe_teensy/CTestConfiguration.ini
+[0.082s] Parse Config file:/home/devcom/circe_ws/build/circe_teensy/CTestConfiguration.ini
+[0.082s] Test project /home/devcom/circe_ws/build/circe_teensy
+[0.082s] Constructing a list of tests
+[0.083s] Done constructing a list of tests
+[0.083s] Updating test list for fixtures
+[0.083s] Added 0 tests to meet fixture requirements
+[0.083s] Checking test dependency graph...
+[0.083s] Checking test dependency graph end
+[0.083s] test 1
+[0.083s]     Start 1: lint_cmake
+[0.083s] 
+[0.083s] 1: Test command: /usr/bin/python3 "-u" "/opt/ros/jazzy/share/ament_cmake_test/cmake/run_test.py" "/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/lint_cmake.xunit.xml" "--package-name" "circe_teensy" "--output-file" "/home/devcom/circe_ws/build/circe_teensy/ament_lint_cmake/lint_cmake.txt" "--command" "/opt/ros/jazzy/bin/ament_lint_cmake" "--xunit-file" "/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/lint_cmake.xunit.xml"
+[0.083s] 1: Working Directory: /home/devcom/circe_ws/src/circe_teensy
+[0.083s] 1: Test timeout computed to be: 60
+[0.170s] 1: -- run_test.py: invoking following command in '/home/devcom/circe_ws/src/circe_teensy':
+[0.171s] 1:  - /opt/ros/jazzy/bin/ament_lint_cmake --xunit-file /home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/lint_cmake.xunit.xml
+[0.283s] 1: 
+[0.283s] 1: No problems found
+[0.320s] 1: -- run_test.py: return code 0
+[0.320s] 1: -- run_test.py: verify result file '/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/lint_cmake.xunit.xml'
+[0.343s] 1/2 Test #1: lint_cmake .......................   Passed    0.26 sec
+[0.343s] test 2
+[0.343s]     Start 2: xmllint
+[0.343s] 
+[0.344s] 2: Test command: /usr/bin/python3 "-u" "/opt/ros/jazzy/share/ament_cmake_test/cmake/run_test.py" "/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/xmllint.xunit.xml" "--package-name" "circe_teensy" "--output-file" "/home/devcom/circe_ws/build/circe_teensy/ament_xmllint/xmllint.txt" "--command" "/opt/ros/jazzy/bin/ament_xmllint" "--xunit-file" "/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/xmllint.xunit.xml"
+[0.344s] 2: Working Directory: /home/devcom/circe_ws/src/circe_teensy
+[0.344s] 2: Test timeout computed to be: 60
+[0.435s] 2: -- run_test.py: invoking following command in '/home/devcom/circe_ws/src/circe_teensy':
+[0.435s] 2:  - /opt/ros/jazzy/bin/ament_xmllint --xunit-file /home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/xmllint.xunit.xml
+[0.904s] 2: File 'package.xml' is valid
+[0.904s] 2: 
+[0.904s] 2: No problems found
+[0.937s] 2: -- run_test.py: return code 0
+[0.937s] 2: -- run_test.py: verify result file '/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/xmllint.xunit.xml'
+[0.959s] 2/2 Test #2: xmllint ..........................   Passed    0.62 sec
+[0.959s] 
+[0.960s] 100% tests passed, 0 tests failed out of 2
+[0.960s] 
+[0.960s] Label Time Summary:
+[0.960s] lint_cmake    =   0.26 sec*proc (1 test)
+[0.960s] linter        =   0.88 sec*proc (2 tests)
+[0.960s] xmllint       =   0.62 sec*proc (1 test)
+[0.960s] 
+[0.960s] Total Test time (real) =   0.88 sec
+[0.964s] Invoked command in '/home/devcom/circe_ws/build/circe_teensy' returned '0': AMENT_PREFIX_PATH=/home/devcom/circe_ws/install/circe_teensy:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/devcom/circe_ws/install/circe_teensy:${CMAKE_PREFIX_PATH} DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/ctest -C Release -D ExperimentalTest --no-compress-output -V --force-new-ctest-process

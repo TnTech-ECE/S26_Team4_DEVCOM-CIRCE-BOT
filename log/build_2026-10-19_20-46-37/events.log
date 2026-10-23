@@ -1,0 +1,346 @@
+[0.000000] (-) TimerEvent: {}
+[0.006813] (-) JobUnselected: {'identifier': 'circe_bringup'}
+[0.007030] (-) JobUnselected: {'identifier': 'circe_control'}
+[0.007069] (-) JobUnselected: {'identifier': 'circe_description'}
+[0.007089] (-) JobUnselected: {'identifier': 'circe_diagnostics'}
+[0.007109] (-) JobUnselected: {'identifier': 'circe_gazebo'}
+[0.007128] (-) JobUnselected: {'identifier': 'circe_nav'}
+[0.007149] (-) JobUnselected: {'identifier': 'circe_perception'}
+[0.007171] (-) JobUnselected: {'identifier': 'roverrobotics_description'}
+[0.007190] (-) JobUnselected: {'identifier': 'roverrobotics_driver'}
+[0.007217] (-) JobUnselected: {'identifier': 'roverrobotics_gazebo'}
+[0.007255] (-) JobUnselected: {'identifier': 'roverrobotics_input_manager'}
+[0.007286] (-) JobUnselected: {'identifier': 'sllidar_ros2'}
+[0.007335] (circe_teensy) JobQueued: {'identifier': 'circe_teensy', 'dependencies': OrderedDict()}
+[0.007386] (circe_teensy) JobStarted: {'identifier': 'circe_teensy'}
+[0.034179] (circe_teensy) JobProgress: {'identifier': 'circe_teensy', 'progress': 'cmake'}
+[0.037318] (circe_teensy) JobProgress: {'identifier': 'circe_teensy', 'progress': 'build'}
+[0.037571] (circe_teensy) Command: {'cmd': ['/usr/bin/cmake', '--build', '/home/devcom/circe_ws/build/circe_teensy', '--', '-j4', '-l4'], 'cwd': '/home/devcom/circe_ws/build/circe_teensy', 'env': OrderedDict({'GJS_DEBUG_TOPICS': 'JS ERROR;JS LOG', 'EGL_PLATFORM': 'wayland', 'LESSOPEN': '| /usr/bin/lesspipe %s', 'VSCODE_CWD': '/home/devcom', 'VSCODE_ESM_ENTRYPOINT': 'vs/workbench/api/node/extensionHostProcess', 'PLATFORMIO_CALLER': 'vscode', 'AI_AGENT': 'claude-code_2-1-296_agent', 'USER': 'devcom', 'CLAUDE_CODE_ENTRYPOINT': 'claude-vscode', 'VSCODE_NLS_CONFIG': '{"userLocale":"en-us","osLocale":"c","resolvedLanguage":"en","defaultMessagesFile":"/usr/share/code/resources/app/out/nls.messages.json","locale":"en-us","availableLanguages":{}}', 'GZ_CONFIG_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/share/gz:/opt/ros/jazzy/opt/sdformat_vendor/share/gz:/opt/ros/jazzy/opt/gz_gui_vendor/share/gz:/opt/ros/jazzy/opt/gz_transport_vendor/share/gz:/opt/ros/jazzy/opt/gz_rendering_vendor/share/gz:/opt/ros/jazzy/opt/gz_plugin_vendor/share/gz:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/share/gz:/opt/ros/jazzy/opt/gz_msgs_vendor/share/gz:/opt/ros/jazzy/opt/gz_common_vendor/share/gz', 'GIT_EDITOR': 'true', 'VSCODE_HANDLES_UNCAUGHT_ERRORS': 'true', 'XDG_SESSION_TYPE': 'wayland', 'CLAUDE_AGENT_SDK_VERSION': '0.3.296', 'CLAUDE_CODE_SESSION_ATTENDED': '1', 'CLUTTER_DISABLE_MIPMAPPED_TEXT': '1', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/lib:/opt/ros/jazzy/opt/gz_sensors_vendor/lib:/opt/ros/jazzy/opt/gz_physics_vendor/lib:/opt/ros/jazzy/opt/sdformat_vendor/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/aarch64-linux-gnu:/opt/ros/jazzy/opt/gz_gui_vendor/lib:/opt/ros/jazzy/opt/gz_transport_vendor/lib:/opt/ros/jazzy/opt/gz_rendering_vendor/lib:/opt/ros/jazzy/opt/gz_plugin_vendor/lib:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/lib:/opt/ros/jazzy/opt/gz_msgs_vendor/lib:/opt/ros/jazzy/opt/gz_common_vendor/lib:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_tools_vendor/lib:/opt/ros/jazzy/opt/gz_ogre_next_vendor/lib:/opt/ros/jazzy/opt/gz_dartsim_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'CLAUDE_CODE_MESSAGING_TOKEN': '2ecc2aa4f4965a080b5222686be0f54b', 'HOME': '/home/devcom', 'CHROME_DESKTOP': 'com.microsoft.VSCode.desktop', 'CYCLONEDDS_URI': 'file:///etc/cyclonedds/rover.xml', 'OLDPWD': '/home/devcom/circe_ws/src/circe_teensy', 'DESKTOP_SESSION': 'ubuntu', 'NO_PROXY': '127.0.0.1', 'VSCODE_IPC_HOOK': '/run/user/1000/vscode-27b30ae2-1.14-main.sock', 'GIO_LAUNCHED_DESKTOP_FILE': '/usr/share/applications/com.microsoft.VSCode.desktop', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'CLAUDE_CODE_CHILD_SESSION': '1', 'PLATFORMIO_IDE': '3.3.4', 'MANAGERPID': '1582', 'SYSTEMD_EXEC_PID': '1786', 'IM_CONFIG_CHECK_ENV': '1', 'GSM_SKIP_SSH_AGENT_WORKAROUND': 'true', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'GIO_LAUNCHED_DESKTOP_FILE_PID': '14721', 'VSCODE_CRASH_REPORTER_PROCESS_TYPE': 'extensionHost', 'DEBUGINFOD_URLS': 'https://debuginfod.ubuntu.com', 'IM_CONFIG_PHASE': '1', 'WAYLAND_DISPLAY': 'wayland-0', 'VSCODE_L10N_BUNDLE_LOCATION': '', 'COLCON_PREFIX_PATH': '/home/devcom/circe_ws/install', 'ROS_DISTRO': 'jazzy', 'LOGNAME': 'devcom', 'CLAUDE_CODE_EMIT_STARTUP_TIMING': '1', 'JOURNAL_STREAM': '8:16797', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'CLAUDE_CODE_QUESTION_PREVIEW_FORMAT': 'markdown', 'MEMORY_PRESSURE_WATCH': '/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/session.slice/org.gnome.Shell@wayland.service/memory.pressure', 'XDG_SESSION_CLASS': 'user', 'USERNAME': 'devcom', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', 'FC_FONTATIONS': '1', 'MCP_CONNECTION_NONBLOCKING': 'true', 'PATH': '/opt/ros/jazzy/opt/gz_msgs_vendor/bin:/opt/ros/jazzy/opt/gz_tools_vendor/bin:/opt/ros/jazzy/opt/gz_ogre_next_vendor/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin', 'SESSION_MANAGER': 'local/circe-desktop:@/tmp/.ICE-unix/1760,unix/circe-desktop:/tmp/.ICE-unix/1760', 'INVOCATION_ID': '7fc778edbad44ccab0d98193fcafca33', 'VSCODE_NODE_COMPILE_CACHE_ROOT': '/usr/share/code/resources/app/node-compile-cache', 'COREPACK_ENABLE_AUTO_PIN': '0', 'XDG_MENU_PREFIX': 'gnome-', 'GNOME_SETUP_DISPLAY': ':1', 'XDG_RUNTIME_DIR': '/run/user/1000', 'CLAUDE_EFFORT': 'high', 'DISPLAY': ':0', 'PLATFORMIO_PATH': '/home/devcom/.platformio/python3/bin:/opt/ros/jazzy/opt/gz_msgs_vendor/bin:/opt/ros/jazzy/opt/gz_tools_vendor/bin:/opt/ros/jazzy/opt/gz_ogre_next_vendor/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin', 'CLAUDE_PID': '15787', 'NoDefaultCurrentDirectoryInExePath': '1', 'LANG': 'C.UTF-8', 'XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'RMW_IMPLEMENTATION': 'rmw_cyclonedds_cpp', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/.mutter-Xwaylandauth.V66QX3', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'ROS_DOMAIN_ID': '42', 'AMENT_PREFIX_PATH': '/home/devcom/circe_ws/install/circe_gazebo:/home/devcom/circe_ws/install/circe_bringup:/home/devcom/circe_ws/install/sllidar_ros2:/home/devcom/circe_ws/install/circe_control:/home/devcom/circe_ws/install/roverrobotics_input_manager:/home/devcom/circe_ws/install/roverrobotics_gazebo:/home/devcom/circe_ws/install/roverrobotics_driver:/home/devcom/circe_ws/install/circe_description:/home/devcom/circe_ws/install/roverrobotics_description:/home/devcom/circe_ws/install/circe_perception:/home/devcom/circe_ws/install/circe_nav:/home/devcom/circe_ws/install/circe_diagnostics:/opt/ros/jazzy', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'ELECTRON_RUN_AS_NODE': '1', 'GDMSESSION': 'ubuntu', 'CLAUDE_CODE_ENABLE_SDK_FILE_CHECKPOINTING': 'true', 'CLAUDE_CODE_SESSION_ID': 'cc790d5a-da31-414d-b9a1-ed00ce996315', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'CLAUDECODE': '1', 'GJS_DEBUG_OUTPUT': 'stderr', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/devcom/circe_ws/build/circe_teensy', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'VSCODE_CODE_CACHE_PATH': '/home/devcom/.config/Code/CachedData/2a59476c9bfcb90b3ddc372c36762471b7dfad1c', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'CLAUDE_CODE_EXECPATH': '/home/devcom/.vscode/extensions/anthropic.claude-code-2.1.296-linux-arm64/resources/native-binary/claude', 'PYTHONPATH': '/opt/ros/jazzy/opt/gz_sim_vendor/lib/python:/opt/ros/jazzy/opt/sdformat_vendor/lib/python:/opt/ros/jazzy/opt/gz_transport_vendor/lib/python:/opt/ros/jazzy/opt/gz_msgs_vendor/lib/python:/opt/ros/jazzy/opt/gz_math_vendor/lib/python:/opt/ros/jazzy/lib/python3.12/site-packages', 'CLAUDE_CODE_ENABLE_TASKS': '0', 'COLCON': '1', 'MEMORY_PRESSURE_WRITE': 'c29tZSAyMDAwMDAgMjAwMDAwMAA=', 'CLAUDE_CODE_MESSAGING_SOCKET': '/run/user/1000/cc-socks/15787.sock', 'CMAKE_PREFIX_PATH': '/home/devcom/circe_ws/install/circe_gazebo:/home/devcom/circe_ws/install/circe_bringup:/home/devcom/circe_ws/install/sllidar_ros2:/home/devcom/circe_ws/install/circe_control:/home/devcom/circe_ws/install/roverrobotics_input_manager:/home/devcom/circe_ws/install/roverrobotics_gazebo:/home/devcom/circe_ws/install/roverrobotics_driver:/home/devcom/circe_ws/install/circe_description:/home/devcom/circe_ws/install/roverrobotics_description:/home/devcom/circe_ws/install/circe_perception:/home/devcom/circe_ws/install/circe_nav:/home/devcom/circe_ws/install/circe_diagnostics:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy', 'VSCODE_PID': '14721'}), 'shell': False}
+[0.099527] (-) TimerEvent: {}
+[0.123935] (circe_teensy) StdoutLine: {'line': b'-- Found ament_cmake: 2.5.6 (/opt/ros/jazzy/share/ament_cmake/cmake)\n'}
+[0.199704] (-) TimerEvent: {}
+[0.300062] (-) TimerEvent: {}
+[0.400328] (-) TimerEvent: {}
+[0.500586] (-) TimerEvent: {}
+[0.600924] (-) TimerEvent: {}
+[0.628424] (circe_teensy) StdoutLine: {'line': b'-- Found ament_lint_auto: 0.17.5 (/opt/ros/jazzy/share/ament_lint_auto/cmake)\n'}
+[0.701036] (-) TimerEvent: {}
+[0.802910] (-) TimerEvent: {}
+[0.859833] (circe_teensy) StdoutLine: {'line': b"-- Added test 'flake8' to check Python code syntax and style conventions\n"}
+[0.860154] (circe_teensy) StdoutLine: {'line': b"-- Configured 'flake8' exclude dirs and/or files: \n"}
+[0.862960] (circe_teensy) StdoutLine: {'line': b"-- Added test 'lint_cmake' to check CMake code style\n"}
+[0.864732] (circe_teensy) StdoutLine: {'line': b"-- Added test 'pep257' to check Python code against some of the docstring style conventions in PEP 257\n"}
+[0.866806] (circe_teensy) StdoutLine: {'line': b"-- Added test 'xmllint' to check XML markup files\n"}
+[0.868590] (circe_teensy) StdoutLine: {'line': b'-- Configuring done (0.8s)\n'}
+[0.876938] (circe_teensy) StdoutLine: {'line': b'-- Generating done (0.0s)\n'}
+[0.880221] (circe_teensy) StdoutLine: {'line': b'-- Build files have been written to: /home/devcom/circe_ws/build/circe_teensy\n'}
+[0.902948] (-) TimerEvent: {}
+[0.945200] (circe_teensy) StdoutLine: {'line': b'[100%] Building Teensy 4.0 firmware with PlatformIO\n'}
+[1.003059] (-) TimerEvent: {}
+[1.104772] (-) TimerEvent: {}
+[1.205078] (-) TimerEvent: {}
+[1.305271] (-) TimerEvent: {}
+[1.382515] (circe_teensy) StdoutLine: {'line': b'Processing teensy40 (platform: teensy; board: teensy40; framework: arduino)\n'}
+[1.383603] (circe_teensy) StdoutLine: {'line': b'--------------------------------------------------------------------------------\n'}
+[1.405980] (-) TimerEvent: {}
+[1.506289] (-) TimerEvent: {}
+[1.606576] (-) TimerEvent: {}
+[1.707149] (-) TimerEvent: {}
+[1.810001] (-) TimerEvent: {}
+[1.911422] (-) TimerEvent: {}
+[2.011706] (-) TimerEvent: {}
+[2.111945] (-) TimerEvent: {}
+[2.212140] (-) TimerEvent: {}
+[2.254379] (circe_teensy) StdoutLine: {'line': b'Verbose mode can be enabled via `-v, --verbose` option\n'}
+[2.306623] (circe_teensy) StdoutLine: {'line': b'CONFIGURATION: https://docs.platformio.org/page/boards/teensy/teensy40.html\n'}
+[2.306866] (circe_teensy) StdoutLine: {'line': b'PLATFORM: Teensy (6.0.0) > Teensy 4.0\n'}
+[2.306981] (circe_teensy) StdoutLine: {'line': b'HARDWARE: IMXRT1062 600MHz, 512KB RAM, 1.94MB Flash\n'}
+[2.307066] (circe_teensy) StdoutLine: {'line': b'DEBUG: Current (jlink) External (jlink)\n'}
+[2.307150] (circe_teensy) StdoutLine: {'line': b'PACKAGES: \n'}
+[2.307243] (circe_teensy) StdoutLine: {'line': b' - framework-arduinoteensy @ 1.162.0 (1.62) \n'}
+[2.307415] (circe_teensy) StdoutLine: {'line': b' - tool-teensy @ 1.162.0 (1.62) \n'}
+[2.307508] (circe_teensy) StdoutLine: {'line': b' - toolchain-gccarmnoneeabi-teensy @ 1.150201.0 (15.2.1)\n'}
+[2.312245] (-) TimerEvent: {}
+[2.336120] (circe_teensy) StdoutLine: {'line': b'LDF: Library Dependency Finder -> https://bit.ly/configure-pio-ldf\n'}
+[2.336345] (circe_teensy) StdoutLine: {'line': b'LDF Modes: Finder ~ chain, Compatibility ~ soft\n'}
+[2.412369] (-) TimerEvent: {}
+[2.512639] (-) TimerEvent: {}
+[2.534165] (circe_teensy) StdoutLine: {'line': b'Found 93 compatible libraries\n'}
+[2.538123] (circe_teensy) StdoutLine: {'line': b'Scanning dependencies...\n'}
+[2.608893] (circe_teensy) StdoutLine: {'line': b'Dependency Graph\n'}
+[2.609121] (circe_teensy) StdoutLine: {'line': b'|-- TinyGPSPlus @ 1.1.0\n'}
+[2.612699] (-) TimerEvent: {}
+[2.612848] (circe_teensy) StdoutLine: {'line': b'Building in release mode\n'}
+[2.662357] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/src/bridge.cpp.o\n'}
+[2.669515] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/src/gps.cpp.o\n'}
+[2.677346] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/src/main.cpp.o\n'}
+[2.685964] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/src/status_led.cpp.o\n'}
+[2.712942] (-) TimerEvent: {}
+[2.815463] (-) TimerEvent: {}
+[2.915925] (-) TimerEvent: {}
+[3.016298] (-) TimerEvent: {}
+[3.116580] (-) TimerEvent: {}
+[3.221041] (-) TimerEvent: {}
+[3.321278] (-) TimerEvent: {}
+[3.448046] (-) TimerEvent: {}
+[3.549129] (-) TimerEvent: {}
+[3.649517] (-) TimerEvent: {}
+[3.749776] (-) TimerEvent: {}
+[3.776867] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/src/test_messages.cpp.o\n'}
+[3.850003] (-) TimerEvent: {}
+[3.950421] (-) TimerEvent: {}
+[4.007043] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/src/ultrasonic.cpp.o\n'}
+[4.050593] (-) TimerEvent: {}
+[4.061707] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/lib08e/TinyGPSPlus/TinyGPS++.cpp.o\n'}
+[4.151996] (-) TimerEvent: {}
+[4.209973] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/AudioStream.cpp.o\n'}
+[4.254778] (-) TimerEvent: {}
+[4.355141] (-) TimerEvent: {}
+[4.455598] (-) TimerEvent: {}
+[4.555864] (-) TimerEvent: {}
+[4.657211] (-) TimerEvent: {}
+[4.761255] (-) TimerEvent: {}
+[4.861577] (-) TimerEvent: {}
+[4.963997] (-) TimerEvent: {}
+[5.064321] (-) TimerEvent: {}
+[5.089105] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/CrashReport.cpp.o\n'}
+[5.110881] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/DMAChannel.cpp.o\n'}
+[5.165271] (-) TimerEvent: {}
+[5.265645] (-) TimerEvent: {}
+[5.366264] (-) TimerEvent: {}
+[5.375312] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/EventResponder.cpp.o\n'}
+[5.468890] (-) TimerEvent: {}
+[5.510985] (circe_teensy) StdoutLine: {'line': b'Archiving /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/lib08e/libTinyGPSPlus.a\n'}
+[5.526527] (circe_teensy) StdoutLine: {'line': b'Indexing /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/lib08e/libTinyGPSPlus.a\n'}
+[5.540231] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/HardwareSerial.cpp.o\n'}
+[5.569940] (-) TimerEvent: {}
+[5.650714] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/HardwareSerial1.cpp.o\n'}
+[5.670074] (-) TimerEvent: {}
+[5.770357] (-) TimerEvent: {}
+[5.873060] (-) TimerEvent: {}
+[5.973393] (-) TimerEvent: {}
+[6.073654] (-) TimerEvent: {}
+[6.173991] (-) TimerEvent: {}
+[6.275120] (-) TimerEvent: {}
+[6.376691] (-) TimerEvent: {}
+[6.478949] (-) TimerEvent: {}
+[6.578235] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/HardwareSerial2.cpp.o\n'}
+[6.579042] (-) TimerEvent: {}
+[6.679255] (-) TimerEvent: {}
+[6.779551] (-) TimerEvent: {}
+[6.879878] (-) TimerEvent: {}
+[6.930265] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/HardwareSerial3.cpp.o\n'}
+[6.980002] (-) TimerEvent: {}
+[7.080286] (-) TimerEvent: {}
+[7.169314] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/HardwareSerial4.cpp.o\n'}
+[7.180972] (-) TimerEvent: {}
+[7.281683] (-) TimerEvent: {}
+[7.384947] (-) TimerEvent: {}
+[7.485198] (-) TimerEvent: {}
+[7.502820] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/HardwareSerial5.cpp.o\n'}
+[7.585368] (-) TimerEvent: {}
+[7.685670] (-) TimerEvent: {}
+[7.785943] (-) TimerEvent: {}
+[7.888995] (-) TimerEvent: {}
+[7.989368] (-) TimerEvent: {}
+[8.089696] (-) TimerEvent: {}
+[8.189959] (-) TimerEvent: {}
+[8.244274] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/HardwareSerial6.cpp.o\n'}
+[8.290128] (-) TimerEvent: {}
+[8.390459] (-) TimerEvent: {}
+[8.446799] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/HardwareSerial7.cpp.o\n'}
+[8.492420] (-) TimerEvent: {}
+[8.592796] (-) TimerEvent: {}
+[8.645701] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/HardwareSerial8.cpp.o\n'}
+[8.693011] (-) TimerEvent: {}
+[8.795365] (-) TimerEvent: {}
+[8.895678] (-) TimerEvent: {}
+[8.911516] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/IPAddress.cpp.o\n'}
+[9.000044] (-) TimerEvent: {}
+[9.100406] (-) TimerEvent: {}
+[9.200751] (-) TimerEvent: {}
+[9.302504] (-) TimerEvent: {}
+[9.405116] (-) TimerEvent: {}
+[9.505488] (-) TimerEvent: {}
+[9.605862] (-) TimerEvent: {}
+[9.706282] (-) TimerEvent: {}
+[9.806686] (-) TimerEvent: {}
+[9.907968] (-) TimerEvent: {}
+[9.929019] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/IntervalTimer.cpp.o\n'}
+[10.008145] (-) TimerEvent: {}
+[10.096078] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/MTP_Storage.cpp.o\n'}
+[10.112233] (-) TimerEvent: {}
+[10.155348] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/MTP_Teensy.cpp.o\n'}
+[10.204056] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/Print.cpp.o\n'}
+[10.213745] (-) TimerEvent: {}
+[10.237215] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/Stream.cpp.o\n'}
+[10.314723] (-) TimerEvent: {}
+[10.354150] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/Time.cpp.o\n'}
+[10.417105] (-) TimerEvent: {}
+[10.517435] (-) TimerEvent: {}
+[10.617860] (-) TimerEvent: {}
+[10.720937] (-) TimerEvent: {}
+[10.821223] (-) TimerEvent: {}
+[10.921394] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/Tone.cpp.o\n'}
+[10.921785] (-) TimerEvent: {}
+[11.022520] (-) TimerEvent: {}
+[11.122895] (-) TimerEvent: {}
+[11.223237] (-) TimerEvent: {}
+[11.325011] (-) TimerEvent: {}
+[11.427592] (-) TimerEvent: {}
+[11.527926] (-) TimerEvent: {}
+[11.628231] (-) TimerEvent: {}
+[11.728477] (-) TimerEvent: {}
+[11.739157] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/WMath.cpp.o\n'}
+[11.831986] (-) TimerEvent: {}
+[11.932321] (-) TimerEvent: {}
+[11.948540] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/WString.cpp.o\n'}
+[12.033949] (-) TimerEvent: {}
+[12.077935] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/analog.c.o\n'}
+[12.100948] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/bootdata.c.o\n'}
+[12.137005] (-) TimerEvent: {}
+[12.163157] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/clockspeed.c.o\n'}
+[12.237668] (-) TimerEvent: {}
+[12.328938] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/debugprintf.c.o\n'}
+[12.337847] (-) TimerEvent: {}
+[12.424116] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/delay.c.o\n'}
+[12.437966] (-) TimerEvent: {}
+[12.475218] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/digital.c.o\n'}
+[12.509594] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/eeprom.c.o\n'}
+[12.538146] (-) TimerEvent: {}
+[12.585616] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/extmem.c.o\n'}
+[12.640951] (-) TimerEvent: {}
+[12.690250] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/fuse.c.o\n'}
+[12.741088] (-) TimerEvent: {}
+[12.793660] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/interrupt.c.o\n'}
+[12.828005] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/keylayouts.c.o\n'}
+[12.841231] (-) TimerEvent: {}
+[12.891461] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/main.cpp.o\n'}
+[12.905928] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/memcpy-armv7m.S.o\n'}
+[12.941409] (-) TimerEvent: {}
+[12.947418] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/memset.S.o\n'}
+[12.968961] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/new.cpp.o\n'}
+[12.982262] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/nonstd.c.o\n'}
+[13.043931] (-) TimerEvent: {}
+[13.079675] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/pwm.c.o\n'}
+[13.144065] (-) TimerEvent: {}
+[13.244327] (-) TimerEvent: {}
+[13.297387] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/rtc.c.o\n'}
+[13.344567] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/serialEvent.cpp.o\n'}
+[13.344888] (-) TimerEvent: {}
+[13.407363] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/serialEvent1.cpp.o\n'}
+[13.431556] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/serialEvent2.cpp.o\n'}
+[13.445060] (-) TimerEvent: {}
+[13.467580] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/serialEvent3.cpp.o\n'}
+[13.514318] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/serialEvent4.cpp.o\n'}
+[13.541148] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/serialEvent5.cpp.o\n'}
+[13.547296] (-) TimerEvent: {}
+[13.565322] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/serialEvent6.cpp.o\n'}
+[13.589737] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/serialEvent7.cpp.o\n'}
+[13.628550] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/serialEvent8.cpp.o\n'}
+[13.647486] (-) TimerEvent: {}
+[13.649564] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/serialEventUSB1.cpp.o\n'}
+[13.691998] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/serialEventUSB2.cpp.o\n'}
+[13.700629] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/sm_alloc_valid.c.o\n'}
+[13.747648] (-) TimerEvent: {}
+[13.784524] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/sm_calloc.c.o\n'}
+[13.798947] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/sm_free.c.o\n'}
+[13.847791] (-) TimerEvent: {}
+[13.858799] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/sm_hash.c.o\n'}
+[13.888036] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/sm_malloc.c.o\n'}
+[13.931930] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/sm_malloc_stats.c.o\n'}
+[13.949944] (-) TimerEvent: {}
+[13.966995] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/sm_pool.c.o\n'}
+[13.985263] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/sm_realloc.c.o\n'}
+[13.999518] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/sm_realloc_i.c.o\n'}
+[14.025616] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/sm_realloc_move.c.o\n'}
+[14.050139] (-) TimerEvent: {}
+[14.065325] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/sm_szalloc.c.o\n'}
+[14.108221] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/sm_util.c.o\n'}
+[14.119913] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/sm_zalloc.c.o\n'}
+[14.146380] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/startup.c.o\n'}
+[14.150255] (-) TimerEvent: {}
+[14.155876] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/tempmon.c.o\n'}
+[14.200988] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/usb.c.o\n'}
+[14.243689] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/usb_audio.cpp.o\n'}
+[14.250420] (-) TimerEvent: {}
+[14.295306] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/usb_desc.c.o\n'}
+[14.350546] (-) TimerEvent: {}
+[14.401178] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/usb_flightsim.cpp.o\n'}
+[14.451962] (-) TimerEvent: {}
+[14.489321] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/usb_inst.cpp.o\n'}
+[14.543259] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/usb_joystick.c.o\n'}
+[14.552178] (-) TimerEvent: {}
+[14.652518] (-) TimerEvent: {}
+[14.698965] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/usb_keyboard.c.o\n'}
+[14.752709] (-) TimerEvent: {}
+[14.831222] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/usb_midi.c.o\n'}
+[14.853950] (-) TimerEvent: {}
+[14.875111] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/usb_mouse.c.o\n'}
+[14.956007] (-) TimerEvent: {}
+[15.005612] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/usb_mtp.c.o\n'}
+[15.017476] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/usb_rawhid.c.o\n'}
+[15.057964] (-) TimerEvent: {}
+[15.119985] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/usb_seremu.c.o\n'}
+[15.158079] (-) TimerEvent: {}
+[15.160755] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/usb_serial.c.o\n'}
+[15.222891] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/usb_serial2.c.o\n'}
+[15.261147] (-) TimerEvent: {}
+[15.322055] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/usb_serial3.c.o\n'}
+[15.361250] (-) TimerEvent: {}
+[15.415790] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/usb_touch.c.o\n'}
+[15.461085] (circe_teensy) StdoutLine: {'line': b'Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/FrameworkArduino/yield.cpp.o\n'}
+[15.461440] (-) TimerEvent: {}
+[15.561608] (-) TimerEvent: {}
+[15.661882] (-) TimerEvent: {}
+[15.762162] (-) TimerEvent: {}
+[15.862368] (-) TimerEvent: {}
+[15.962569] (-) TimerEvent: {}
+[16.062782] (-) TimerEvent: {}
+[16.125861] (circe_teensy) StdoutLine: {'line': b'Archiving /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/libFrameworkArduino.a\n'}
+[16.162901] (-) TimerEvent: {}
+[16.175378] (circe_teensy) StdoutLine: {'line': b'Indexing /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/libFrameworkArduino.a\n'}
+[16.221155] (circe_teensy) StdoutLine: {'line': b'Linking /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/firmware.elf\n'}
+[16.263051] (-) TimerEvent: {}
+[16.272933] (circe_teensy) StdoutLine: {'line': b'Checking size /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/firmware.elf\n'}
+[16.273165] (circe_teensy) StdoutLine: {'line': b'Advanced Memory Usage is available via "PlatformIO Home > Project Inspect"\n'}
+[16.273947] (circe_teensy) StdoutLine: {'line': b'Calculating size /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/firmware.elf\n'}
+[16.277431] (circe_teensy) StderrLine: {'line': b'teensy_size: Memory Usage on Teensy 4.0:\n'}
+[16.277700] (circe_teensy) StderrLine: {'line': b'teensy_size:   FLASH: code:43600, data:7112, headers:8676   free for files:1972228\n'}
+[16.277791] (circe_teensy) StderrLine: {'line': b'teensy_size:    RAM1: variables:9120, code:41880, padding:23656   free for local variables:449632\n'}
+[16.277889] (circe_teensy) StderrLine: {'line': b'teensy_size:    RAM2: variables:12416  free for malloc/new:511872\n'}
+[16.280570] (circe_teensy) StdoutLine: {'line': b'Building /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/firmware.hex\n'}
+[16.363961] (-) TimerEvent: {}
+[16.464243] (-) TimerEvent: {}
+[16.524664] (circe_teensy) StdoutLine: {'line': b'========================= [SUCCESS] Took 15.15 seconds =========================\n'}
+[16.564358] (-) TimerEvent: {}
+[16.644611] (circe_teensy) StdoutLine: {'line': b'[100%] Built target firmware\n'}
+[16.664475] (-) TimerEvent: {}
+[16.667462] (circe_teensy) CommandEnded: {'returncode': 0}
+[16.668300] (circe_teensy) JobProgress: {'identifier': 'circe_teensy', 'progress': 'install'}
+[16.686388] (circe_teensy) Command: {'cmd': ['/usr/bin/cmake', '--install', '/home/devcom/circe_ws/build/circe_teensy'], 'cwd': '/home/devcom/circe_ws/build/circe_teensy', 'env': OrderedDict({'GJS_DEBUG_TOPICS': 'JS ERROR;JS LOG', 'EGL_PLATFORM': 'wayland', 'LESSOPEN': '| /usr/bin/lesspipe %s', 'VSCODE_CWD': '/home/devcom', 'VSCODE_ESM_ENTRYPOINT': 'vs/workbench/api/node/extensionHostProcess', 'PLATFORMIO_CALLER': 'vscode', 'AI_AGENT': 'claude-code_2-1-296_agent', 'USER': 'devcom', 'CLAUDE_CODE_ENTRYPOINT': 'claude-vscode', 'VSCODE_NLS_CONFIG': '{"userLocale":"en-us","osLocale":"c","resolvedLanguage":"en","defaultMessagesFile":"/usr/share/code/resources/app/out/nls.messages.json","locale":"en-us","availableLanguages":{}}', 'GZ_CONFIG_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/share/gz:/opt/ros/jazzy/opt/sdformat_vendor/share/gz:/opt/ros/jazzy/opt/gz_gui_vendor/share/gz:/opt/ros/jazzy/opt/gz_transport_vendor/share/gz:/opt/ros/jazzy/opt/gz_rendering_vendor/share/gz:/opt/ros/jazzy/opt/gz_plugin_vendor/share/gz:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/share/gz:/opt/ros/jazzy/opt/gz_msgs_vendor/share/gz:/opt/ros/jazzy/opt/gz_common_vendor/share/gz', 'GIT_EDITOR': 'true', 'VSCODE_HANDLES_UNCAUGHT_ERRORS': 'true', 'XDG_SESSION_TYPE': 'wayland', 'CLAUDE_AGENT_SDK_VERSION': '0.3.296', 'CLAUDE_CODE_SESSION_ATTENDED': '1', 'CLUTTER_DISABLE_MIPMAPPED_TEXT': '1', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/lib:/opt/ros/jazzy/opt/gz_sensors_vendor/lib:/opt/ros/jazzy/opt/gz_physics_vendor/lib:/opt/ros/jazzy/opt/sdformat_vendor/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/aarch64-linux-gnu:/opt/ros/jazzy/opt/gz_gui_vendor/lib:/opt/ros/jazzy/opt/gz_transport_vendor/lib:/opt/ros/jazzy/opt/gz_rendering_vendor/lib:/opt/ros/jazzy/opt/gz_plugin_vendor/lib:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/lib:/opt/ros/jazzy/opt/gz_msgs_vendor/lib:/opt/ros/jazzy/opt/gz_common_vendor/lib:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_tools_vendor/lib:/opt/ros/jazzy/opt/gz_ogre_next_vendor/lib:/opt/ros/jazzy/opt/gz_dartsim_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'CLAUDE_CODE_MESSAGING_TOKEN': '2ecc2aa4f4965a080b5222686be0f54b', 'HOME': '/home/devcom', 'CHROME_DESKTOP': 'com.microsoft.VSCode.desktop', 'CYCLONEDDS_URI': 'file:///etc/cyclonedds/rover.xml', 'OLDPWD': '/home/devcom/circe_ws/src/circe_teensy', 'DESKTOP_SESSION': 'ubuntu', 'NO_PROXY': '127.0.0.1', 'VSCODE_IPC_HOOK': '/run/user/1000/vscode-27b30ae2-1.14-main.sock', 'GIO_LAUNCHED_DESKTOP_FILE': '/usr/share/applications/com.microsoft.VSCode.desktop', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'CLAUDE_CODE_CHILD_SESSION': '1', 'PLATFORMIO_IDE': '3.3.4', 'MANAGERPID': '1582', 'SYSTEMD_EXEC_PID': '1786', 'IM_CONFIG_CHECK_ENV': '1', 'GSM_SKIP_SSH_AGENT_WORKAROUND': 'true', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'GIO_LAUNCHED_DESKTOP_FILE_PID': '14721', 'VSCODE_CRASH_REPORTER_PROCESS_TYPE': 'extensionHost', 'DEBUGINFOD_URLS': 'https://debuginfod.ubuntu.com', 'IM_CONFIG_PHASE': '1', 'WAYLAND_DISPLAY': 'wayland-0', 'VSCODE_L10N_BUNDLE_LOCATION': '', 'COLCON_PREFIX_PATH': '/home/devcom/circe_ws/install', 'ROS_DISTRO': 'jazzy', 'LOGNAME': 'devcom', 'CLAUDE_CODE_EMIT_STARTUP_TIMING': '1', 'JOURNAL_STREAM': '8:16797', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'CLAUDE_CODE_QUESTION_PREVIEW_FORMAT': 'markdown', 'MEMORY_PRESSURE_WATCH': '/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/session.slice/org.gnome.Shell@wayland.service/memory.pressure', 'XDG_SESSION_CLASS': 'user', 'USERNAME': 'devcom', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', 'FC_FONTATIONS': '1', 'MCP_CONNECTION_NONBLOCKING': 'true', 'PATH': '/opt/ros/jazzy/opt/gz_msgs_vendor/bin:/opt/ros/jazzy/opt/gz_tools_vendor/bin:/opt/ros/jazzy/opt/gz_ogre_next_vendor/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin', 'SESSION_MANAGER': 'local/circe-desktop:@/tmp/.ICE-unix/1760,unix/circe-desktop:/tmp/.ICE-unix/1760', 'INVOCATION_ID': '7fc778edbad44ccab0d98193fcafca33', 'VSCODE_NODE_COMPILE_CACHE_ROOT': '/usr/share/code/resources/app/node-compile-cache', 'COREPACK_ENABLE_AUTO_PIN': '0', 'XDG_MENU_PREFIX': 'gnome-', 'GNOME_SETUP_DISPLAY': ':1', 'XDG_RUNTIME_DIR': '/run/user/1000', 'CLAUDE_EFFORT': 'high', 'DISPLAY': ':0', 'PLATFORMIO_PATH': '/home/devcom/.platformio/python3/bin:/opt/ros/jazzy/opt/gz_msgs_vendor/bin:/opt/ros/jazzy/opt/gz_tools_vendor/bin:/opt/ros/jazzy/opt/gz_ogre_next_vendor/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin', 'CLAUDE_PID': '15787', 'NoDefaultCurrentDirectoryInExePath': '1', 'LANG': 'C.UTF-8', 'XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'RMW_IMPLEMENTATION': 'rmw_cyclonedds_cpp', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/.mutter-Xwaylandauth.V66QX3', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'ROS_DOMAIN_ID': '42', 'AMENT_PREFIX_PATH': '/home/devcom/circe_ws/install/circe_gazebo:/home/devcom/circe_ws/install/circe_bringup:/home/devcom/circe_ws/install/sllidar_ros2:/home/devcom/circe_ws/install/circe_control:/home/devcom/circe_ws/install/roverrobotics_input_manager:/home/devcom/circe_ws/install/roverrobotics_gazebo:/home/devcom/circe_ws/install/roverrobotics_driver:/home/devcom/circe_ws/install/circe_description:/home/devcom/circe_ws/install/roverrobotics_description:/home/devcom/circe_ws/install/circe_perception:/home/devcom/circe_ws/install/circe_nav:/home/devcom/circe_ws/install/circe_diagnostics:/opt/ros/jazzy', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'ELECTRON_RUN_AS_NODE': '1', 'GDMSESSION': 'ubuntu', 'CLAUDE_CODE_ENABLE_SDK_FILE_CHECKPOINTING': 'true', 'CLAUDE_CODE_SESSION_ID': 'cc790d5a-da31-414d-b9a1-ed00ce996315', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'CLAUDECODE': '1', 'GJS_DEBUG_OUTPUT': 'stderr', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/devcom/circe_ws/build/circe_teensy', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'VSCODE_CODE_CACHE_PATH': '/home/devcom/.config/Code/CachedData/2a59476c9bfcb90b3ddc372c36762471b7dfad1c', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'CLAUDE_CODE_EXECPATH': '/home/devcom/.vscode/extensions/anthropic.claude-code-2.1.296-linux-arm64/resources/native-binary/claude', 'PYTHONPATH': '/opt/ros/jazzy/opt/gz_sim_vendor/lib/python:/opt/ros/jazzy/opt/sdformat_vendor/lib/python:/opt/ros/jazzy/opt/gz_transport_vendor/lib/python:/opt/ros/jazzy/opt/gz_msgs_vendor/lib/python:/opt/ros/jazzy/opt/gz_math_vendor/lib/python:/opt/ros/jazzy/lib/python3.12/site-packages', 'CLAUDE_CODE_ENABLE_TASKS': '0', 'COLCON': '1', 'MEMORY_PRESSURE_WRITE': 'c29tZSAyMDAwMDAgMjAwMDAwMAA=', 'CLAUDE_CODE_MESSAGING_SOCKET': '/run/user/1000/cc-socks/15787.sock', 'CMAKE_PREFIX_PATH': '/home/devcom/circe_ws/install/circe_gazebo:/home/devcom/circe_ws/install/circe_bringup:/home/devcom/circe_ws/install/sllidar_ros2:/home/devcom/circe_ws/install/circe_control:/home/devcom/circe_ws/install/roverrobotics_input_manager:/home/devcom/circe_ws/install/roverrobotics_gazebo:/home/devcom/circe_ws/install/roverrobotics_driver:/home/devcom/circe_ws/install/circe_description:/home/devcom/circe_ws/install/roverrobotics_description:/home/devcom/circe_ws/install/circe_perception:/home/devcom/circe_ws/install/circe_nav:/home/devcom/circe_ws/install/circe_diagnostics:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy', 'VSCODE_PID': '14721'}), 'shell': False}
+[16.702822] (circe_teensy) StdoutLine: {'line': b'-- Install configuration: ""\n'}
+[16.703035] (circe_teensy) StdoutLine: {'line': b'-- Installing: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/firmware/firmware.hex\n'}
+[16.704179] (circe_teensy) StdoutLine: {'line': b'-- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/launch\n'}
+[16.704363] (circe_teensy) StdoutLine: {'line': b'-- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/launch/teensy_bridge.launch.py\n'}
+[16.704443] (circe_teensy) StdoutLine: {'line': b'-- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/config\n'}
+[16.704517] (circe_teensy) StdoutLine: {'line': b'-- Installing: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/config/teensy_bridge.yaml\n'}
+[16.704638] (circe_teensy) StdoutLine: {'line': b'-- Installing: /home/devcom/circe_ws/install/circe_teensy/lib/circe_teensy/teensy_bridge.py\n'}
+[16.704984] (circe_teensy) StdoutLine: {'line': b'-- Installing: /home/devcom/circe_ws/install/circe_teensy/share/ament_index/resource_index/package_run_dependencies/circe_teensy\n'}
+[16.705431] (circe_teensy) StdoutLine: {'line': b'-- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/ament_index/resource_index/parent_prefix_path/circe_teensy\n'}
+[16.705558] (circe_teensy) StdoutLine: {'line': b'-- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/environment/ament_prefix_path.sh\n'}
+[16.705638] (circe_teensy) StdoutLine: {'line': b'-- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/environment/ament_prefix_path.dsv\n'}
+[16.705736] (circe_teensy) StdoutLine: {'line': b'-- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/environment/path.sh\n'}
+[16.705816] (circe_teensy) StdoutLine: {'line': b'-- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/environment/path.dsv\n'}
+[16.705960] (circe_teensy) StdoutLine: {'line': b'-- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/local_setup.bash\n'}
+[16.706046] (circe_teensy) StdoutLine: {'line': b'-- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/local_setup.sh\n'}
+[16.706139] (circe_teensy) StdoutLine: {'line': b'-- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/local_setup.zsh\n'}
+[16.706219] (circe_teensy) StdoutLine: {'line': b'-- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/local_setup.dsv\n'}
+[16.706298] (circe_teensy) StdoutLine: {'line': b'-- Installing: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/package.dsv\n'}
+[16.706412] (circe_teensy) StdoutLine: {'line': b'-- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/ament_index/resource_index/packages/circe_teensy\n'}
+[16.706549] (circe_teensy) StdoutLine: {'line': b'-- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/cmake/circe_teensyConfig.cmake\n'}
+[16.706628] (circe_teensy) StdoutLine: {'line': b'-- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/cmake/circe_teensyConfig-version.cmake\n'}
+[16.706699] (circe_teensy) StdoutLine: {'line': b'-- Installing: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/package.xml\n'}
+[16.709066] (circe_teensy) CommandEnded: {'returncode': 0}
+[16.741052] (circe_teensy) JobEnded: {'identifier': 'circe_teensy', 'rc': 0}
+[16.741755] (-) EventReactorShutdown: {}

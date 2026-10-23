@@ -1,0 +1,85 @@
+[0.013s] Invoking command in '/home/devcom/circe_ws/build/roverrobotics_driver': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --build /home/devcom/circe_ws/build/roverrobotics_driver -- -j4 -l4
+[0.144s] [ 25%] Building CXX object CMakeFiles/roverrobotics_driver.dir/src/roverrobotics_ros2_driver.cpp.o
+[0.144s] [ 25%] Building CXX object CMakeFiles/roverrobotics_driver.dir/library/librover/src/protocol_pro.cpp.o
+[0.144s] [ 25%] Building CXX object CMakeFiles/roverrobotics_driver.dir/library/librover/src/comm_serial.cpp.o
+[0.144s] [ 33%] Building CXX object CMakeFiles/roverrobotics_driver.dir/library/librover/src/protocol_zero_2.cpp.o
+[2.449s] [ 41%] Building CXX object CMakeFiles/roverrobotics_driver.dir/library/librover/src/protocol_mini_2wd_serial.cpp.o
+[3.522s] [ 50%] Building CXX object CMakeFiles/roverrobotics_driver.dir/library/librover/src/differential_robot.cpp.o
+[40.871s] [ 58%] Linking CXX executable roverrobotics_driver
+[44.115s] [100%] Built target roverrobotics_driver
+[44.138s] Invoked command in '/home/devcom/circe_ws/build/roverrobotics_driver' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --build /home/devcom/circe_ws/build/roverrobotics_driver -- -j4 -l4
+[44.159s] Invoking command in '/home/devcom/circe_ws/build/roverrobotics_driver': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --install /home/devcom/circe_ws/build/roverrobotics_driver
+[44.176s] -- Install configuration: ""
+[44.176s] -- Execute custom install script
+[44.177s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/accessories.launch.py
+[44.177s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/gps.launch.py
+[44.177s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/max.launch.py
+[44.177s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/max_teleop.launch.py
+[44.178s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/mega.launch.py
+[44.178s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/mega_teleop.launch.py
+[44.178s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/mini.launch.py
+[44.178s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/mini_2wd.launch.py
+[44.178s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/mini_2wd_teleop.launch.py
+[44.178s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/mini_teleop.launch.py
+[44.178s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/miti.launch.py
+[44.178s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/miti_65.launch.py
+[44.179s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/miti_65_teleop.launch.py
+[44.179s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/miti_teleop.launch.py
+[44.179s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/nav2_backend.py
+[44.179s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/navigation_launch.py
+[44.179s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/pro.launch.py
+[44.179s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/pro_teleop.launch.py
+[44.179s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/ps4_controller.launch.py
+[44.180s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/ps5_controller.launch.py
+[44.180s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/robot_localizer.launch.py
+[44.180s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/slam_launch.py
+[44.180s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/zero.launch.py
+[44.180s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/zero_teleop.launch.py
+[44.181s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/accessories.yaml
+[44.181s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/localization_ekf.yaml
+[44.181s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/max_130_config.yaml
+[44.181s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/max_150_config.yaml
+[44.181s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/mega_config.yaml
+[44.181s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/mini_2wd_config.yaml
+[44.182s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/mini_config.yaml
+[44.182s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/miti_65_config.yaml
+[44.182s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/miti_config.yaml
+[44.182s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/nav2_params.yaml
+[44.182s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/pro_config.yaml
+[44.182s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/ps4_controller_config.yaml
+[44.182s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/ps4_controller_config_jp6.yaml
+[44.183s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/ps5_controller_config.yaml
+[44.183s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/ps5_controller_config_jp6.yaml
+[44.183s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/realsense_config.yaml
+[44.183s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/route_server_params.yaml
+[44.183s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/rviz_configs/nav2_default_view.rviz
+[44.183s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/rviz_configs/realsense_rviz_layout.rviz
+[44.184s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/rviz_configs/slam_rviz_layout.rviz
+[44.184s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/slam_configs/mapper_params_lifelong.yaml
+[44.184s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/slam_configs/mapper_params_localization.yaml
+[44.184s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/slam_configs/mapper_params_offline.yaml
+[44.184s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/slam_configs/mapper_params_online_async.yaml
+[44.184s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/slam_configs/mapper_params_online_sync.yaml
+[44.184s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/topics.yaml
+[44.185s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/zero_config.yaml
+[44.185s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/maps/maze_map.data
+[44.185s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/maps/maze_map.pgm
+[44.185s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/maps/maze_map.posegraph
+[44.185s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/maps/maze_map.yaml
+[44.186s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/lib/roverrobotics_driver/roverrobotics_driver
+[44.186s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/ament_index/resource_index/package_run_dependencies/roverrobotics_driver
+[44.186s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/ament_index/resource_index/parent_prefix_path/roverrobotics_driver
+[44.186s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/environment/ament_prefix_path.sh
+[44.187s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/environment/ament_prefix_path.dsv
+[44.187s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/environment/path.sh
+[44.187s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/environment/path.dsv
+[44.187s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/local_setup.bash
+[44.187s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/local_setup.sh
+[44.188s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/local_setup.zsh
+[44.188s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/local_setup.dsv
+[44.188s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/package.dsv
+[44.207s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/ament_index/resource_index/packages/roverrobotics_driver
+[44.207s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/cmake/roverrobotics_driverConfig.cmake
+[44.207s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/cmake/roverrobotics_driverConfig-version.cmake
+[44.207s] -- Up-to-date symlink: /home/devcom/circe_ws/install/roverrobotics_driver/share/roverrobotics_driver/package.xml
+[44.210s] Invoked command in '/home/devcom/circe_ws/build/roverrobotics_driver' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --install /home/devcom/circe_ws/build/roverrobotics_driver

@@ -1,0 +1,173 @@
+### robot_localization EKF for CIRCE ###
+#
+# Ported from roverrobotics_driver/config/localization_ekf.yaml, unchanged except for
+# these comments. The top-level key must stay `ekf_filter_node` to match the node name
+# in launch/localization.launch.py.
+#
+# *** THIS FILTER OWNS odom -> base_link (publish_tf: true below). ***
+# circe_bringup/config/rover_zero_4wd.yaml therefore keeps the motor driver's
+# publish_tf false, and nothing else may publish that edge.
+#
+# *** imu0 STAYS ON imu/data. DO NOT POINT IT AT /camera/camera/imu. ***
+# The D456's IMU is now the source, but it reaches the filter through
+# circe_perception/scripts/imu_fusion.py, which publishes /imu/data. Subscribing to
+# the camera topic directly is tempting and very nearly works -- robot_localization
+# rotates any IMU into base_link via TF, and imu0_config below asks only for yaw
+# rate, which the raw topic does carry. Three things break anyway:
+#
+#   1. NOTHING WOULD PUBLISH /imu/data, so scan_pitch_filter.py and terrain_node.py
+#      -- which both read msg.orientation -- lose their attitude input. The camera's
+#      messages carry orientation (0,0,0,0) with covariance -1, from which both nodes
+#      extract roll 0.00 / pitch 0.00 and conclude the robot is permanently level. No
+#      error, and scan_pitch_filter's imu_timeout does not fire because messages ARE
+#      arriving. That is the ramp bug, back, and invisible.
+#   2. NO GYRO BIAS CORRECTION. Look at the two config vectors below: the wheels
+#      supply vx/vy only and the IMU supplies yaw rate only, so this filter's heading
+#      is a PURE INTEGRAL of gyro z. A raw MEMS zero-rate offset of ~1 deg/s is
+#      therefore ~1 deg/s of heading drift -- measured in imu_fusion's test harness
+#      at 60.2 deg after one minute, against 0.08 deg with bias learning on.
+#   3. QoS. The camera's ~/imu publisher is hardcoded BEST_EFFORT (rs_node_setup.cpp,
+#      HID_QOS) and no driver parameter reaches it. Any RELIABLE subscriber matches
+#      it silently never.
+#
+# imu_fusion.py fixes all three and hands over a message with the same meaning the
+# BNO055's had, so this file needs no change at all. Select the device with
+# `imu_source:=d456|bno055` on circe_bringup/launch/sensors.launch.py.
+#
+# *** WHY LINEAR ACCELERATION IS STILL NOT FUSED ***
+# The accelerometer is used -- inside imu_fusion, as the gravity reference that stops
+# gyro drift. It is deliberately NOT fused as ax here, for two reasons:
+#   * two_d_mode below zeroes roll and pitch, so the filter believes it is level. On
+#     a 9 deg ramp, 9.81*sin(9 deg) = 1.53 m/s^2 of gravity leaks into ax and reads as
+#     real forward acceleration. Tennessee terrain is the worst case for this.
+#   * the IMU sits on the sensor mast, off the rotation axis, so it also measures
+#     centripetal and tangential terms the filter has no lever arm to remove:
+#     ~0.6 m/s^2 at 2 rad/s. Wheel odometry measures vx far better than integrating
+#     that would.
+
+ekf_filter_node:
+    ros__parameters:
+        use_sim_time: false
+        # 30 Hz, not 15. This is the publish rate of odom -> base_link, and that edge
+        # is what everything downstream sees the robot move through:
+        #
+        #   * RViz renders the robot's pose from TF. At 15 Hz the model visibly steps,
+        #     while Gazebo looks smooth because it draws from its own physics state and
+        #     never consults TF. Measured before the change: map -> odom 50.0 Hz,
+        #     wheel joints 19.0 Hz, odom -> base_link 14.3 Hz - the slowest edge in the
+        #     tree by 3.5x, and the only one carrying actual body motion.
+        #   * controller_server runs at 20 Hz and consumes /odometry/filtered. At 15 Hz
+        #     the controller was being fed odometry SLOWER than its own control rate,
+        #     so some cycles re-used a stale pose. That part is not cosmetic.
+        #
+        # Cost is small - the EKF is nowhere near the expensive node here; MPPI at
+        # 600 x 40 x 20 Hz dominates. If the Pi 5 ever needs the headroom, take it from
+        # batch_size first and leave this alone.
+        frequency: 30.0
+        sensor_timeout: 1.0
+        two_d_mode: true
+        transform_time_offset: 0.0
+        transform_timeout: 0.0
+        print_diagnostics: true
+        debug: false
+        debug_out_file: /path/to/debug/file.txt
+        publish_tf: true
+        publish_acceleration: false
+        reset_on_time_jump: true
+
+        map_frame: map                   # Defaults to "map" if unspecified
+        odom_frame: odom                 # Defaults to "odom" if unspecified
+        base_link_frame: base_link       # Defaults to "base_link" if unspecified
+        world_frame: odom                # Defaults to the value of odom_frame if unspecified
+        odom0: odometry/wheels
+
+        odom0_config: [false, false, false,
+                       false, false, false,
+                       true,  true,  false,
+                       false, false, false,
+                       false, false, false]
+
+        #        [x_pos   , y_pos    , z_pos,
+        #         roll    , pitch    , yaw,
+        #         x_vel   , y_vel    , z_vel,
+        #         roll_vel, pitch_vel, yaw_vel,
+        #         x_accel , y_accel  , z_accel]
+
+        odom0_queue_size: 10
+        odom0_nodelay: true
+        odom0_differential: false
+        odom0_relative: true
+
+        imu0: imu/data
+        imu0_config: [false, false, false,
+                      false,  false,  false,
+                      false, false, false,
+                      false,  false,  true,
+                      false,  false,  false]
+
+        #        [x_pos   , y_pos    , z_pos,
+        #         roll    , pitch    , yaw,
+        #         x_vel   , y_vel    , z_vel,
+        #         roll_vel, pitch_vel, yaw_vel,
+        #         x_accel , y_accel  , z_accel]
+        
+        imu0_nodelay: true
+        imu0_differential: false
+        imu0_relative: true
+        imu0_queue_size: 12
+
+        imu0_remove_gravitational_acceleration: true
+
+        use_control: false
+        stamped_control: false
+        control_timeout: 0.2
+        control_config: [true, false, false, false, false, true]
+        acceleration_limits: [1.3, 0.0, 0.0, 0.0, 0.0, 3.4]
+        deceleration_limits: [1.3, 0.0, 0.0, 0.0, 0.0, 4.5]
+        acceleration_gains: [0.8, 0.0, 0.0, 0.0, 0.0, 0.9]
+        deceleration_gains: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0]
+
+# [ADVANCED] The process noise covariance matrix can be difficult to tune, and can vary for each application, so it is
+# exposed as a configuration parameter. This matrix represents the noise we add to the total error after each
+# prediction step. The better the omnidirectional motion model matches your system, the smaller these values can be.
+# However, if users find that a given variable is slow to converge, one approach is to increase the
+# process_noise_covariance diagonal value for the variable in question, which will cause the filter's predicted error
+# to be larger, which will cause the filter to trust the incoming measurement more during correction. The values are
+# ordered as x, y, z, roll, pitch, yaw, vx, vy, vz, vroll, vpitch, vyaw, ax, ay, az. Defaults to the matrix below if
+# unspecified.
+        process_noise_covariance: [0.1,   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+                                   0.0,    0.1,   0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+                                   0.0,    0.0,    0.06,   0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+                                   0.0,    0.0,    0.0,    0.03,   0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+                                   0.0,    0.0,    0.0,    0.0,    0.03,   0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+                                   0.0,    0.0,    0.0,    0.0,    0.0,    0.2,   0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+                                   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.05,   0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+                                   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.05,   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+                                   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.04,   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+                                   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.01,   0.0,    0.0,    0.0,    0.0,    0.0,
+                                   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.01,   0.0,    0.0,    0.0,    0.0,
+                                   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.5,   0.0,    0.0,    0.0,
+                                   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.4,   0.0,    0.0,
+                                   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.01,   0.0,
+                                   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.015]
+# [ADVANCED] This represents the initial value for the state estimate error covariance matrix. Setting a diagonal
+# value (variance) to a large value will result in rapid convergence for initial measurements of the variable in
+# question. Users should take care not to use large values for variables that will not be measured directly. The values
+# are ordered as x, y, z, roll, pitch, yaw, vx, vy, vz, vroll, vpitch, vyaw, ax, ay, az. Defaults to the matrix below
+#if unspecified.
+        initial_estimate_covariance: [1e-9,   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,     0.0,    0.0,    0.0,
+                                      0.0,    1e-9,   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,     0.0,    0.0,    0.0,
+                                      0.0,    0.0,    1e-9,   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,     0.0,    0.0,    0.0,
+                                      0.0,    0.0,    0.0,    1e-9,   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,     0.0,    0.0,    0.0,
+                                      0.0,    0.0,    0.0,    0.0,    1e-9,   0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,     0.0,    0.0,    0.0,
+                                      0.0,    0.0,    0.0,    0.0,    0.0,    1e-9,   0.0,    0.0,    0.0,    0.0,     0.0,     0.0,     0.0,    0.0,    0.0,
+                                      0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.1,   0.0,    0.0,    0.0,     0.0,     0.0,     0.0,    0.0,    0.0,
+                                      0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.1,   0.0,    0.0,     0.0,     0.0,     0.0,    0.0,    0.0,
+                                      0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    1e-9,   0.0,     0.0,     0.0,     0.0,    0.0,    0.0,
+                                      0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    1e-9,    0.0,     0.0,     0.0,    0.0,    0.0,
+                                      0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     1e-9,    0.0,     0.0,    0.0,    0.0,
+                                      0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.1,    0.0,    0.0,    0.0,
+                                      0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,     1e-9,   0.0,    0.0,
+                                      0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,     0.0,    1e-9,   0.0,
+                                      0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,     0.0,    0.0,    1e-9]
+

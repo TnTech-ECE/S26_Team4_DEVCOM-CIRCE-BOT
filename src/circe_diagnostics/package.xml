@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>circe_diagnostics</name>
+  <version>0.1.0</version>
+  <description>
+    Runtime health monitoring for CIRCE. circe_health_monitor watches the parts of the
+    stack that report nothing about themselves -- lidar, camera, IMU, SLAM and the Pi 5
+    -- and diagnostic_aggregator folds those statuses, together with the ones the EKF
+    and Nav2 already publish, into one tree on /diagnostics_agg and a single overall
+    level on /diagnostics_toplevel_state.
+
+    Monitoring only: nothing here acts on what it reports.
+  </description>
+  <maintainer email="sz1305568@gmail.com">sharif</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <!-- scripts/health_monitor.py -->
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>diagnostic_updater</exec_depend>
+  <exec_depend>diagnostic_msgs</exec_depend>
+  <exec_depend>rcl_interfaces</exec_depend>
+  <exec_depend>tf2_msgs</exec_depend>
+  <!-- Resolves each rate check's `type` string to a message class at runtime, so a new
+       topic can be watched by editing config/health_monitor.yaml alone. -->
+  <exec_depend>rosidl_runtime_py</exec_depend>
+  <!-- The message types config/health_monitor.yaml names. get_message() imports them at
+       startup, so a missing one is a misconfigured check (ERROR in the tree), not a
+       crash; but it is still a missing dependency. -->
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>nav_msgs</exec_depend>
+  <!-- CPU load, memory and disk for the Host checks. -->
+  <exec_depend>python3-psutil</exec_depend>
+
+  <!-- launch/diagnostics.launch.py runs its aggregator_node. -->
+  <exec_depend>diagnostic_aggregator</exec_depend>
+
+  <!--
+    Deliberately NOT declared:
+
+    rqt_robot_monitor  - the viewer. It belongs on whatever machine is LOOKING at the
+                         robot, not on the Pi, which never opens a GUI.
+    circe_bringup etc. - this package watches topics and TF by name. It depends on
+                         nothing in the workspace, so the dependency points the other
+                         way: circe_bringup declares this package.
+  -->
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

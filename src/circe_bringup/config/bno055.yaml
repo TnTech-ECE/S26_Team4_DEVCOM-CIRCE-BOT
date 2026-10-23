@@ -1,0 +1,38 @@
+# BNO055 external IMU -- driver: bno055 / bno055
+#
+# NOT LAUNCHED BY DEFAULT and no BNO055 is currently fitted to CIRCE. Kept so the
+# option is one launch argument away: `use_imu:=true` on sensors.launch.py.
+#
+# The `bno055` package is not installed and is not in circe.repos -- install it before
+# setting use_imu:=true, or the launch will fail to find the executable.
+#
+# Note the standing decision in circe_nav/config/localization_ekf.yaml: the EKF has an
+# imu0 input configured, but nothing publishes /imu/data while this node is off.
+# frame_id must stay "imu_link" to match circe_description's circe_imu.urdf.xacro.
+
+/**:
+  ros__parameters:
+    ros_topic_prefix: ""
+    connection_type: "uart"
+    uart_port: "/dev/bno055"
+    uart_baudrate: 115200
+    uart_timeout: 0.1
+    data_query_frequency: 100
+    calib_status_frequency: 0.1
+    frame_id: "imu_link"
+    operation_mode: 0x0C
+    placement_axis_remap: "P2"
+    acc_factor: 100.0
+    mag_factor: 16000000.0
+    gyr_factor: 900.0
+    set_offsets: false # set to true to use offsets below
+    offset_acc: [0xFFEC, 0x00A5, 0xFFE8]
+    offset_mag: [0xFFB4, 0xFE9E, 0x027D]
+    offset_gyr: [0x0002, 0xFFFF, 0xFFFF]
+    ## Sensor standard deviation [x,y,z]
+    ## Used to calculate covariance matrices
+    ## defaults are used if parameters below are not provided
+    # variance_acc: [0.0, 0.0, 0.0] # [m/s^2]
+    # variance_angular_vel: [0.0, 0.0, 0.0] # [rad/s]
+    # variance_orientation: [0.0, 0.0, 0.0] # [rad]
+    # variance_mag: [0.0, 0.0, 0.0] # [Tesla]

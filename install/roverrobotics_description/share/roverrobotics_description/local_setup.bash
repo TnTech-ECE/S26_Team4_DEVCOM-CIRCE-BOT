@@ -1,0 +1,1 @@
+/home/devcom/circe_ws/build/roverrobotics_description/ament_cmake_environment_hooks/local_setup.bash

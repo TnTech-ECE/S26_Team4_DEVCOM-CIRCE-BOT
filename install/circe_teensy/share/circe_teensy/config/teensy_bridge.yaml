@@ -1,0 +1,44 @@
+# Teensy USB bridge -- node: circe_teensy / teensy_bridge.py
+#
+# Keyed on `/**` like circe_diagnostics/config/health_monitor.yaml: this file is only
+# ever passed to this one node, and keying on its name loses the whole file silently
+# the day the node is renamed.
+/**:
+  ros__parameters:
+    # Symlink from circe_bringup/udev/63-teensy.rules. Not /dev/ttyACM0: the Rover Zero
+    # motor controller is also a ttyACM device, and enumeration order is not fixed.
+    port: /dev/teensy
+
+    # Forwarded to the Teensy as ODOM_SPEED (twist.twist.linear.x) so the spool can
+    # pay out cable at the rover's speed. The EKF's output; it exists only while
+    # localization runs. /odometry/wheels is the driver's raw alternative.
+    odom_topic: /odometry/filtered
+
+    # PI_HEARTBEAT rate. The Teensy echoes the last counter it saw in its own 1 Hz
+    # heartbeat, which is what proves the Pi -> Teensy direction in the log.
+    heartbeat_hz: 1.0
+
+    # /gps/fix header.frame_id. navsat_transform_node looks up base_link -> this frame to
+    # remove the antenna's offset from the robot's origin; until circe_description
+    # carries a gps_link it warns once and assumes the antenna sits at base_link.
+    gps_frame: gps_link
+
+    # Horizontal 1-sigma position error per unit HDOP, metres. From the datasheet's
+    # <2.5 m CEP at typical HDOP ~1. Sets /gps/fix covariance, which is how much the
+    # GPS-mode EKF will trust each fix.
+    gps_sigma_per_hdop: 2.5
+
+    # One sensor_msgs/Range topic and frame per ultrasonic, indexed by the sensor_id in
+    # the table at the top of src/ultrasonic.cpp (0 = Serial5 pins 20/21, 1 = Serial4
+    # pins 16/17). Rename both once the mounting positions are fixed, e.g.
+    # /ultrasonic/front + ultrasonic_front_link. The frames are not yet in
+    # circe_description, so RViz and costmaps cannot place the readings until they are.
+    ultrasonic_topics: ['/ultrasonic/sensor_0', '/ultrasonic/sensor_1']
+    ultrasonic_frames: ['ultrasonic_0_link', 'ultrasonic_1_link']
+
+    # Beam width. DFRobot quotes ~60 deg for the A02YYUW (SEN0311); measure it on the
+    # rover if a costmap layer will rely on it.
+    ultrasonic_fov_rad: 1.047
+
+    # Empty: ~/circe_logs/teensy_rx_<YYYYmmdd_HHMMSS>.txt, a new file per run.
+    log_file: ''

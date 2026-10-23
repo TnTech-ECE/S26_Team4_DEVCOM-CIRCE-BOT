@@ -1,0 +1,106 @@
+Start testing: Oct 19 20:47 CDT
+----------------------------------------------------------
+1/4 Testing: flake8
+1/4 Test: flake8
+Command: "/usr/bin/python3" "-u" "/opt/ros/jazzy/share/ament_cmake_test/cmake/run_test.py" "/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/flake8.xunit.xml" "--package-name" "circe_teensy" "--output-file" "/home/devcom/circe_ws/build/circe_teensy/ament_flake8/flake8.txt" "--command" "/opt/ros/jazzy/bin/ament_flake8" "--xunit-file" "/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/flake8.xunit.xml"
+Directory: /home/devcom/circe_ws/src/circe_teensy
+"flake8" start time: Oct 19 20:47 CDT
+Output:
+----------------------------------------------------------
+-- run_test.py: invoking following command in '/home/devcom/circe_ws/src/circe_teensy':
+ - /opt/ros/jazzy/bin/ament_flake8 --xunit-file /home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/flake8.xunit.xml
+
+2 files checked
+No problems found
+
+Checked files:
+
+* ./scripts/teensy_bridge.py
+* ./launch/teensy_bridge.launch.py
+-- run_test.py: return code 0
+-- run_test.py: verify result file '/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/flake8.xunit.xml'
+<end of output>
+Test time =   0.64 sec
+----------------------------------------------------------
+Test Passed.
+"flake8" end time: Oct 19 20:47 CDT
+"flake8" time elapsed: 00:00:00
+----------------------------------------------------------
+
+2/4 Testing: lint_cmake
+2/4 Test: lint_cmake
+Command: "/usr/bin/python3" "-u" "/opt/ros/jazzy/share/ament_cmake_test/cmake/run_test.py" "/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/lint_cmake.xunit.xml" "--package-name" "circe_teensy" "--output-file" "/home/devcom/circe_ws/build/circe_teensy/ament_lint_cmake/lint_cmake.txt" "--command" "/opt/ros/jazzy/bin/ament_lint_cmake" "--xunit-file" "/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/lint_cmake.xunit.xml"
+Directory: /home/devcom/circe_ws/src/circe_teensy
+"lint_cmake" start time: Oct 19 20:47 CDT
+Output:
+----------------------------------------------------------
+-- run_test.py: invoking following command in '/home/devcom/circe_ws/src/circe_teensy':
+ - /opt/ros/jazzy/bin/ament_lint_cmake --xunit-file /home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/lint_cmake.xunit.xml
+
+No problems found
+-- run_test.py: return code 0
+-- run_test.py: verify result file '/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/lint_cmake.xunit.xml'
+<end of output>
+Test time =   0.27 sec
+----------------------------------------------------------
+Test Passed.
+"lint_cmake" end time: Oct 19 20:47 CDT
+"lint_cmake" time elapsed: 00:00:00
+----------------------------------------------------------
+
+3/4 Testing: pep257
+3/4 Test: pep257
+Command: "/usr/bin/python3" "-u" "/opt/ros/jazzy/share/ament_cmake_test/cmake/run_test.py" "/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/pep257.xunit.xml" "--package-name" "circe_teensy" "--output-file" "/home/devcom/circe_ws/build/circe_teensy/ament_pep257/pep257.txt" "--command" "/opt/ros/jazzy/bin/ament_pep257" "--xunit-file" "/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/pep257.xunit.xml"
+Directory: /home/devcom/circe_ws/src/circe_teensy
+"pep257" start time: Oct 19 20:47 CDT
+Output:
+----------------------------------------------------------
+-- run_test.py: invoking following command in '/home/devcom/circe_ws/src/circe_teensy':
+ - /opt/ros/jazzy/bin/ament_pep257 --xunit-file /home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/pep257.xunit.xml
+checking ./launch/teensy_bridge.launch.py
+checking ./scripts/teensy_bridge.py
+No problems found
+-- run_test.py: return code 0
+-- run_test.py: verify result file '/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/pep257.xunit.xml'
+<end of output>
+Test time =   0.38 sec
+----------------------------------------------------------
+Test Passed.
+"pep257" end time: Oct 19 20:47 CDT
+"pep257" time elapsed: 00:00:00
+----------------------------------------------------------
+
+4/4 Testing: xmllint
+4/4 Test: xmllint
+Command: "/usr/bin/python3" "-u" "/opt/ros/jazzy/share/ament_cmake_test/cmake/run_test.py" "/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/xmllint.xunit.xml" "--package-name" "circe_teensy" "--output-file" "/home/devcom/circe_ws/build/circe_teensy/ament_xmllint/xmllint.txt" "--command" "/opt/ros/jazzy/bin/ament_xmllint" "--xunit-file" "/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/xmllint.xunit.xml"
+Directory: /home/devcom/circe_ws/src/circe_teensy
+"xmllint" start time: Oct 19 20:47 CDT
+Output:
+----------------------------------------------------------
+-- run_test.py: invoking following command in '/home/devcom/circe_ws/src/circe_teensy':
+ - /opt/ros/jazzy/bin/ament_xmllint --xunit-file /home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/xmllint.xunit.xml
+File 'package.xml' is valid
+
+No problems found
+-- run_test.py: return code 0
+-- run_test.py: verify result file '/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/xmllint.xunit.xml'
+<end of output>
+Test time =   0.34 sec
+----------------------------------------------------------
+Test Passed.
+"xmllint" end time: Oct 19 20:47 CDT
+"xmllint" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Oct 19 20:47 CDT
+
+flake8 =   0.64 sec*proc
+
+lint_cmake =   0.27 sec*proc
+
+linter =   1.63 sec*proc
+
+pep257 =   0.38 sec*proc
+
+xmllint =   0.34 sec*proc
+

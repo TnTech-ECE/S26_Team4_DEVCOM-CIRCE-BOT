@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>circe_perception</name>
+  <version>0.1.0</version>
+  <description>
+    Terrain traversability from the D456 depth image. Reads depth, judges each 5 cm patch
+    of ground as drivable or not from step, slope, roughness and drop-off, and publishes a
+    graded OccupancyGrid that Nav2 consumes as a StaticLayer in both costmaps.
+
+    Geometric only -- no learned models. The rover runs on a Raspberry Pi 5 with no CUDA,
+    and "is this patch drivable" should be arithmetic you can reason about.
+  </description>
+  <maintainer email="sz1305568@gmail.com">sharif</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <!-- terrain.launch.py: scripts/terrain_node.py -->
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>nav_msgs</exec_depend>
+  <!-- `from tf2_ros import Buffer, TransformListener` in terrain_node.py and
+       imu_fusion.py is the PYTHON package, tf2_ros_py (dpkg: ros-jazzy-tf2-ros-py).
+       tf2_ros alone is the C++ library and does not provide that module; it only
+       worked because ros-base happens to pull tf2_ros_py in. -->
+  <exec_depend>tf2_ros_py</exec_depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <!-- scipy.ndimage minimum/maximum filters for the local ground reference -->
+  <exec_depend>python3-scipy</exec_depend>
+
+  <!--
+    Deliberate NON-dependencies:
+
+    cv_bridge   - not needed. The depth image is decoded straight out of msg.data with
+                  numpy.frombuffer, which avoids pulling OpenCV onto the Pi for what is a
+                  reshape. Both 16UC1 (hardware, millimetres) and 32FC1 (Gazebo, metres)
+                  are handled directly.
+    pcl_ros     - no point cloud is ever built. The node goes depth image -> grid, and
+                  publishes an OccupancyGrid. Materialising a cloud would be the single
+                  most expensive thing it could do.
+    circe_nav   - this package publishes a topic and nothing more. Whether Nav2 listens is
+                  decided in circe_nav/config/nav2_params.yaml, so the dependency would
+                  point the wrong way.
+  -->
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

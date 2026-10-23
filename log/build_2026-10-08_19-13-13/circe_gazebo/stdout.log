@@ -1,0 +1,28 @@
+-- Install configuration: ""
+-- Execute custom install script
+-- Symlinking: /home/devcom/circe_ws/install/circe_gazebo/share/circe_gazebo/launch/__pycache__/circe_sim.launch.cpython-312.pyc
+-- Symlinking: /home/devcom/circe_ws/install/circe_gazebo/share/circe_gazebo/launch/__pycache__/circe_sim_nav.launch.cpython-312.pyc
+-- Up-to-date symlink: /home/devcom/circe_ws/install/circe_gazebo/share/circe_gazebo/launch/circe_sim.launch.py
+-- Up-to-date symlink: /home/devcom/circe_ws/install/circe_gazebo/share/circe_gazebo/launch/circe_sim_nav.launch.py
+-- Up-to-date symlink: /home/devcom/circe_ws/install/circe_gazebo/share/circe_gazebo/worlds/circe_indoor.sdf
+-- Up-to-date symlink: /home/devcom/circe_ws/install/circe_gazebo/share/circe_gazebo/worlds/circe_outdoor.sdf
+-- Up-to-date symlink: /home/devcom/circe_ws/install/circe_gazebo/share/circe_gazebo/worlds/empty.sdf
+-- Up-to-date symlink: /home/devcom/circe_ws/install/circe_gazebo/share/circe_gazebo/worlds/generate_outdoor.py
+-- Up-to-date symlink: /home/devcom/circe_ws/install/circe_gazebo/share/circe_gazebo/config/gz_bridge.yaml
+-- Up-to-date symlink: /home/devcom/circe_ws/install/circe_gazebo/share/circe_gazebo/rviz/circe_sim.rviz
+-- Up-to-date symlink: /home/devcom/circe_ws/install/circe_gazebo/lib/circe_gazebo/stop_sim.sh
+-- Up-to-date symlink: /home/devcom/circe_ws/install/circe_gazebo/share/ament_index/resource_index/package_run_dependencies/circe_gazebo
+-- Up-to-date symlink: /home/devcom/circe_ws/install/circe_gazebo/share/ament_index/resource_index/parent_prefix_path/circe_gazebo
+-- Up-to-date symlink: /home/devcom/circe_ws/install/circe_gazebo/share/circe_gazebo/environment/ament_prefix_path.sh
+-- Up-to-date symlink: /home/devcom/circe_ws/install/circe_gazebo/share/circe_gazebo/environment/ament_prefix_path.dsv
+-- Up-to-date symlink: /home/devcom/circe_ws/install/circe_gazebo/share/circe_gazebo/environment/path.sh
+-- Up-to-date symlink: /home/devcom/circe_ws/install/circe_gazebo/share/circe_gazebo/environment/path.dsv
+-- Up-to-date symlink: /home/devcom/circe_ws/install/circe_gazebo/share/circe_gazebo/local_setup.bash
+-- Up-to-date symlink: /home/devcom/circe_ws/install/circe_gazebo/share/circe_gazebo/local_setup.sh
+-- Up-to-date symlink: /home/devcom/circe_ws/install/circe_gazebo/share/circe_gazebo/local_setup.zsh
+-- Up-to-date symlink: /home/devcom/circe_ws/install/circe_gazebo/share/circe_gazebo/local_setup.dsv
+-- Symlinking: /home/devcom/circe_ws/install/circe_gazebo/share/circe_gazebo/package.dsv
+-- Up-to-date symlink: /home/devcom/circe_ws/install/circe_gazebo/share/ament_index/resource_index/packages/circe_gazebo
+-- Up-to-date symlink: /home/devcom/circe_ws/install/circe_gazebo/share/circe_gazebo/cmake/circe_gazeboConfig.cmake
+-- Up-to-date symlink: /home/devcom/circe_ws/install/circe_gazebo/share/circe_gazebo/cmake/circe_gazeboConfig-version.cmake
+-- Up-to-date symlink: /home/devcom/circe_ws/install/circe_gazebo/share/circe_gazebo/package.xml

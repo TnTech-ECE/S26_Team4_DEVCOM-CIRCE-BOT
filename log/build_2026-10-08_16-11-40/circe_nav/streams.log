@@ -1,0 +1,61 @@
+[0.021s] Invoking command in '/home/devcom/circe_ws/build/circe_nav': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/devcom/circe_ws/src/circe_nav -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/devcom/circe_ws/install/circe_nav
+[0.188s] -- The C compiler identification is GNU 13.3.0
+[0.321s] -- The CXX compiler identification is GNU 13.3.0
+[0.358s] -- Detecting C compiler ABI info
+[0.584s] -- Detecting C compiler ABI info - done
+[0.600s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.601s] -- Detecting C compile features
+[0.602s] -- Detecting C compile features - done
+[0.622s] -- Detecting CXX compiler ABI info
+[0.893s] -- Detecting CXX compiler ABI info - done
+[0.909s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.910s] -- Detecting CXX compile features
+[0.910s] -- Detecting CXX compile features - done
+[0.921s] -- Found ament_cmake: 2.5.6 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[1.286s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+[1.560s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[1.696s] -- Found ament_lint_auto: 0.17.5 (/opt/ros/jazzy/share/ament_lint_auto/cmake)
+[2.058s] -- Added test 'flake8' to check Python code syntax and style conventions
+[2.058s] -- Configured 'flake8' exclude dirs and/or files: 
+[2.059s] -- Added test 'lint_cmake' to check CMake code style
+[2.061s] -- Added test 'pep257' to check Python code against some of the docstring style conventions in PEP 257
+[2.066s] -- Added test 'xmllint' to check XML markup files
+[2.073s] -- Configuring done (2.0s)
+[2.081s] -- Generating done (0.0s)
+[2.085s] -- Build files have been written to: /home/devcom/circe_ws/build/circe_nav
+[2.107s] Invoked command in '/home/devcom/circe_ws/build/circe_nav' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/devcom/circe_ws/src/circe_nav -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/devcom/circe_ws/install/circe_nav
+[2.108s] Invoking command in '/home/devcom/circe_ws/build/circe_nav': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/devcom/circe_ws/build/circe_nav -- -j4 -l4
+[2.241s] Invoked command in '/home/devcom/circe_ws/build/circe_nav' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/devcom/circe_ws/build/circe_nav -- -j4 -l4
+[2.242s] Invoking command in '/home/devcom/circe_ws/build/circe_nav': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/devcom/circe_ws/build/circe_nav
+[2.270s] -- Install configuration: ""
+[2.274s] -- Execute custom install script
+[2.274s] -- Symlinking: /home/devcom/circe_ws/install/circe_nav/lib/circe_nav/cable_mission.py
+[2.305s] -- Symlinking: /home/devcom/circe_ws/install/circe_nav/share/circe_nav/launch/__pycache__/localization.launch.cpython-312.pyc
+[2.343s] -- Symlinking: /home/devcom/circe_ws/install/circe_nav/share/circe_nav/launch/__pycache__/navigation.launch.cpython-312.pyc
+[2.409s] -- Symlinking: /home/devcom/circe_ws/install/circe_nav/share/circe_nav/launch/__pycache__/slam.launch.cpython-312.pyc
+[2.509s] -- Symlinking: /home/devcom/circe_ws/install/circe_nav/share/circe_nav/launch/localization.launch.py
+[2.556s] -- Symlinking: /home/devcom/circe_ws/install/circe_nav/share/circe_nav/launch/navigation.launch.py
+[2.613s] -- Symlinking: /home/devcom/circe_ws/install/circe_nav/share/circe_nav/launch/slam.launch.py
+[2.651s] -- Symlinking: /home/devcom/circe_ws/install/circe_nav/share/circe_nav/config/localization_ekf.yaml
+[2.706s] -- Symlinking: /home/devcom/circe_ws/install/circe_nav/share/circe_nav/config/mapper_params_circe.yaml
+[2.756s] -- Symlinking: /home/devcom/circe_ws/install/circe_nav/share/circe_nav/config/mapper_params_localization.yaml
+[2.814s] -- Symlinking: /home/devcom/circe_ws/install/circe_nav/share/circe_nav/config/nav2_params.yaml
+[2.867s] -- Symlinking: /home/devcom/circe_ws/install/circe_nav/share/circe_nav/rviz/nav2_view.rviz
+[2.903s] -- Symlinking: /home/devcom/circe_ws/install/circe_nav/share/circe_nav/rviz/slam.rviz
+[2.938s] -- Symlinking: /home/devcom/circe_ws/install/circe_nav/share/circe_nav/maps/README.md
+[3.018s] -- Symlinking: /home/devcom/circe_ws/install/circe_nav/share/ament_index/resource_index/package_run_dependencies/circe_nav
+[3.073s] -- Symlinking: /home/devcom/circe_ws/install/circe_nav/share/ament_index/resource_index/parent_prefix_path/circe_nav
+[3.133s] -- Symlinking: /home/devcom/circe_ws/install/circe_nav/share/circe_nav/environment/ament_prefix_path.sh
+[3.204s] -- Symlinking: /home/devcom/circe_ws/install/circe_nav/share/circe_nav/environment/ament_prefix_path.dsv
+[3.287s] -- Symlinking: /home/devcom/circe_ws/install/circe_nav/share/circe_nav/environment/path.sh
+[3.325s] -- Symlinking: /home/devcom/circe_ws/install/circe_nav/share/circe_nav/environment/path.dsv
+[3.357s] -- Symlinking: /home/devcom/circe_ws/install/circe_nav/share/circe_nav/local_setup.bash
+[3.381s] -- Symlinking: /home/devcom/circe_ws/install/circe_nav/share/circe_nav/local_setup.sh
+[3.405s] -- Symlinking: /home/devcom/circe_ws/install/circe_nav/share/circe_nav/local_setup.zsh
+[3.425s] -- Symlinking: /home/devcom/circe_ws/install/circe_nav/share/circe_nav/local_setup.dsv
+[3.445s] -- Symlinking: /home/devcom/circe_ws/install/circe_nav/share/circe_nav/package.dsv
+[3.465s] -- Symlinking: /home/devcom/circe_ws/install/circe_nav/share/ament_index/resource_index/packages/circe_nav
+[3.489s] -- Symlinking: /home/devcom/circe_ws/install/circe_nav/share/circe_nav/cmake/circe_navConfig.cmake
+[3.515s] -- Symlinking: /home/devcom/circe_ws/install/circe_nav/share/circe_nav/cmake/circe_navConfig-version.cmake
+[3.535s] -- Symlinking: /home/devcom/circe_ws/install/circe_nav/share/circe_nav/package.xml
+[3.557s] Invoked command in '/home/devcom/circe_ws/build/circe_nav' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/devcom/circe_ws/build/circe_nav

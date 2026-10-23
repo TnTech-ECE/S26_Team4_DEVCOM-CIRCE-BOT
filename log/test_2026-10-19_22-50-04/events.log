@@ -1,0 +1,109 @@
+[0.000000] (-) TimerEvent: {}
+[0.000135] (circe_teensy) JobQueued: {'identifier': 'circe_teensy', 'dependencies': OrderedDict({'circe_teensy': '/home/devcom/circe_ws/install/circe_teensy'})}
+[0.000542] (circe_teensy) JobStarted: {'identifier': 'circe_teensy'}
+[0.036146] (circe_teensy) Command: {'cmd': ['/usr/bin/ctest', '-C', 'Release', '-D', 'ExperimentalTest', '--no-compress-output', '-V', '--force-new-ctest-process'], 'cwd': '/home/devcom/circe_ws/build/circe_teensy', 'env': OrderedDict({'GJS_DEBUG_TOPICS': 'JS ERROR;JS LOG', 'EGL_PLATFORM': 'wayland', 'LESSOPEN': '| /usr/bin/lesspipe %s', 'VSCODE_CWD': '/home/devcom', 'VSCODE_ESM_ENTRYPOINT': 'vs/workbench/api/node/extensionHostProcess', 'PLATFORMIO_CALLER': 'vscode', 'AI_AGENT': 'claude-code_2-1-296_agent', 'USER': 'devcom', 'CLAUDE_CODE_ENTRYPOINT': 'claude-vscode', 'VSCODE_NLS_CONFIG': '{"userLocale":"en-us","osLocale":"c","resolvedLanguage":"en","defaultMessagesFile":"/usr/share/code/resources/app/out/nls.messages.json","locale":"en-us","availableLanguages":{}}', 'GZ_CONFIG_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/share/gz:/opt/ros/jazzy/opt/sdformat_vendor/share/gz:/opt/ros/jazzy/opt/gz_gui_vendor/share/gz:/opt/ros/jazzy/opt/gz_transport_vendor/share/gz:/opt/ros/jazzy/opt/gz_rendering_vendor/share/gz:/opt/ros/jazzy/opt/gz_plugin_vendor/share/gz:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/share/gz:/opt/ros/jazzy/opt/gz_msgs_vendor/share/gz:/opt/ros/jazzy/opt/gz_common_vendor/share/gz', 'GIT_EDITOR': 'true', 'VSCODE_HANDLES_UNCAUGHT_ERRORS': 'true', 'XDG_SESSION_TYPE': 'wayland', 'CLAUDE_AGENT_SDK_VERSION': '0.3.296', 'CLAUDE_CODE_SESSION_ATTENDED': '1', 'CLUTTER_DISABLE_MIPMAPPED_TEXT': '1', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/lib:/opt/ros/jazzy/opt/gz_sensors_vendor/lib:/opt/ros/jazzy/opt/gz_physics_vendor/lib:/opt/ros/jazzy/opt/sdformat_vendor/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/aarch64-linux-gnu:/opt/ros/jazzy/opt/gz_gui_vendor/lib:/opt/ros/jazzy/opt/gz_transport_vendor/lib:/opt/ros/jazzy/opt/gz_rendering_vendor/lib:/opt/ros/jazzy/opt/gz_plugin_vendor/lib:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/lib:/opt/ros/jazzy/opt/gz_msgs_vendor/lib:/opt/ros/jazzy/opt/gz_common_vendor/lib:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_tools_vendor/lib:/opt/ros/jazzy/opt/gz_ogre_next_vendor/lib:/opt/ros/jazzy/opt/gz_dartsim_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'CLAUDE_CODE_MESSAGING_TOKEN': '2ecc2aa4f4965a080b5222686be0f54b', 'HOME': '/home/devcom', 'CHROME_DESKTOP': 'com.microsoft.VSCode.desktop', 'CYCLONEDDS_URI': 'file:///etc/cyclonedds/rover.xml', 'OLDPWD': '/home/devcom/circe_ws/src/circe_teensy', 'DESKTOP_SESSION': 'ubuntu', 'NO_PROXY': '127.0.0.1', 'VSCODE_IPC_HOOK': '/run/user/1000/vscode-27b30ae2-1.14-main.sock', 'GIO_LAUNCHED_DESKTOP_FILE': '/usr/share/applications/com.microsoft.VSCode.desktop', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'CLAUDE_CODE_CHILD_SESSION': '1', 'PLATFORMIO_IDE': '3.3.4', 'MANAGERPID': '1582', 'SYSTEMD_EXEC_PID': '1786', 'IM_CONFIG_CHECK_ENV': '1', 'GSM_SKIP_SSH_AGENT_WORKAROUND': 'true', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'GIO_LAUNCHED_DESKTOP_FILE_PID': '14721', 'VSCODE_CRASH_REPORTER_PROCESS_TYPE': 'extensionHost', 'DEBUGINFOD_URLS': 'https://debuginfod.ubuntu.com', 'IM_CONFIG_PHASE': '1', 'WAYLAND_DISPLAY': 'wayland-0', 'VSCODE_L10N_BUNDLE_LOCATION': '', 'COLCON_PREFIX_PATH': '/home/devcom/circe_ws/install', 'ROS_DISTRO': 'jazzy', 'LOGNAME': 'devcom', 'CLAUDE_CODE_EMIT_STARTUP_TIMING': '1', 'JOURNAL_STREAM': '8:16797', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'CLAUDE_CODE_QUESTION_PREVIEW_FORMAT': 'markdown', 'MEMORY_PRESSURE_WATCH': '/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/session.slice/org.gnome.Shell@wayland.service/memory.pressure', 'XDG_SESSION_CLASS': 'user', 'USERNAME': 'devcom', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', 'FC_FONTATIONS': '1', 'MCP_CONNECTION_NONBLOCKING': 'true', 'PATH': '/opt/ros/jazzy/opt/gz_msgs_vendor/bin:/opt/ros/jazzy/opt/gz_tools_vendor/bin:/opt/ros/jazzy/opt/gz_ogre_next_vendor/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin', 'SESSION_MANAGER': 'local/circe-desktop:@/tmp/.ICE-unix/1760,unix/circe-desktop:/tmp/.ICE-unix/1760', 'INVOCATION_ID': '7fc778edbad44ccab0d98193fcafca33', 'VSCODE_NODE_COMPILE_CACHE_ROOT': '/usr/share/code/resources/app/node-compile-cache', 'COREPACK_ENABLE_AUTO_PIN': '0', 'XDG_MENU_PREFIX': 'gnome-', 'GNOME_SETUP_DISPLAY': ':1', 'XDG_RUNTIME_DIR': '/run/user/1000', 'CLAUDE_EFFORT': 'high', 'DISPLAY': ':0', 'PLATFORMIO_PATH': '/home/devcom/.platformio/python3/bin:/opt/ros/jazzy/opt/gz_msgs_vendor/bin:/opt/ros/jazzy/opt/gz_tools_vendor/bin:/opt/ros/jazzy/opt/gz_ogre_next_vendor/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin', 'CLAUDE_PID': '15787', 'NoDefaultCurrentDirectoryInExePath': '1', 'LANG': 'C.UTF-8', 'XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'RMW_IMPLEMENTATION': 'rmw_cyclonedds_cpp', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/.mutter-Xwaylandauth.V66QX3', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'ROS_DOMAIN_ID': '42', 'AMENT_PREFIX_PATH': '/home/devcom/circe_ws/install/circe_teensy:/home/devcom/circe_ws/install/circe_gazebo:/home/devcom/circe_ws/install/circe_bringup:/home/devcom/circe_ws/install/sllidar_ros2:/home/devcom/circe_ws/install/circe_control:/home/devcom/circe_ws/install/roverrobotics_input_manager:/home/devcom/circe_ws/install/roverrobotics_gazebo:/home/devcom/circe_ws/install/roverrobotics_driver:/home/devcom/circe_ws/install/circe_description:/home/devcom/circe_ws/install/roverrobotics_description:/home/devcom/circe_ws/install/circe_perception:/home/devcom/circe_ws/install/circe_nav:/home/devcom/circe_ws/install/circe_diagnostics:/opt/ros/jazzy', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'ELECTRON_RUN_AS_NODE': '1', 'GDMSESSION': 'ubuntu', 'CLAUDE_CODE_ENABLE_SDK_FILE_CHECKPOINTING': 'true', 'CLAUDE_CODE_SESSION_ID': 'cc790d5a-da31-414d-b9a1-ed00ce996315', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'CLAUDECODE': '1', 'GJS_DEBUG_OUTPUT': 'stderr', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/devcom/circe_ws/build/circe_teensy', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'VSCODE_CODE_CACHE_PATH': '/home/devcom/.config/Code/CachedData/2a59476c9bfcb90b3ddc372c36762471b7dfad1c', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'CLAUDE_CODE_EXECPATH': '/home/devcom/.vscode/extensions/anthropic.claude-code-2.1.296-linux-arm64/resources/native-binary/claude', 'PYTHONPATH': '/opt/ros/jazzy/opt/gz_sim_vendor/lib/python:/opt/ros/jazzy/opt/sdformat_vendor/lib/python:/opt/ros/jazzy/opt/gz_transport_vendor/lib/python:/opt/ros/jazzy/opt/gz_msgs_vendor/lib/python:/opt/ros/jazzy/opt/gz_math_vendor/lib/python:/opt/ros/jazzy/lib/python3.12/site-packages', 'CLAUDE_CODE_ENABLE_TASKS': '0', 'COLCON': '1', 'MEMORY_PRESSURE_WRITE': 'c29tZSAyMDAwMDAgMjAwMDAwMAA=', 'CLAUDE_CODE_MESSAGING_SOCKET': '/run/user/1000/cc-socks/15787.sock', 'CMAKE_PREFIX_PATH': '/home/devcom/circe_ws/install/circe_teensy:/home/devcom/circe_ws/install/circe_gazebo:/home/devcom/circe_ws/install/circe_bringup:/home/devcom/circe_ws/install/sllidar_ros2:/home/devcom/circe_ws/install/circe_control:/home/devcom/circe_ws/install/roverrobotics_input_manager:/home/devcom/circe_ws/install/roverrobotics_gazebo:/home/devcom/circe_ws/install/roverrobotics_driver:/home/devcom/circe_ws/install/circe_description:/home/devcom/circe_ws/install/roverrobotics_description:/home/devcom/circe_ws/install/circe_perception:/home/devcom/circe_ws/install/circe_nav:/home/devcom/circe_ws/install/circe_diagnostics:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor', 'VSCODE_PID': '14721'}), 'shell': False}
+[0.054110] (circe_teensy) StdoutLine: {'line': b'UpdateCTestConfiguration  from :/home/devcom/circe_ws/build/circe_teensy/CTestConfiguration.ini\n'}
+[0.054443] (circe_teensy) StdoutLine: {'line': b'Parse Config file:/home/devcom/circe_ws/build/circe_teensy/CTestConfiguration.ini\n'}
+[0.054696] (circe_teensy) StdoutLine: {'line': b'   Site: circe-desktop\n'}
+[0.054789] (circe_teensy) StdoutLine: {'line': b'   Build name: (empty)\n'}
+[0.054864] (circe_teensy) StdoutLine: {'line': b' Add coverage exclude regular expressions.\n'}
+[0.054937] (circe_teensy) StdoutLine: {'line': b'Create new tag: 20261020-0350 - Experimental\n'}
+[0.055008] (circe_teensy) StdoutLine: {'line': b'UpdateCTestConfiguration  from :/home/devcom/circe_ws/build/circe_teensy/CTestConfiguration.ini\n'}
+[0.055097] (circe_teensy) StdoutLine: {'line': b'Parse Config file:/home/devcom/circe_ws/build/circe_teensy/CTestConfiguration.ini\n'}
+[0.055184] (circe_teensy) StdoutLine: {'line': b'Test project /home/devcom/circe_ws/build/circe_teensy\n'}
+[0.055263] (circe_teensy) StdoutLine: {'line': b'Constructing a list of tests\n'}
+[0.055386] (circe_teensy) StdoutLine: {'line': b'Done constructing a list of tests\n'}
+[0.055594] (circe_teensy) StdoutLine: {'line': b'Updating test list for fixtures\n'}
+[0.055684] (circe_teensy) StdoutLine: {'line': b'Added 0 tests to meet fixture requirements\n'}
+[0.055757] (circe_teensy) StdoutLine: {'line': b'Checking test dependency graph...\n'}
+[0.055828] (circe_teensy) StdoutLine: {'line': b'Checking test dependency graph end\n'}
+[0.055899] (circe_teensy) StdoutLine: {'line': b'test 1\n'}
+[0.055968] (circe_teensy) StdoutLine: {'line': b'    Start 1: flake8\n'}
+[0.056038] (circe_teensy) StdoutLine: {'line': b'\n'}
+[0.056106] (circe_teensy) StdoutLine: {'line': b'1: Test command: /usr/bin/python3 "-u" "/opt/ros/jazzy/share/ament_cmake_test/cmake/run_test.py" "/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/flake8.xunit.xml" "--package-name" "circe_teensy" "--output-file" "/home/devcom/circe_ws/build/circe_teensy/ament_flake8/flake8.txt" "--command" "/opt/ros/jazzy/bin/ament_flake8" "--xunit-file" "/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/flake8.xunit.xml"\n'}
+[0.056185] (circe_teensy) StdoutLine: {'line': b'1: Working Directory: /home/devcom/circe_ws/src/circe_teensy\n'}
+[0.056255] (circe_teensy) StdoutLine: {'line': b'1: Test timeout computed to be: 60\n'}
+[0.099740] (-) TimerEvent: {}
+[0.145907] (circe_teensy) StdoutLine: {'line': b"1: -- run_test.py: invoking following command in '/home/devcom/circe_ws/src/circe_teensy':\n"}
+[0.146130] (circe_teensy) StdoutLine: {'line': b'1:  - /opt/ros/jazzy/bin/ament_flake8 --xunit-file /home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/flake8.xunit.xml\n'}
+[0.199837] (-) TimerEvent: {}
+[0.300020] (-) TimerEvent: {}
+[0.400245] (-) TimerEvent: {}
+[0.500514] (-) TimerEvent: {}
+[0.600718] (-) TimerEvent: {}
+[0.601303] (circe_teensy) StdoutLine: {'line': b'1: \n'}
+[0.601523] (circe_teensy) StdoutLine: {'line': b'1: 2 files checked\n'}
+[0.601623] (circe_teensy) StdoutLine: {'line': b'1: No problems found\n'}
+[0.601703] (circe_teensy) StdoutLine: {'line': b'1: \n'}
+[0.601778] (circe_teensy) StdoutLine: {'line': b'1: Checked files:\n'}
+[0.601851] (circe_teensy) StdoutLine: {'line': b'1: \n'}
+[0.601922] (circe_teensy) StdoutLine: {'line': b'1: * ./scripts/teensy_bridge.py\n'}
+[0.601992] (circe_teensy) StdoutLine: {'line': b'1: * ./launch/teensy_bridge.launch.py\n'}
+[0.680812] (circe_teensy) StdoutLine: {'line': b'1: -- run_test.py: return code 0\n'}
+[0.681065] (circe_teensy) StdoutLine: {'line': b"1: -- run_test.py: verify result file '/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/flake8.xunit.xml'\n"}
+[0.700817] (-) TimerEvent: {}
+[0.702056] (circe_teensy) StdoutLine: {'line': b'1/4 Test #1: flake8 ...........................   Passed    0.65 sec\n'}
+[0.702324] (circe_teensy) StdoutLine: {'line': b'test 2\n'}
+[0.702406] (circe_teensy) StdoutLine: {'line': b'    Start 2: lint_cmake\n'}
+[0.702479] (circe_teensy) StdoutLine: {'line': b'\n'}
+[0.702581] (circe_teensy) StdoutLine: {'line': b'2: Test command: /usr/bin/python3 "-u" "/opt/ros/jazzy/share/ament_cmake_test/cmake/run_test.py" "/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/lint_cmake.xunit.xml" "--package-name" "circe_teensy" "--output-file" "/home/devcom/circe_ws/build/circe_teensy/ament_lint_cmake/lint_cmake.txt" "--command" "/opt/ros/jazzy/bin/ament_lint_cmake" "--xunit-file" "/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/lint_cmake.xunit.xml"\n'}
+[0.702666] (circe_teensy) StdoutLine: {'line': b'2: Working Directory: /home/devcom/circe_ws/src/circe_teensy\n'}
+[0.702738] (circe_teensy) StdoutLine: {'line': b'2: Test timeout computed to be: 60\n'}
+[0.794814] (circe_teensy) StdoutLine: {'line': b"2: -- run_test.py: invoking following command in '/home/devcom/circe_ws/src/circe_teensy':\n"}
+[0.795100] (circe_teensy) StdoutLine: {'line': b'2:  - /opt/ros/jazzy/bin/ament_lint_cmake --xunit-file /home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/lint_cmake.xunit.xml\n'}
+[0.800901] (-) TimerEvent: {}
+[0.901073] (-) TimerEvent: {}
+[0.907335] (circe_teensy) StdoutLine: {'line': b'2: \n'}
+[0.907544] (circe_teensy) StdoutLine: {'line': b'2: No problems found\n'}
+[0.936420] (circe_teensy) StdoutLine: {'line': b'2: -- run_test.py: return code 0\n'}
+[0.936631] (circe_teensy) StdoutLine: {'line': b"2: -- run_test.py: verify result file '/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/lint_cmake.xunit.xml'\n"}
+[0.956934] (circe_teensy) StdoutLine: {'line': b'2/4 Test #2: lint_cmake .......................   Passed    0.25 sec\n'}
+[0.957138] (circe_teensy) StdoutLine: {'line': b'test 3\n'}
+[0.957217] (circe_teensy) StdoutLine: {'line': b'    Start 3: pep257\n'}
+[0.957290] (circe_teensy) StdoutLine: {'line': b'\n'}
+[0.957361] (circe_teensy) StdoutLine: {'line': b'3: Test command: /usr/bin/python3 "-u" "/opt/ros/jazzy/share/ament_cmake_test/cmake/run_test.py" "/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/pep257.xunit.xml" "--package-name" "circe_teensy" "--output-file" "/home/devcom/circe_ws/build/circe_teensy/ament_pep257/pep257.txt" "--command" "/opt/ros/jazzy/bin/ament_pep257" "--xunit-file" "/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/pep257.xunit.xml"\n'}
+[0.957464] (circe_teensy) StdoutLine: {'line': b'3: Working Directory: /home/devcom/circe_ws/src/circe_teensy\n'}
+[0.957559] (circe_teensy) StdoutLine: {'line': b'3: Test timeout computed to be: 60\n'}
+[1.001173] (-) TimerEvent: {}
+[1.044811] (circe_teensy) StdoutLine: {'line': b"3: -- run_test.py: invoking following command in '/home/devcom/circe_ws/src/circe_teensy':\n"}
+[1.045024] (circe_teensy) StdoutLine: {'line': b'3:  - /opt/ros/jazzy/bin/ament_pep257 --xunit-file /home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/pep257.xunit.xml\n'}
+[1.101284] (-) TimerEvent: {}
+[1.201480] (-) TimerEvent: {}
+[1.241529] (circe_teensy) StdoutLine: {'line': b'3: checking ./launch/teensy_bridge.launch.py\n'}
+[1.241904] (circe_teensy) StdoutLine: {'line': b'3: checking ./scripts/teensy_bridge.py\n'}
+[1.242002] (circe_teensy) StdoutLine: {'line': b'3: No problems found\n'}
+[1.291523] (circe_teensy) StdoutLine: {'line': b'3: -- run_test.py: return code 0\n'}
+[1.292904] (circe_teensy) StdoutLine: {'line': b"3: -- run_test.py: verify result file '/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/pep257.xunit.xml'\n"}
+[1.301630] (-) TimerEvent: {}
+[1.318518] (circe_teensy) StdoutLine: {'line': b'3/4 Test #3: pep257 ...........................   Passed    0.36 sec\n'}
+[1.318786] (circe_teensy) StdoutLine: {'line': b'test 4\n'}
+[1.318873] (circe_teensy) StdoutLine: {'line': b'    Start 4: xmllint\n'}
+[1.318949] (circe_teensy) StdoutLine: {'line': b'\n'}
+[1.319022] (circe_teensy) StdoutLine: {'line': b'4: Test command: /usr/bin/python3 "-u" "/opt/ros/jazzy/share/ament_cmake_test/cmake/run_test.py" "/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/xmllint.xunit.xml" "--package-name" "circe_teensy" "--output-file" "/home/devcom/circe_ws/build/circe_teensy/ament_xmllint/xmllint.txt" "--command" "/opt/ros/jazzy/bin/ament_xmllint" "--xunit-file" "/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/xmllint.xunit.xml"\n'}
+[1.319103] (circe_teensy) StdoutLine: {'line': b'4: Working Directory: /home/devcom/circe_ws/src/circe_teensy\n'}
+[1.319174] (circe_teensy) StdoutLine: {'line': b'4: Test timeout computed to be: 60\n'}
+[1.401714] (-) TimerEvent: {}
+[1.411413] (circe_teensy) StdoutLine: {'line': b"4: -- run_test.py: invoking following command in '/home/devcom/circe_ws/src/circe_teensy':\n"}
+[1.411761] (circe_teensy) StdoutLine: {'line': b'4:  - /opt/ros/jazzy/bin/ament_xmllint --xunit-file /home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/xmllint.xunit.xml\n'}
+[1.501821] (-) TimerEvent: {}
+[1.602551] (-) TimerEvent: {}
+[1.618897] (circe_teensy) StdoutLine: {'line': b"4: File 'package.xml' is valid\n"}
+[1.619227] (circe_teensy) StdoutLine: {'line': b'4: \n'}
+[1.619381] (circe_teensy) StdoutLine: {'line': b'4: No problems found\n'}
+[1.652794] (circe_teensy) StdoutLine: {'line': b'4: -- run_test.py: return code 0\n'}
+[1.653118] (circe_teensy) StdoutLine: {'line': b"4: -- run_test.py: verify result file '/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/xmllint.xunit.xml'\n"}
+[1.681365] (circe_teensy) StdoutLine: {'line': b'4/4 Test #4: xmllint ..........................   Passed    0.36 sec\n'}
+[1.681841] (circe_teensy) StdoutLine: {'line': b'\n'}
+[1.682053] (circe_teensy) StdoutLine: {'line': b'100% tests passed, 0 tests failed out of 4\n'}
+[1.682154] (circe_teensy) StdoutLine: {'line': b'\n'}
+[1.682231] (circe_teensy) StdoutLine: {'line': b'Label Time Summary:\n'}
+[1.682302] (circe_teensy) StdoutLine: {'line': b'flake8        =   0.65 sec*proc (1 test)\n'}
+[1.682371] (circe_teensy) StdoutLine: {'line': b'lint_cmake    =   0.25 sec*proc (1 test)\n'}
+[1.682444] (circe_teensy) StdoutLine: {'line': b'linter        =   1.62 sec*proc (4 tests)\n'}
+[1.682537] (circe_teensy) StdoutLine: {'line': b'pep257        =   0.36 sec*proc (1 test)\n'}
+[1.682625] (circe_teensy) StdoutLine: {'line': b'xmllint       =   0.36 sec*proc (1 test)\n'}
+[1.682704] (circe_teensy) StdoutLine: {'line': b'\n'}
+[1.682783] (circe_teensy) StdoutLine: {'line': b'Total Test time (real) =   1.63 sec\n'}
+[1.685928] (circe_teensy) CommandEnded: {'returncode': 0}
+[1.686457] (circe_teensy) JobEnded: {'identifier': 'circe_teensy', 'rc': 0}
+[1.687117] (-) EventReactorShutdown: {}

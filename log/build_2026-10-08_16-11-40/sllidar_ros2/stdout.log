@@ -1,0 +1,96 @@
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found ament_cmake: 2.5.6 (/opt/ros/jazzy/share/ament_cmake/cmake)
+-- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+-- Override CMake install command with custom implementation using symlinks instead of copying resources
+-- Found rclcpp: 28.1.22 (/opt/ros/jazzy/share/rclcpp/cmake)
+-- Found rosidl_generator_c: 4.6.9 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+-- Found rosidl_generator_cpp: 4.6.9 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found rmw_implementation_cmake: 7.3.4 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+-- Found rmw_cyclonedds_cpp: 2.2.4 (/opt/ros/jazzy/share/rmw_cyclonedds_cpp/cmake)
+-- Using RMW implementation 'rmw_cyclonedds_cpp' as default
+-- Found sensor_msgs: 5.3.8 (/opt/ros/jazzy/share/sensor_msgs/cmake)
+-- Found std_srvs: 5.3.8 (/opt/ros/jazzy/share/std_srvs/cmake)
+-- Configuring done (2.2s)
+-- Generating done (0.1s)
+-- Build files have been written to: /home/devcom/circe_ws/build/sllidar_ros2
+[ 10%] Building CXX object CMakeFiles/sllidar_node.dir/src/sllidar_node.cpp.o
+[  5%] Building CXX object CMakeFiles/sllidar_client.dir/src/sllidar_client.cpp.o
+[ 20%] Building CXX object CMakeFiles/sllidar_node.dir/sdk/src/arch/linux/net_socket.cpp.o
+[ 15%] Building CXX object CMakeFiles/sllidar_node.dir/sdk/src/arch/linux/net_serial.cpp.o
+[ 25%] Building CXX object CMakeFiles/sllidar_node.dir/sdk/src/arch/linux/timer.cpp.o
+[ 30%] Building CXX object CMakeFiles/sllidar_node.dir/sdk/src/dataunpacker/dataunpacker.cpp.o
+[ 35%] Building CXX object CMakeFiles/sllidar_node.dir/sdk/src/dataunpacker/unpacker/handler_hqnode.cpp.o
+[ 40%] Building CXX object CMakeFiles/sllidar_node.dir/sdk/src/dataunpacker/unpacker/handler_normalnode.cpp.o
+[ 45%] Building CXX object CMakeFiles/sllidar_node.dir/sdk/src/hal/thread.cpp.o
+[ 50%] Building CXX object CMakeFiles/sllidar_node.dir/sdk/src/rplidar_driver.cpp.o
+[ 55%] Linking CXX executable sllidar_client
+[ 60%] Building CXX object CMakeFiles/sllidar_node.dir/sdk/src/sl_async_transceiver.cpp.o
+[ 60%] Built target sllidar_client
+[ 65%] Building CXX object CMakeFiles/sllidar_node.dir/sdk/src/sl_lidar_driver.cpp.o
+[ 70%] Building CXX object CMakeFiles/sllidar_node.dir/sdk/src/sl_lidarprotocol_codec.cpp.o
+[ 75%] Building CXX object CMakeFiles/sllidar_node.dir/sdk/src/sl_serial_channel.cpp.o
+[ 80%] Building CXX object CMakeFiles/sllidar_node.dir/sdk/src/sl_tcp_channel.cpp.o
+[ 85%] Building CXX object CMakeFiles/sllidar_node.dir/sdk/src/sl_udp_channel.cpp.o
+[ 90%] Building CXX object CMakeFiles/sllidar_node.dir/sdk/src/sl_crc.cpp.o
+[ 95%] Building CXX object CMakeFiles/sllidar_node.dir/sdk/src/dataunpacker/unpacker/handler_capsules.cpp.o
+[100%] Linking CXX executable sllidar_node
+[100%] Built target sllidar_node
+-- Install configuration: ""
+-- Execute custom install script
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/launch/sllidar_a1_launch.py
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/launch/sllidar_a2m12_launch .py
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/launch/sllidar_a2m7_launch.py
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/launch/sllidar_a2m8_launch.py
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/launch/sllidar_a3_launch.py
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/launch/sllidar_c1_launch.py
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/launch/sllidar_s1_launch.py
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/launch/sllidar_s1_tcp_launch.py
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/launch/sllidar_s2_launch.py
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/launch/sllidar_s2e_launch.py
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/launch/sllidar_s3_launch.py
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/launch/sllidar_t1_launch.py
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/launch/view_sllidar_a1_launch.py
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/launch/view_sllidar_a2m12_launch.py
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/launch/view_sllidar_a2m7_launch.py
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/launch/view_sllidar_a2m8_launch.py
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/launch/view_sllidar_a3_launch.py
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/launch/view_sllidar_c1_launch.py
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/launch/view_sllidar_s1_launch.py
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/launch/view_sllidar_s1_tcp_launch.py
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/launch/view_sllidar_s2_launch.py
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/launch/view_sllidar_s2e_launch.py
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/launch/view_sllidar_s3_launch.py
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/launch/view_sllidar_t1_launch.py
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/rviz/sllidar_ros2.rviz
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/lib/sllidar_ros2/sllidar_node
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/lib/sllidar_ros2/sllidar_client
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/ament_index/resource_index/package_run_dependencies/sllidar_ros2
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/ament_index/resource_index/parent_prefix_path/sllidar_ros2
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/environment/ament_prefix_path.sh
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/environment/ament_prefix_path.dsv
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/environment/path.sh
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/environment/path.dsv
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/local_setup.bash
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/local_setup.sh
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/local_setup.zsh
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/local_setup.dsv
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/package.dsv
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/ament_index/resource_index/packages/sllidar_ros2
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/cmake/ament_cmake_export_dependencies-extras.cmake
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/cmake/ament_cmake_export_include_directories-extras.cmake
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/cmake/sllidar_ros2Config.cmake
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/cmake/sllidar_ros2Config-version.cmake
+-- Symlinking: /home/devcom/circe_ws/install/sllidar_ros2/share/sllidar_ros2/package.xml

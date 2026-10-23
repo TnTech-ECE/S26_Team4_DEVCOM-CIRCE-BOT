@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>circe_gazebo</name>
+  <version>0.1.0</version>
+  <description>
+    Gazebo Harmonic simulation of CIRCE. Substitutes for the hardware layer only:
+    circe_sim.launch.py replaces rover.launch.py and sensors.launch.py, while the
+    EKF, SLAM and Nav2 layers in circe_nav are reused unchanged with use_sim_time.
+  </description>
+  <maintainer email="sz1305568@gmail.com">sharif</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <!-- circe_sim.launch.py: gz server/gui and the spawn entity -->
+  <exec_depend>ros_gz_sim</exec_depend>
+
+  <!-- circe_sim.launch.py: parameter_bridge, configured by config/gz_bridge.yaml -->
+  <exec_depend>ros_gz_bridge</exec_depend>
+
+  <!-- scan_to_scan_filter_chain: same rear-sector mask as the hardware path, applied
+       between the bridge's /scan_raw and /scan. See config/gz_bridge.yaml. -->
+  <exec_depend>laser_filters</exec_depend>
+
+  <!-- circe_sim.launch.py: the robot model, expanded with sim_mode:=true -->
+  <exec_depend>circe_description</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>xacro</exec_depend>
+  <exec_depend>rviz2</exec_depend>
+
+  <!-- circe_sim_nav.launch.py includes localization/slam/navigation from circe_nav -->
+  <exec_depend>circe_nav</exec_depend>
+
+  <!-- circe_sim_nav.launch.py: terrain traversability, use_terrain:=true -->
+  <exec_depend>circe_perception</exec_depend>
+
+  <!-- circe_sim_nav.launch.py: the same health monitor and aggregator tree as the robot. -->
+  <exec_depend>circe_diagnostics</exec_depend>
+
+  <!-- circe_sim_nav.launch.py chains its layers through circe_bringup's
+       scripts/wait_for.py, the same sequencer the hardware bringup uses. This REVERSES
+       the non-dependency recorded here before, whose premise was that nothing in
+       circe_bringup is reusable under Gazebo. The sequencer is, and a second copy of
+       it would be how sim and hardware sequencing drift apart. It pulls in no drivers
+       this workspace does not already build: they are all in src/. Nothing from
+       circe_bringup's LAUNCH files is used here; they still start real hardware and
+       still declare no use_sim_time. -->
+  <exec_depend>circe_bringup</exec_depend>
+
+  <!--
+    Deliberate NON-dependencies:
+
+    ros_gz_image  - image_bridge is the faster path for the two Image topics, but it
+                    carries neither camera_info nor the point cloud, so everything goes
+                    through one parameter_bridge instead. Add it only if image
+                    throughput actually becomes the bottleneck.
+    circe_control - joy teleop needs a physical gamepad. Drive the sim with
+                    `ros2 run teleop_twist_keyboard teleop_twist_keyboard` instead.
+  -->
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

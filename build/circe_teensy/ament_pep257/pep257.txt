@@ -1,0 +1,10 @@
+-- run_test.py: invoking following command in '/home/devcom/circe_ws/src/circe_teensy':
+ - /opt/ros/jazzy/bin/ament_pep257 --xunit-file /home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/pep257.xunit.xml
+
+checking ./launch/teensy_bridge.launch.py
+checking ./scripts/teensy_bridge.py
+No problems found
+
+
+-- run_test.py: return code 0
+-- run_test.py: verify result file '/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/pep257.xunit.xml'

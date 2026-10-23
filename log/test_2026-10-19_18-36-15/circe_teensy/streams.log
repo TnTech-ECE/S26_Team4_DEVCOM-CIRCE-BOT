@@ -1,0 +1,88 @@
+[0.044s] Invoking command in '/home/devcom/circe_ws/build/circe_teensy': AMENT_PREFIX_PATH=/home/devcom/circe_ws/install/circe_teensy:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/devcom/circe_ws/install/circe_teensy:${CMAKE_PREFIX_PATH} DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/ctest -C Release -D ExperimentalTest --no-compress-output -V --force-new-ctest-process
+[0.065s] UpdateCTestConfiguration  from :/home/devcom/circe_ws/build/circe_teensy/CTestConfiguration.ini
+[0.065s] Parse Config file:/home/devcom/circe_ws/build/circe_teensy/CTestConfiguration.ini
+[0.065s]    Site: circe-desktop
+[0.066s]    Build name: (empty)
+[0.066s]  Add coverage exclude regular expressions.
+[0.067s] Create new tag: 20261019-2336 - Experimental
+[0.067s] UpdateCTestConfiguration  from :/home/devcom/circe_ws/build/circe_teensy/CTestConfiguration.ini
+[0.067s] Parse Config file:/home/devcom/circe_ws/build/circe_teensy/CTestConfiguration.ini
+[0.068s] Test project /home/devcom/circe_ws/build/circe_teensy
+[0.068s] Constructing a list of tests
+[0.068s] Done constructing a list of tests
+[0.068s] Updating test list for fixtures
+[0.068s] Added 0 tests to meet fixture requirements
+[0.068s] Checking test dependency graph...
+[0.068s] Checking test dependency graph end
+[0.069s] test 1
+[0.069s]     Start 1: flake8
+[0.069s] 
+[0.069s] 1: Test command: /usr/bin/python3 "-u" "/opt/ros/jazzy/share/ament_cmake_test/cmake/run_test.py" "/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/flake8.xunit.xml" "--package-name" "circe_teensy" "--output-file" "/home/devcom/circe_ws/build/circe_teensy/ament_flake8/flake8.txt" "--command" "/opt/ros/jazzy/bin/ament_flake8" "--xunit-file" "/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/flake8.xunit.xml"
+[0.069s] 1: Working Directory: /home/devcom/circe_ws/src/circe_teensy
+[0.070s] 1: Test timeout computed to be: 60
+[0.214s] 1: -- run_test.py: invoking following command in '/home/devcom/circe_ws/src/circe_teensy':
+[0.214s] 1:  - /opt/ros/jazzy/bin/ament_flake8 --xunit-file /home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/flake8.xunit.xml
+[0.740s] 1: 
+[0.740s] 1: 2 files checked
+[0.740s] 1: No problems found
+[0.741s] 1: 
+[0.741s] 1: Checked files:
+[0.741s] 1: 
+[0.741s] 1: * ./scripts/teensy_bridge.py
+[0.741s] 1: * ./launch/teensy_bridge.launch.py
+[0.858s] 1: -- run_test.py: return code 0
+[0.858s] 1: -- run_test.py: verify result file '/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/flake8.xunit.xml'
+[0.895s] 1/4 Test #1: flake8 ...........................   Passed    0.83 sec
+[0.895s] test 2
+[0.895s]     Start 2: lint_cmake
+[0.895s] 
+[0.895s] 2: Test command: /usr/bin/python3 "-u" "/opt/ros/jazzy/share/ament_cmake_test/cmake/run_test.py" "/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/lint_cmake.xunit.xml" "--package-name" "circe_teensy" "--output-file" "/home/devcom/circe_ws/build/circe_teensy/ament_lint_cmake/lint_cmake.txt" "--command" "/opt/ros/jazzy/bin/ament_lint_cmake" "--xunit-file" "/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/lint_cmake.xunit.xml"
+[0.895s] 2: Working Directory: /home/devcom/circe_ws/src/circe_teensy
+[0.895s] 2: Test timeout computed to be: 60
+[1.018s] 2: -- run_test.py: invoking following command in '/home/devcom/circe_ws/src/circe_teensy':
+[1.018s] 2:  - /opt/ros/jazzy/bin/ament_lint_cmake --xunit-file /home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/lint_cmake.xunit.xml
+[1.162s] 2: 
+[1.162s] 2: No problems found
+[1.192s] 2: -- run_test.py: return code 0
+[1.192s] 2: -- run_test.py: verify result file '/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/lint_cmake.xunit.xml'
+[1.213s] 2/4 Test #2: lint_cmake .......................   Passed    0.32 sec
+[1.213s] test 3
+[1.213s]     Start 3: pep257
+[1.213s] 
+[1.213s] 3: Test command: /usr/bin/python3 "-u" "/opt/ros/jazzy/share/ament_cmake_test/cmake/run_test.py" "/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/pep257.xunit.xml" "--package-name" "circe_teensy" "--output-file" "/home/devcom/circe_ws/build/circe_teensy/ament_pep257/pep257.txt" "--command" "/opt/ros/jazzy/bin/ament_pep257" "--xunit-file" "/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/pep257.xunit.xml"
+[1.213s] 3: Working Directory: /home/devcom/circe_ws/src/circe_teensy
+[1.213s] 3: Test timeout computed to be: 60
+[1.302s] 3: -- run_test.py: invoking following command in '/home/devcom/circe_ws/src/circe_teensy':
+[1.302s] 3:  - /opt/ros/jazzy/bin/ament_pep257 --xunit-file /home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/pep257.xunit.xml
+[1.534s] 3: checking ./launch/teensy_bridge.launch.py
+[1.534s] 3: checking ./scripts/teensy_bridge.py
+[1.534s] 3: No problems found
+[1.586s] 3: -- run_test.py: return code 0
+[1.586s] 3: -- run_test.py: verify result file '/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/pep257.xunit.xml'
+[1.621s] 3/4 Test #3: pep257 ...........................   Passed    0.41 sec
+[1.622s] test 4
+[1.622s]     Start 4: xmllint
+[1.622s] 
+[1.622s] 4: Test command: /usr/bin/python3 "-u" "/opt/ros/jazzy/share/ament_cmake_test/cmake/run_test.py" "/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/xmllint.xunit.xml" "--package-name" "circe_teensy" "--output-file" "/home/devcom/circe_ws/build/circe_teensy/ament_xmllint/xmllint.txt" "--command" "/opt/ros/jazzy/bin/ament_xmllint" "--xunit-file" "/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/xmllint.xunit.xml"
+[1.622s] 4: Working Directory: /home/devcom/circe_ws/src/circe_teensy
+[1.622s] 4: Test timeout computed to be: 60
+[1.775s] 4: -- run_test.py: invoking following command in '/home/devcom/circe_ws/src/circe_teensy':
+[1.775s] 4:  - /opt/ros/jazzy/bin/ament_xmllint --xunit-file /home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/xmllint.xunit.xml
+[2.006s] 4: File 'package.xml' is valid
+[2.006s] 4: 
+[2.006s] 4: No problems found
+[2.063s] 4: -- run_test.py: return code 0
+[2.063s] 4: -- run_test.py: verify result file '/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/xmllint.xunit.xml'
+[2.104s] 4/4 Test #4: xmllint ..........................   Passed    0.48 sec
+[2.105s] 
+[2.105s] 100% tests passed, 0 tests failed out of 4
+[2.105s] 
+[2.105s] Label Time Summary:
+[2.105s] flake8        =   0.83 sec*proc (1 test)
+[2.105s] lint_cmake    =   0.32 sec*proc (1 test)
+[2.105s] linter        =   2.04 sec*proc (4 tests)
+[2.105s] pep257        =   0.41 sec*proc (1 test)
+[2.105s] xmllint       =   0.48 sec*proc (1 test)
+[2.106s] 
+[2.106s] Total Test time (real) =   2.04 sec
+[2.112s] Invoked command in '/home/devcom/circe_ws/build/circe_teensy' returned '0': AMENT_PREFIX_PATH=/home/devcom/circe_ws/install/circe_teensy:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/devcom/circe_ws/install/circe_teensy:${CMAKE_PREFIX_PATH} DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/ctest -C Release -D ExperimentalTest --no-compress-output -V --force-new-ctest-process

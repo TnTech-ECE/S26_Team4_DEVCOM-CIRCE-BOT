@@ -1,0 +1,56 @@
+[0.016s] Invoking command in '/home/devcom/circe_ws/build/circe_teensy': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/devcom/circe_ws/build/circe_teensy -- -j4 -l4
+[0.126s] [100%] Building Teensy 4.0 firmware with PlatformIO
+[0.540s] Processing teensy40 (platform: teensy; board: teensy40; framework: arduino)
+[0.540s] --------------------------------------------------------------------------------
+[1.274s] Verbose mode can be enabled via `-v, --verbose` option
+[1.338s] CONFIGURATION: https://docs.platformio.org/page/boards/teensy/teensy40.html
+[1.338s] PLATFORM: Teensy (6.0.0) > Teensy 4.0
+[1.338s] HARDWARE: IMXRT1062 600MHz, 512KB RAM, 1.94MB Flash
+[1.338s] DEBUG: Current (jlink) External (jlink)
+[1.338s] PACKAGES: 
+[1.338s]  - framework-arduinoteensy @ 1.162.0 (1.62) 
+[1.338s]  - tool-teensy @ 1.162.0 (1.62) 
+[1.339s]  - toolchain-gccarmnoneeabi-teensy @ 1.150201.0 (15.2.1)
+[1.369s] LDF: Library Dependency Finder -> https://bit.ly/configure-pio-ldf
+[1.369s] LDF Modes: Finder ~ chain, Compatibility ~ soft
+[1.548s] Found 92 compatible libraries
+[1.548s] Scanning dependencies...
+[1.597s] No dependencies
+[1.600s] Building in release mode
+[1.652s] Compiling /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/src/ultrasonic.cpp.o
+[2.567s] Linking /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/firmware.elf
+[2.633s] Checking size /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/firmware.elf
+[2.634s] Advanced Memory Usage is available via "PlatformIO Home > Project Inspect"
+[2.637s] Calculating size /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/firmware.elf
+[2.647s] Building /home/devcom/circe_ws/build/circe_teensy/pio/teensy40/firmware.hex
+[2.647s] teensy_size: Memory Usage on Teensy 4.0:
+[2.647s] teensy_size:   FLASH: code:11956, data:4040, headers:8576   free for files:2007044
+[2.648s] teensy_size:    RAM1: variables:4704, code:10240, padding:22528   free for local variables:486816
+[2.648s] teensy_size:    RAM2: variables:12416  free for malloc/new:511872
+[2.940s] ========================= [SUCCESS] Took 2.40 seconds =========================
+[3.060s] [100%] Built target firmware
+[3.091s] Invoked command in '/home/devcom/circe_ws/build/circe_teensy' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/devcom/circe_ws/build/circe_teensy -- -j4 -l4
+[3.120s] Invoking command in '/home/devcom/circe_ws/build/circe_teensy': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/devcom/circe_ws/build/circe_teensy
+[3.143s] -- Install configuration: ""
+[3.143s] -- Installing: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/firmware/firmware.hex
+[3.145s] -- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/launch
+[3.145s] -- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/launch/teensy_bridge.launch.py
+[3.145s] -- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/config
+[3.145s] -- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/config/teensy_bridge.yaml
+[3.145s] -- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/lib/circe_teensy/teensy_bridge.py
+[3.145s] -- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/ament_index/resource_index/package_run_dependencies/circe_teensy
+[3.145s] -- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/ament_index/resource_index/parent_prefix_path/circe_teensy
+[3.146s] -- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/environment/ament_prefix_path.sh
+[3.146s] -- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/environment/ament_prefix_path.dsv
+[3.146s] -- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/environment/path.sh
+[3.146s] -- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/environment/path.dsv
+[3.146s] -- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/local_setup.bash
+[3.146s] -- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/local_setup.sh
+[3.146s] -- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/local_setup.zsh
+[3.146s] -- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/local_setup.dsv
+[3.146s] -- Installing: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/package.dsv
+[3.146s] -- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/ament_index/resource_index/packages/circe_teensy
+[3.147s] -- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/cmake/circe_teensyConfig.cmake
+[3.147s] -- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/cmake/circe_teensyConfig-version.cmake
+[3.147s] -- Up-to-date: /home/devcom/circe_ws/install/circe_teensy/share/circe_teensy/package.xml
+[3.150s] Invoked command in '/home/devcom/circe_ws/build/circe_teensy' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/devcom/circe_ws/build/circe_teensy

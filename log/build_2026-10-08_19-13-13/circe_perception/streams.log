@@ -1,0 +1,28 @@
+[0.013s] Invoking command in '/home/devcom/circe_ws/build/circe_perception': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --build /home/devcom/circe_ws/build/circe_perception -- -j4 -l4
+[0.116s] Invoked command in '/home/devcom/circe_ws/build/circe_perception' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --build /home/devcom/circe_ws/build/circe_perception -- -j4 -l4
+[0.118s] Invoking command in '/home/devcom/circe_ws/build/circe_perception': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --install /home/devcom/circe_ws/build/circe_perception
+[0.148s] -- Install configuration: ""
+[0.149s] -- Execute custom install script
+[0.149s] -- Symlinking: /home/devcom/circe_ws/install/circe_perception/share/circe_perception/launch/__pycache__/terrain.launch.cpython-312.pyc
+[0.176s] -- Up-to-date symlink: /home/devcom/circe_ws/install/circe_perception/share/circe_perception/launch/terrain.launch.py
+[0.177s] -- Up-to-date symlink: /home/devcom/circe_ws/install/circe_perception/share/circe_perception/config/scan_sector_filter.yaml
+[0.177s] -- Up-to-date symlink: /home/devcom/circe_ws/install/circe_perception/share/circe_perception/config/terrain.yaml
+[0.177s] -- Up-to-date symlink: /home/devcom/circe_ws/install/circe_perception/lib/circe_perception/terrain_node.py
+[0.178s] -- Up-to-date symlink: /home/devcom/circe_ws/install/circe_perception/lib/circe_perception/scan_pitch_filter.py
+[0.179s] -- Up-to-date symlink: /home/devcom/circe_ws/install/circe_perception/lib/circe_perception/imu_fusion.py
+[0.180s] -- Up-to-date symlink: /home/devcom/circe_ws/install/circe_perception/share/ament_index/resource_index/package_run_dependencies/circe_perception
+[0.182s] -- Up-to-date symlink: /home/devcom/circe_ws/install/circe_perception/share/ament_index/resource_index/parent_prefix_path/circe_perception
+[0.182s] -- Up-to-date symlink: /home/devcom/circe_ws/install/circe_perception/share/circe_perception/environment/ament_prefix_path.sh
+[0.182s] -- Up-to-date symlink: /home/devcom/circe_ws/install/circe_perception/share/circe_perception/environment/ament_prefix_path.dsv
+[0.182s] -- Up-to-date symlink: /home/devcom/circe_ws/install/circe_perception/share/circe_perception/environment/path.sh
+[0.183s] -- Up-to-date symlink: /home/devcom/circe_ws/install/circe_perception/share/circe_perception/environment/path.dsv
+[0.184s] -- Up-to-date symlink: /home/devcom/circe_ws/install/circe_perception/share/circe_perception/local_setup.bash
+[0.184s] -- Up-to-date symlink: /home/devcom/circe_ws/install/circe_perception/share/circe_perception/local_setup.sh
+[0.188s] -- Up-to-date symlink: /home/devcom/circe_ws/install/circe_perception/share/circe_perception/local_setup.zsh
+[0.188s] -- Up-to-date symlink: /home/devcom/circe_ws/install/circe_perception/share/circe_perception/local_setup.dsv
+[0.188s] -- Symlinking: /home/devcom/circe_ws/install/circe_perception/share/circe_perception/package.dsv
+[0.217s] -- Up-to-date symlink: /home/devcom/circe_ws/install/circe_perception/share/ament_index/resource_index/packages/circe_perception
+[0.217s] -- Up-to-date symlink: /home/devcom/circe_ws/install/circe_perception/share/circe_perception/cmake/circe_perceptionConfig.cmake
+[0.217s] -- Up-to-date symlink: /home/devcom/circe_ws/install/circe_perception/share/circe_perception/cmake/circe_perceptionConfig-version.cmake
+[0.217s] -- Up-to-date symlink: /home/devcom/circe_ws/install/circe_perception/share/circe_perception/package.xml
+[0.222s] Invoked command in '/home/devcom/circe_ws/build/circe_perception' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --install /home/devcom/circe_ws/build/circe_perception

@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>circe_nav</name>
+  <version>0.1.0</version>
+  <description>
+    State estimation, SLAM, and Nav2 for CIRCE. One launch file per TF edge owner:
+    localization.launch.py owns odom to base_link, slam.launch.py owns map to odom,
+    navigation.launch.py runs Nav2 and nothing else.
+  </description>
+  <maintainer email="sz1305568@gmail.com">sharif</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <!-- localization.launch.py -->
+  <exec_depend>robot_localization</exec_depend>
+
+  <!-- slam.launch.py -->
+  <exec_depend>slam_toolbox</exec_depend>
+  <!-- lifecycle_manager_localization in slam.launch.py, started when
+       use_lifecycle_manager is true. It is what RViz's Nav2 panel queries to decide
+       whether localization is active; CIRCE has no AMCL to create it otherwise. -->
+  <exec_depend>nav2_lifecycle_manager</exec_depend>
+
+  <!-- navigation.launch.py includes nav2_bringup/launch/navigation_launch.py -->
+  <exec_depend>nav2_bringup</exec_depend>
+  <exec_depend>nav2_map_server</exec_depend>
+
+  <exec_depend>rviz2</exec_depend>
+
+  <!-- scripts/cable_mission.py. These arrived transitively through nav2_bringup, which
+       is a launch-file package and promises none of them. tf2_ros_py, not tf2_ros: the
+       Python `tf2_ros` module lives in the former. -->
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>nav2_msgs</exec_depend>
+  <exec_depend>tf2_ros_py</exec_depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

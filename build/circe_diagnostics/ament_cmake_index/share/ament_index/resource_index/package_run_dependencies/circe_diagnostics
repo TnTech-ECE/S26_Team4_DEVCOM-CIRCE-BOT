@@ -1,0 +1,1 @@
+rclpy;diagnostic_updater;diagnostic_msgs;rcl_interfaces;tf2_msgs;rosidl_runtime_py;sensor_msgs;nav_msgs;python3-psutil;diagnostic_aggregator;ament_lint_auto;ament_lint_common

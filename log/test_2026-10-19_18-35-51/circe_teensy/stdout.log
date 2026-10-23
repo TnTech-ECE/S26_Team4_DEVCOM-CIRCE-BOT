@@ -1,0 +1,104 @@
+UpdateCTestConfiguration  from :/home/devcom/circe_ws/build/circe_teensy/CTestConfiguration.ini
+Parse Config file:/home/devcom/circe_ws/build/circe_teensy/CTestConfiguration.ini
+   Site: circe-desktop
+   Build name: (empty)
+ Add coverage exclude regular expressions.
+Create new tag: 20261019-2335 - Experimental
+UpdateCTestConfiguration  from :/home/devcom/circe_ws/build/circe_teensy/CTestConfiguration.ini
+Parse Config file:/home/devcom/circe_ws/build/circe_teensy/CTestConfiguration.ini
+Test project /home/devcom/circe_ws/build/circe_teensy
+Constructing a list of tests
+Done constructing a list of tests
+Updating test list for fixtures
+Added 0 tests to meet fixture requirements
+Checking test dependency graph...
+Checking test dependency graph end
+test 1
+    Start 1: flake8
+
+1: Test command: /usr/bin/python3 "-u" "/opt/ros/jazzy/share/ament_cmake_test/cmake/run_test.py" "/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/flake8.xunit.xml" "--package-name" "circe_teensy" "--output-file" "/home/devcom/circe_ws/build/circe_teensy/ament_flake8/flake8.txt" "--command" "/opt/ros/jazzy/bin/ament_flake8" "--xunit-file" "/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/flake8.xunit.xml"
+1: Working Directory: /home/devcom/circe_ws/src/circe_teensy
+1: Test timeout computed to be: 60
+1: -- run_test.py: invoking following command in '/home/devcom/circe_ws/src/circe_teensy':
+1:  - /opt/ros/jazzy/bin/ament_flake8 --xunit-file /home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/flake8.xunit.xml
+1: from pathlib import Path
+1: ^
+1: from nav_msgs.msg import Odometry
+1: ^
+1: 2     I100 Import statements are in the wrong order. 'from pathlib import Path' should be before 'import struct'
+1: 
+1: ./scripts/teensy_bridge.py:29:1: I100 Import statements are in the wrong order. 'from pathlib import Path' should be before 'import struct'
+1: 
+1: ./scripts/teensy_bridge.py:33:1: I100 Import statements are in the wrong order. 'from nav_msgs.msg import Odometry' should be before 'import serial'
+1: 
+1: 
+1: 2 files checked
+1: 2 errors
+1: 
+1: 'I'-type errors: 2
+1: 
+1: Checked files:
+1: 
+1: * ./scripts/teensy_bridge.py
+1: * ./launch/teensy_bridge.launch.py
+1: -- run_test.py: return code 1
+1: -- run_test.py: verify result file '/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/flake8.xunit.xml'
+1/4 Test #1: flake8 ...........................***Failed    1.61 sec
+test 2
+    Start 2: lint_cmake
+
+2: Test command: /usr/bin/python3 "-u" "/opt/ros/jazzy/share/ament_cmake_test/cmake/run_test.py" "/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/lint_cmake.xunit.xml" "--package-name" "circe_teensy" "--output-file" "/home/devcom/circe_ws/build/circe_teensy/ament_lint_cmake/lint_cmake.txt" "--command" "/opt/ros/jazzy/bin/ament_lint_cmake" "--xunit-file" "/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/lint_cmake.xunit.xml"
+2: Working Directory: /home/devcom/circe_ws/src/circe_teensy
+2: Test timeout computed to be: 60
+2: -- run_test.py: invoking following command in '/home/devcom/circe_ws/src/circe_teensy':
+2:  - /opt/ros/jazzy/bin/ament_lint_cmake --xunit-file /home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/lint_cmake.xunit.xml
+2: 
+2: No problems found
+2: -- run_test.py: return code 0
+2: -- run_test.py: verify result file '/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/lint_cmake.xunit.xml'
+2/4 Test #2: lint_cmake .......................   Passed    0.56 sec
+test 3
+    Start 3: pep257
+
+3: Test command: /usr/bin/python3 "-u" "/opt/ros/jazzy/share/ament_cmake_test/cmake/run_test.py" "/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/pep257.xunit.xml" "--package-name" "circe_teensy" "--output-file" "/home/devcom/circe_ws/build/circe_teensy/ament_pep257/pep257.txt" "--command" "/opt/ros/jazzy/bin/ament_pep257" "--xunit-file" "/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/pep257.xunit.xml"
+3: Working Directory: /home/devcom/circe_ws/src/circe_teensy
+3: Test timeout computed to be: 60
+3: -- run_test.py: invoking following command in '/home/devcom/circe_ws/src/circe_teensy':
+3:  - /opt/ros/jazzy/bin/ament_pep257 --xunit-file /home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/pep257.xunit.xml
+3: ./launch/teensy_bridge.launch.py:2 at module level: D213: Multi-line docstring summary should start at the second line
+3: ./scripts/teensy_bridge.py:2 at module level: D213: Multi-line docstring summary should start at the second line
+3: 2 errors
+3: checking ./launch/teensy_bridge.launch.py
+3: checking ./scripts/teensy_bridge.py
+3: -- run_test.py: return code 1
+3: -- run_test.py: verify result file '/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/pep257.xunit.xml'
+3/4 Test #3: pep257 ...........................***Failed    0.57 sec
+test 4
+    Start 4: xmllint
+
+4: Test command: /usr/bin/python3 "-u" "/opt/ros/jazzy/share/ament_cmake_test/cmake/run_test.py" "/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/xmllint.xunit.xml" "--package-name" "circe_teensy" "--output-file" "/home/devcom/circe_ws/build/circe_teensy/ament_xmllint/xmllint.txt" "--command" "/opt/ros/jazzy/bin/ament_xmllint" "--xunit-file" "/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/xmllint.xunit.xml"
+4: Working Directory: /home/devcom/circe_ws/src/circe_teensy
+4: Test timeout computed to be: 60
+4: -- run_test.py: invoking following command in '/home/devcom/circe_ws/src/circe_teensy':
+4:  - /opt/ros/jazzy/bin/ament_xmllint --xunit-file /home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/xmllint.xunit.xml
+4: File 'package.xml' is valid
+4: 
+4: No problems found
+4: -- run_test.py: return code 0
+4: -- run_test.py: verify result file '/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/xmllint.xunit.xml'
+4/4 Test #4: xmllint ..........................   Passed    0.64 sec
+
+50% tests passed, 2 tests failed out of 4
+
+Label Time Summary:
+flake8        =   1.61 sec*proc (1 test)
+lint_cmake    =   0.56 sec*proc (1 test)
+linter        =   3.39 sec*proc (4 tests)
+pep257        =   0.57 sec*proc (1 test)
+xmllint       =   0.64 sec*proc (1 test)
+
+Total Test time (real) =   3.39 sec
+
+The following tests FAILED:
+	  1 - flake8 (Failed)
+	  3 - pep257 (Failed)

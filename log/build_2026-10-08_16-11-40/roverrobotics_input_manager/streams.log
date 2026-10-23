@@ -1,0 +1,49 @@
+[0.020s] Invoking command in '/home/devcom/circe_ws/build/roverrobotics_input_manager': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/devcom/circe_ws/src/roverrobotics_ros2/roverrobotics_input_manager -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/devcom/circe_ws/install/roverrobotics_input_manager
+[0.269s] -- The C compiler identification is GNU 13.3.0
+[0.468s] -- The CXX compiler identification is GNU 13.3.0
+[0.512s] -- Detecting C compiler ABI info
+[0.772s] -- Detecting C compiler ABI info - done
+[0.788s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.788s] -- Detecting C compile features
+[0.789s] -- Detecting C compile features - done
+[0.811s] -- Detecting CXX compiler ABI info
+[1.083s] -- Detecting CXX compiler ABI info - done
+[1.098s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[1.098s] -- Detecting CXX compile features
+[1.099s] -- Detecting CXX compile features - done
+[1.111s] -- Found ament_cmake: 2.5.6 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[1.496s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+[1.668s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[2.009s] -- Configuring done (1.9s)
+[2.016s] -- Generating done (0.0s)
+[2.021s] -- Build files have been written to: /home/devcom/circe_ws/build/roverrobotics_input_manager
+[2.040s] Invoked command in '/home/devcom/circe_ws/build/roverrobotics_input_manager' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/devcom/circe_ws/src/roverrobotics_ros2/roverrobotics_input_manager -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/devcom/circe_ws/install/roverrobotics_input_manager
+[2.041s] Invoking command in '/home/devcom/circe_ws/build/roverrobotics_input_manager': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/devcom/circe_ws/build/roverrobotics_input_manager -- -j4 -l4
+[2.128s] Invoked command in '/home/devcom/circe_ws/build/roverrobotics_input_manager' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/devcom/circe_ws/build/roverrobotics_input_manager -- -j4 -l4
+[2.151s] Invoking command in '/home/devcom/circe_ws/build/roverrobotics_input_manager': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/devcom/circe_ws/build/roverrobotics_input_manager
+[2.171s] -- Install configuration: ""
+[2.171s] -- Execute custom install script
+[2.173s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_input_manager/lib/roverrobotics_input_manager/modules/Controller.py
+[2.194s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_input_manager/lib/roverrobotics_input_manager/modules/PadHeartbeat.py
+[2.213s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_input_manager/lib/roverrobotics_input_manager/modules/Topics.py
+[2.232s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_input_manager/lib/roverrobotics_input_manager/modules/__pycache__/Controller.cpython-310.pyc
+[2.254s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_input_manager/lib/roverrobotics_input_manager/modules/__pycache__/Controller.cpython-38.pyc
+[2.272s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_input_manager/lib/roverrobotics_input_manager/modules/__pycache__/Topics.cpython-310.pyc
+[2.291s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_input_manager/lib/roverrobotics_input_manager/modules/__pycache__/Topics.cpython-38.pyc
+[2.310s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_input_manager/lib/roverrobotics_input_manager/joys_manager.py
+[2.328s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_input_manager/share/ament_index/resource_index/package_run_dependencies/roverrobotics_input_manager
+[2.351s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_input_manager/share/ament_index/resource_index/parent_prefix_path/roverrobotics_input_manager
+[2.370s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_input_manager/share/roverrobotics_input_manager/environment/ament_prefix_path.sh
+[2.389s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_input_manager/share/roverrobotics_input_manager/environment/ament_prefix_path.dsv
+[2.413s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_input_manager/share/roverrobotics_input_manager/environment/path.sh
+[2.434s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_input_manager/share/roverrobotics_input_manager/environment/path.dsv
+[2.455s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_input_manager/share/roverrobotics_input_manager/local_setup.bash
+[2.474s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_input_manager/share/roverrobotics_input_manager/local_setup.sh
+[2.493s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_input_manager/share/roverrobotics_input_manager/local_setup.zsh
+[2.512s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_input_manager/share/roverrobotics_input_manager/local_setup.dsv
+[2.535s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_input_manager/share/roverrobotics_input_manager/package.dsv
+[2.558s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_input_manager/share/ament_index/resource_index/packages/roverrobotics_input_manager
+[2.577s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_input_manager/share/roverrobotics_input_manager/cmake/roverrobotics_input_managerConfig.cmake
+[2.597s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_input_manager/share/roverrobotics_input_manager/cmake/roverrobotics_input_managerConfig-version.cmake
+[2.615s] -- Symlinking: /home/devcom/circe_ws/install/roverrobotics_input_manager/share/roverrobotics_input_manager/package.xml
+[2.646s] Invoked command in '/home/devcom/circe_ws/build/roverrobotics_input_manager' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/devcom/circe_ws/build/roverrobotics_input_manager
