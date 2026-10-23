@@ -1,0 +1,156 @@
+[0.015s] Invoking command in '/home/njromsdal/ros2_ws/build/roverrobotics_driver': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/njromsdal/ros2_ws/src/roverrobotics_ros2/roverrobotics_driver -DCMAKE_INSTALL_PREFIX=/home/njromsdal/ros2_ws/install/roverrobotics_driver
+[0.209s] -- The C compiler identification is GNU 13.3.0
+[0.357s] -- The CXX compiler identification is GNU 13.3.0
+[0.388s] -- Detecting C compiler ABI info
+[0.550s] -- Detecting C compiler ABI info - done
+[0.567s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.568s] -- Detecting C compile features
+[0.569s] -- Detecting C compile features - done
+[0.586s] -- Detecting CXX compiler ABI info
+[0.761s] -- Detecting CXX compiler ABI info - done
+[0.782s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.782s] -- Detecting CXX compile features
+[0.783s] -- Detecting CXX compile features - done
+[0.808s] -- Found ament_cmake: 2.5.6 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[1.071s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+[1.271s] -- Found rclcpp: 28.1.22 (/opt/ros/jazzy/share/rclcpp/cmake)
+[1.346s] -- Found rosidl_generator_c: 4.6.9 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+[1.370s] -- Found rosidl_generator_cpp: 4.6.9 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+[1.397s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[1.436s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[1.572s] -- Found rmw_implementation_cmake: 7.3.3 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+[1.577s] -- Found rmw_fastrtps_cpp: 8.4.4 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+[1.737s] -- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.13")  
+[1.776s] -- Found FastRTPS: /opt/ros/jazzy/include (Required is at least version "2.13") 
+[1.822s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[1.954s] -- Found std_msgs: 5.3.8 (/opt/ros/jazzy/share/std_msgs/cmake)
+[1.980s] -- Found geometry_msgs: 5.3.8 (/opt/ros/jazzy/share/geometry_msgs/cmake)
+[2.012s] -- Found nav_msgs: 5.3.8 (/opt/ros/jazzy/share/nav_msgs/cmake)
+[2.055s] -- Found tf2_geometry_msgs: 0.36.22 (/opt/ros/jazzy/share/tf2_geometry_msgs/cmake)
+[2.073s] -- Found eigen3_cmake_module: 0.3.1 (/opt/ros/jazzy/share/eigen3_cmake_module/cmake)
+[2.075s] -- Found Eigen3: TRUE (found version "3.4.0") 
+[2.075s] -- Ensuring Eigen3 include directory is part of orocos-kdl CMake target
+[2.299s] -- Found sensor_msgs: 5.3.8 (/opt/ros/jazzy/share/sensor_msgs/cmake)
+[2.465s] -- Configuring done (2.4s)
+[2.484s] -- Generating done (0.0s)
+[2.489s] -- Build files have been written to: /home/njromsdal/ros2_ws/build/roverrobotics_driver
+[2.504s] Invoked command in '/home/njromsdal/ros2_ws/build/roverrobotics_driver' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/njromsdal/ros2_ws/src/roverrobotics_ros2/roverrobotics_driver -DCMAKE_INSTALL_PREFIX=/home/njromsdal/ros2_ws/install/roverrobotics_driver
+[2.505s] Invoking command in '/home/njromsdal/ros2_ws/build/roverrobotics_driver': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/njromsdal/ros2_ws/build/roverrobotics_driver -- -j20 -l20
+[2.588s] [  8%] [32mBuilding CXX object CMakeFiles/roverrobotics_driver.dir/library/librover/src/utils.cpp.o[0m
+[2.588s] [ 16%] [32mBuilding CXX object CMakeFiles/roverrobotics_driver.dir/library/librover/src/comm_can.cpp.o[0m
+[2.589s] [ 25%] [32mBuilding CXX object CMakeFiles/roverrobotics_driver.dir/library/librover/src/control.cpp.o[0m
+[2.589s] [ 33%] [32mBuilding CXX object CMakeFiles/roverrobotics_driver.dir/library/librover/src/vesc.cpp.o[0m
+[2.589s] [ 41%] [32mBuilding CXX object CMakeFiles/roverrobotics_driver.dir/library/librover/src/utilities.cpp.o[0m
+[2.591s] [ 50%] [32mBuilding CXX object CMakeFiles/roverrobotics_driver.dir/library/librover/src/differential_robot.cpp.o[0m
+[2.592s] [ 58%] [32mBuilding CXX object CMakeFiles/roverrobotics_driver.dir/src/roverrobotics_ros2_driver.cpp.o[0m
+[2.592s] [ 66%] [32mBuilding CXX object CMakeFiles/roverrobotics_driver.dir/library/librover/src/protocol_pro.cpp.o[0m
+[2.594s] [ 75%] [32mBuilding CXX object CMakeFiles/roverrobotics_driver.dir/library/librover/src/comm_serial.cpp.o[0m
+[2.597s] [ 83%] [32mBuilding CXX object CMakeFiles/roverrobotics_driver.dir/library/librover/src/protocol_zero_2.cpp.o[0m
+[2.598s] [ 91%] [32mBuilding CXX object CMakeFiles/roverrobotics_driver.dir/library/librover/src/protocol_mini_2wd_serial.cpp.o[0m
+[3.029s] [01m[K/home/njromsdal/ros2_ws/src/roverrobotics_ros2/roverrobotics_driver/library/librover/src/vesc.cpp:[m[K In member function ‘[01m[Kvesc::vescChannelStatus vesc::BridgedVescArray::[01;32m[KparseReceivedMessage[m[K(std::vector<unsigned char>)[m[K’:
+[3.029s] [01m[K/home/njromsdal/ros2_ws/src/roverrobotics_ros2/roverrobotics_driver/library/librover/src/vesc.cpp:76:5:[m[K [01;35m[Kwarning: [m[Kcontrol reaches end of non-void function [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wreturn-type-Wreturn-type]8;;[m[K]
+[3.029s]    76 |     [01;35m[K}[m[K
+[3.029s]       |     [01;35m[K^[m[K
+[3.503s] In file included from [01m[K/home/njromsdal/ros2_ws/src/roverrobotics_ros2/roverrobotics_driver/include/roverrobotics_ros2_driver.hpp:23[m[K,
+[3.503s]                  from [01m[K/home/njromsdal/ros2_ws/src/roverrobotics_ros2/roverrobotics_driver/src/roverrobotics_ros2_driver.cpp:1[m[K:
+[3.503s] [01m[K/opt/ros/jazzy/include/rcpputils/rcppmath/rolling_mean_accumulator.hpp:20:2:[m[K [01;35m[Kwarning: [m[K#warning "the rcppmath namespace is deprecated, include rcpputils/rolling_mean_accumulator.hpp instead" [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wcpp-Wcpp]8;;[m[K]
+[3.504s]    20 | #[01;35m[Kwarning[m[K \
+[3.504s]       |  [01;35m[K^~~~~~~[m[K
+[6.794s] [01m[K/home/njromsdal/ros2_ws/src/roverrobotics_ros2/roverrobotics_driver/include/roverrobotics_ros2_driver.hpp:44:44:[m[K [01;35m[Kwarning: [m[K‘[01m[Kusing rcppmath::RollingMeanAccumulator = class rcpputils::RollingMeanAccumulator<double>[m[K’ is deprecated: use rcpputils::RollingMeanAccumulator instead [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wdeprecated-declarations-Wdeprecated-declarations]8;;[m[K]
+[6.794s]    44 |   using RollingMeanAccumulator = rcppmath::[01;35m[KRollingMeanAccumulator<double>[m[K;
+[6.794s]       |                                            [01;35m[K^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+[6.794s] [01m[K/opt/ros/jazzy/include/rcpputils/rcppmath/rolling_mean_accumulator.hpp:27:7:[m[K [01;36m[Knote: [m[Kdeclared here
+[6.794s]    27 | using [01;36m[KRollingMeanAccumulator[m[K [[deprecated("use rcpputils::RollingMeanAccumulator instead")]] =
+[6.794s]       |       [01;36m[K^~~~~~~~~~~~~~~~~~~~~~[m[K
+[6.794s] [01m[K/home/njromsdal/ros2_ws/src/roverrobotics_ros2/roverrobotics_driver/include/roverrobotics_ros2_driver.hpp:44:74:[m[K [01;35m[Kwarning: [m[K‘[01m[Kusing rcppmath::RollingMeanAccumulator = class rcpputils::RollingMeanAccumulator<double>[m[K’ is deprecated: use rcpputils::RollingMeanAccumulator instead [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wdeprecated-declarations-Wdeprecated-declarations]8;;[m[K]
+[6.794s]    44 |   using RollingMeanAccumulator = rcppmath::RollingMeanAccumulator<double>[01;35m[K;[m[K
+[6.794s]       |                                                                          [01;35m[K^[m[K
+[6.794s] [01m[K/opt/ros/jazzy/include/rcpputils/rcppmath/rolling_mean_accumulator.hpp:27:7:[m[K [01;36m[Knote: [m[Kdeclared here
+[6.794s]    27 | using [01;36m[KRollingMeanAccumulator[m[K [[deprecated("use rcpputils::RollingMeanAccumulator instead")]] =
+[6.794s]       |       [01;36m[K^~~~~~~~~~~~~~~~~~~~~~[m[K
+[23.150s] [100%] [32m[1mLinking CXX executable roverrobotics_driver[0m
+[24.131s] [100%] Built target roverrobotics_driver
+[24.146s] Invoked command in '/home/njromsdal/ros2_ws/build/roverrobotics_driver' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/njromsdal/ros2_ws/build/roverrobotics_driver -- -j20 -l20
+[24.148s] Invoking command in '/home/njromsdal/ros2_ws/build/roverrobotics_driver': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/njromsdal/ros2_ws/build/roverrobotics_driver
+[24.160s] -- Install configuration: ""
+[24.160s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch
+[24.160s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/ps5_controller.launch.py
+[24.160s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/pro_teleop.launch.py
+[24.160s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/mega.launch.py
+[24.160s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/mini_2wd_teleop.launch.py
+[24.160s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/zero.launch.py
+[24.161s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/zero_teleop.launch.py
+[24.161s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/outdoor_navigation_launch.py
+[24.161s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/miti_teleop.launch.py
+[24.161s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/miti_65.launch.py
+[24.161s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/robot_localizer_outdoor.launch.py
+[24.161s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/pro.launch.py
+[24.161s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/navigation_launch.py
+[24.161s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/miti_65_teleop.launch.py
+[24.161s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/accessories.launch.py
+[24.162s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/max_teleop.launch.py
+[24.162s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/max.launch.py
+[24.162s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/nav2_backend.py
+[24.162s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/mega_teleop.launch.py
+[24.162s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/mini_2wd.launch.py
+[24.162s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/robot_localizer.launch.py
+[24.162s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/ps4_controller.launch.py
+[24.162s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/mini.launch.py
+[24.162s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/miti.launch.py
+[24.162s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/mini_teleop.launch.py
+[24.162s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/launch/slam_launch.py
+[24.162s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/config
+[24.162s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/nav2_params.yaml
+[24.163s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/mini_config.yaml
+[24.163s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/ps4_controller_config.yaml
+[24.163s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/topics.yaml
+[24.163s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/realsense_config.yaml
+[24.163s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/slam_configs
+[24.163s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/slam_configs/mapper_params_localization.yaml
+[24.163s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/slam_configs/mapper_params_online_sync.yaml
+[24.163s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/slam_configs/mapper_params_online_async.yaml
+[24.163s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/slam_configs/mapper_params_offline.yaml
+[24.163s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/slam_configs/mapper_params_lifelong.yaml
+[24.163s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/zero_config.yaml
+[24.163s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/accessories.yaml
+[24.164s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/mini_2wd_config.yaml
+[24.164s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/ps4_controller_config_jp6.yaml
+[24.164s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/pro_config.yaml
+[24.164s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/mega_config.yaml
+[24.164s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/max_130_config.yaml
+[24.164s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/ps5_controller_config.yaml
+[24.164s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/max_65_config.yaml
+[24.164s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/ps5_controller_config_jp6.yaml
+[24.164s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/rviz_configs
+[24.164s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/rviz_configs/realsense_rviz_layout.rviz
+[24.164s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/rviz_configs/nav2_default_view.rviz
+[24.164s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/rviz_configs/slam_rviz_layout.rviz
+[24.164s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/max_150_config.yaml
+[24.164s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/max_100_config.yaml
+[24.165s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/miti_65_config.yaml
+[24.165s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/localization_ekf.yaml
+[24.165s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/miti_config.yaml
+[24.165s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/config/localization_outdoor_ekf.yaml
+[24.165s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/maps
+[24.165s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/maps/maze_map.data
+[24.174s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/maps/maze_map.posegraph
+[24.192s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/maps/maze_map.pgm
+[24.192s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/maps/maze_map.yaml
+[24.192s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/lib/roverrobotics_driver/roverrobotics_driver
+[24.214s] -- Set non-toolchain portion of runtime path of "/home/njromsdal/ros2_ws/install/roverrobotics_driver/lib/roverrobotics_driver/roverrobotics_driver" to ""
+[24.214s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/ament_index/resource_index/package_run_dependencies/roverrobotics_driver
+[24.214s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/ament_index/resource_index/parent_prefix_path/roverrobotics_driver
+[24.214s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/environment/ament_prefix_path.sh
+[24.215s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/environment/ament_prefix_path.dsv
+[24.215s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/environment/path.sh
+[24.215s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/environment/path.dsv
+[24.215s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/local_setup.bash
+[24.215s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/local_setup.sh
+[24.215s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/local_setup.zsh
+[24.215s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/local_setup.dsv
+[24.215s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/package.dsv
+[24.215s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/ament_index/resource_index/packages/roverrobotics_driver
+[24.215s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/cmake/roverrobotics_driverConfig.cmake
+[24.215s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/cmake/roverrobotics_driverConfig-version.cmake
+[24.216s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_driver/share/roverrobotics_driver/package.xml
+[24.218s] Invoked command in '/home/njromsdal/ros2_ws/build/roverrobotics_driver' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/njromsdal/ros2_ws/build/roverrobotics_driver
