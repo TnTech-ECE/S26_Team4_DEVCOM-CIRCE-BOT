@@ -1,6 +1,0 @@
-[0.211s] DEBUG:colcon:Command line arguments: ['/usr/bin/colcon', 'test-result', '--test-result-base', 'build/circe_teensy', '--verbose']
-[0.212s] DEBUG:colcon:Parsed command line arguments: Namespace(log_base=None, log_level=None, verb_name='test-result', test_result_base='build/circe_teensy', all=False, result_files_only=False, verbose=True, delete=False, delete_yes=False, mixin_files=None, mixin=None, verb_parser=<colcon_mixin.mixin.mixin_argument.MixinArgumentDecorator object at 0xffff90ea65d0>, verb_extension=<colcon_test_result.verb.test_result.TestResultVerb object at 0xffff90ea59d0>, main=<bound method TestResultVerb.main of <colcon_test_result.verb.test_result.TestResultVerb object at 0xffff90ea59d0>>, mixin_verb=('test-result',))
-[0.220s] Level 1:colcon.colcon_test_result.test_result:get_test_results(ctest)
-[0.223s] Level 1:colcon.colcon_test_result.test_result:get_test_results(xunit)
-[0.224s] DEBUG:colcon.colcon_test_result.test_result.xunit:Skipping 'build/circe_teensy/Testing/20261019-2253/Test.xml': the root tag is neither 'testsuite' nor 'testsuites'
-[0.225s] DEBUG:colcon.colcon_test_result.test_result.xunit:Skipping 'build/circe_teensy/Testing/20261019-2335/Test.xml': the root tag is neither 'testsuite' nor 'testsuites'

@@ -1,1 +1,0 @@
-/home/devcom/circe_ws/src/roverrobotics_ros2/roverrobotics_description/launch/display_miti_65.launch.py

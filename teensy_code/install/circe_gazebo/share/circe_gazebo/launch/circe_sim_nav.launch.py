@@ -1,1 +1,0 @@
-/home/devcom/circe_ws/src/circe_gazebo/launch/circe_sim_nav.launch.py

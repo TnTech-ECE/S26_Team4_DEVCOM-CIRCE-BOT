@@ -1,4 +1,0 @@
-Invoking command in '/home/devcom/circe_ws/build/circe_perception': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --build /home/devcom/circe_ws/build/circe_perception -- -j4 -l4
-Invoked command in '/home/devcom/circe_ws/build/circe_perception' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --build /home/devcom/circe_ws/build/circe_perception -- -j4 -l4
-Invoking command in '/home/devcom/circe_ws/build/circe_perception': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --install /home/devcom/circe_ws/build/circe_perception
-Invoked command in '/home/devcom/circe_ws/build/circe_perception' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --install /home/devcom/circe_ws/build/circe_perception

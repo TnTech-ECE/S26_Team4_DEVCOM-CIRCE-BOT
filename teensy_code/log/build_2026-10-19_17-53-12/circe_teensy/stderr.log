@@ -1,4 +1,0 @@
-teensy_size: Memory Usage on Teensy 4.0:
-teensy_size:   FLASH: code:7812, data:1992, headers:8624   free for files:2013188
-teensy_size:    RAM1: variables:2432, code:6096, padding:26672   free for local variables:489088
-teensy_size:    RAM2: variables:12416  free for malloc/new:511872

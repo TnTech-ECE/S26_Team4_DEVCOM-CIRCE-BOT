@@ -1,9 +1,0 @@
--- run_test.py: invoking following command in '/home/devcom/circe_ws/src/circe_teensy':
- - /opt/ros/jazzy/bin/ament_lint_cmake --xunit-file /home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/lint_cmake.xunit.xml
-
-
-No problems found
-
-
--- run_test.py: return code 0
--- run_test.py: verify result file '/home/devcom/circe_ws/build/circe_teensy/test_results/circe_teensy/lint_cmake.xunit.xml'

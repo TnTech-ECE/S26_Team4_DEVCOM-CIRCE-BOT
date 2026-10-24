@@ -1,4 +1,0 @@
-Invoking command in '/home/devcom/circe_ws/build/circe_teensy': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/devcom/circe_ws/build/circe_teensy -- -j4 -l4
-Invoked command in '/home/devcom/circe_ws/build/circe_teensy' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/devcom/circe_ws/build/circe_teensy -- -j4 -l4
-Invoking command in '/home/devcom/circe_ws/build/circe_teensy': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/devcom/circe_ws/build/circe_teensy
-Invoked command in '/home/devcom/circe_ws/build/circe_teensy' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/devcom/circe_ws/build/circe_teensy

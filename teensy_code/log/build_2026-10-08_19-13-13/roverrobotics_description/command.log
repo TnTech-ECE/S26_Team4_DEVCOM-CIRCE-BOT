@@ -1,4 +1,0 @@
-Invoking command in '/home/devcom/circe_ws/build/roverrobotics_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --build /home/devcom/circe_ws/build/roverrobotics_description -- -j4 -l4
-Invoked command in '/home/devcom/circe_ws/build/roverrobotics_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --build /home/devcom/circe_ws/build/roverrobotics_description -- -j4 -l4
-Invoking command in '/home/devcom/circe_ws/build/roverrobotics_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --install /home/devcom/circe_ws/build/roverrobotics_description
-Invoked command in '/home/devcom/circe_ws/build/roverrobotics_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --install /home/devcom/circe_ws/build/roverrobotics_description
