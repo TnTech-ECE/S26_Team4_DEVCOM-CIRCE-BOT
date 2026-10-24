@@ -1,0 +1,8 @@
+[submodule "Software/circe_ws/src/roverrobotics_ros2"]
+	path = Software/circe_ws/src/roverrobotics_ros2
+	url = https://github.com/sharifz0089/roverrobotics_ros2.git
+	branch = circe
+[submodule "Software/circe_ws/src/sllidar_ros2"]
+	path = Software/circe_ws/src/sllidar_ros2
+	url = https://github.com/Slamtec/sllidar_ros2.git
+	branch = main
