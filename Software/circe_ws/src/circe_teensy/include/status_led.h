@@ -1,7 +1,4 @@
-// The onboard LED (pin 13) as a traffic light: led_pulse() lights it briefly.
-//
-// Non-blocking: led_update() in loop() turns it off when the pulse expires.
-// Pin 13 is also SPI SCK. Move the indicator to another pin before adding SPI.
+// Onboard LED (pin 13, also SPI SCK): non-blocking activity pulse.
 #pragma once
 
 void led_begin();

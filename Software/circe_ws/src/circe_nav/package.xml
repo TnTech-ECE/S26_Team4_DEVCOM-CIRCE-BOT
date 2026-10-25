@@ -13,25 +13,18 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <!-- localization.launch.py -->
   <exec_depend>robot_localization</exec_depend>
 
-  <!-- slam.launch.py -->
   <exec_depend>slam_toolbox</exec_depend>
-  <!-- lifecycle_manager_localization in slam.launch.py, started when
-       use_lifecycle_manager is true. It is what RViz's Nav2 panel queries to decide
-       whether localization is active; CIRCE has no AMCL to create it otherwise. -->
+  <!-- Makes RViz's Nav2 panel show localization as active. -->
   <exec_depend>nav2_lifecycle_manager</exec_depend>
 
-  <!-- navigation.launch.py includes nav2_bringup/launch/navigation_launch.py -->
   <exec_depend>nav2_bringup</exec_depend>
   <exec_depend>nav2_map_server</exec_depend>
 
   <exec_depend>rviz2</exec_depend>
 
-  <!-- scripts/cable_mission.py. These arrived transitively through nav2_bringup, which
-       is a launch-file package and promises none of them. tf2_ros_py, not tf2_ros: the
-       Python `tf2_ros` module lives in the former. -->
+  <!-- cable_mission.py -->
   <exec_depend>rclpy</exec_depend>
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>nav2_msgs</exec_depend>

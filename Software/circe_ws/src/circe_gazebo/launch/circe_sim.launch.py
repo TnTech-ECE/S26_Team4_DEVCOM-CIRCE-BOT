@@ -1,27 +1,11 @@
 #!/usr/bin/env python3
-"""CIRCE in Gazebo Harmonic: the simulated hardware layer, and nothing above it.
+"""CIRCE in Gazebo Harmonic: the sim stand-in for rover.launch.py + sensors.launch.py.
 
-This is the sim substitute for circe_bringup's rover.launch.py + sensors.launch.py.
-It starts Gazebo, spawns the rover, bridges the topics, and publishes the TF tree
-below base_link. It does NOT start the EKF, SLAM, or Nav2 -- use
-circe_sim_nav.launch.py for those, exactly as the real stack layers up.
+Starts Gazebo, spawns the rover, bridges topics, publishes TF below base_link.
+EKF/SLAM/Nav2 live in circe_sim_nav.launch.py. odom -> base_link is left to the EKF.
 
-    ros2 launch circe_gazebo circe_sim.launch.py
-    ros2 launch circe_gazebo circe_sim.launch.py world:=empty.sdf
-    ros2 launch circe_gazebo circe_sim.launch.py gui:=false        # headless
-
-Drive it with:
+    ros2 launch circe_gazebo circe_sim.launch.py [world:=empty.sdf] [gui:=false]
     ros2 run teleop_twist_keyboard teleop_twist_keyboard
-
-circe_control's teleop is not usable here: it needs a physical gamepad.
-
-Publishes: /clock, /scan, /imu/data, /odometry/wheels, /joint_states,
-           /camera/camera/{color,depth}/..., /tf (base_link and below)
-Subscribes: /cmd_vel
-
-Does NOT publish odom -> base_link. That edge belongs to the EKF in circe_nav, the
-same as on hardware. The gz DiffDrive plugin's own TF goes to /tf_gazebo and is
-deliberately not bridged -- see config/gz_bridge.yaml.
 """
 
 import os
@@ -64,21 +48,11 @@ def generate_launch_description():
     gui = LaunchConfiguration('gui')
     use_rviz = LaunchConfiguration('use_rviz')
 
-    # sim_mode:=true is what switches on every <gazebo> block in the description.
-    # Without it the model spawns with no plugins and no sensors, sits inert, and
-    # gives no obvious clue why.
+    # sim_mode:=true enables the <gazebo> plugin/sensor blocks.
     robot_description = ParameterValue(
         Command(['xacro ', str(model_path), ' sim_mode:=true']), value_type=str)
 
-    # Mesh resolution. Every mesh in the expanded URDF is a package:// URI (the xacros
-    # used to say file://$(find ...), which baked the build machine's absolute path into
-    # /robot_description and broke RViz on any other machine). gz can only resolve
-    # package:// via GZ_SIM_RESOURCE_PATH, which is not set to this workspace by
-    # default, so without the append below the robot silently renders as nothing.
-    #
-    # gz resolves package://foo/bar by looking for a directory named foo on the path,
-    # so what has to be appended is the PARENT of each package's share directory, not
-    # the share directory itself.
+    # gz resolves package:// URIs via GZ_SIM_RESOURCE_PATH (parent of each share dir).
     resource_path = AppendEnvironmentVariable(
         'GZ_SIM_RESOURCE_PATH',
         os.pathsep.join({
@@ -99,9 +73,7 @@ def generate_launch_description():
         }],
     )
 
-    # -r starts the world running. Without it gz comes up PAUSED, /clock never
-    # advances, and every node with use_sim_time sits at t=0 looking hung -- which is
-    # what the upstream rover launch files do and it confuses everyone once.
+    # -r: start unpaused, otherwise /clock never advances.
     gz_sim = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             str(Path(get_package_share_directory('ros_gz_sim'),
@@ -109,8 +81,7 @@ def generate_launch_description():
         launch_arguments={
             'gz_args': [
                 '-r ',
-                # -s runs the server only. Headless is substantially faster and still
-                # publishes every topic, which is what you want for SLAM/Nav2 runs.
+                # -s: headless server.
                 PythonExpression(["'-s ' if '", gui, "'.lower() == 'false' else ''"]),
                 PathJoinSubstitution([str(pkg_gazebo), 'worlds', world]),
             ],
@@ -133,13 +104,7 @@ def generate_launch_description():
         ],
     )
 
-    # Same mask, same config file, same position in the chain as the hardware path in
-    # circe_bringup/launch/sensors.launch.py: the bridge publishes /scan_raw and this
-    # republishes /scan with the rear half removed. Keeping one mechanism across sim and
-    # hardware is the whole point -- see the note in config/gz_bridge.yaml.
-    #
-    # Both remappings matter: the chain node's own topics are `scan` and `scan_filtered`,
-    # and /scan_filtered already belongs to circe_perception's scan_pitch_filter.
+    # Same rear-sector mask as hardware: /scan_raw -> /scan.
     scan_sector_filter = Node(
         package='laser_filters',
         executable='scan_to_scan_filter_chain',
@@ -147,7 +112,6 @@ def generate_launch_description():
         parameters=[str(sector_config), {'use_sim_time': True}],
         remappings=[('scan', '/scan_raw'), ('scan_filtered', '/scan')],
         output='screen',
-        # Same recovery as the hardware path: /scan has no other publisher.
         respawn=True,
         respawn_delay=1.0,
     )
@@ -200,17 +164,8 @@ def generate_launch_description():
         resource_path,
         gz_sim,
 
-        # Order matters here, though not as a hard barrier: `create -topic
-        # /robot_description` subscribes and blocks ("Waiting messages on topic
-        # [/robot_description]") until robot_state_publisher latches the model, so
-        # declaring the publisher first is enough and the spawn cannot lose the race.
-        #
-        # An earlier version wrapped the spawn in RegisterEventHandler(OnProcessStart)
-        # to force the ordering. Do not reintroduce that: when this file is included
-        # from a scoped GroupAction (which circe_sim_nav.launch.py does, and must, to
-        # stop params_file leaking between the circe_nav includes) the group's
-        # launch-configuration scope is popped before the deferred handler fires, and
-        # the spawn dies with "launch configuration 'x' does not exist".
+        # `create` blocks until /robot_description is latched, so no event handler is
+        # needed (one breaks when included from a scoped GroupAction).
         robot_state_publisher,
         spawn,
 

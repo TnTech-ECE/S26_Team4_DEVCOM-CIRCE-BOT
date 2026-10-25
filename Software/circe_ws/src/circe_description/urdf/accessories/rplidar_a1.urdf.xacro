@@ -1,116 +1,28 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="rplidar_a1">
 
     <!--
-      RPLidar A1 (A1M8) accessory for the CIRCE rover.
-
-      The visual is meshes/rplidar_a1.stl, a manufacturer CAD model of the A1M8.
-      Collision stays a PRIMITIVE box - see the note on the collision element below.
-
-      *** THE MESH CONFIRMED a1_scan_plane_z AND CORRECTED a1_total_height. ***
-      Measured off the CAD: the turret's spin axis is fixed to 0.04 mm by fitting the
-      two complete circles it presents (the solid top cap and the turret floor), which
-      agree with each other to dx=0.003 dz=0.042 mm, and the cap measures 70.00 mm
-      across - the datasheet width exactly. The transparent window band runs y=34..49
-      in mesh coordinates, so the optical midline - the scan plane - is at y=41.5.
-
-      That puts the scan plane 41.5 mm above the bottom of the unit, against the 41.0
-      assumed here: agreement to 0.5 mm, from an independent source. This is the number
-      that matters, because lidar_mount_z, the 0.295 m scan height and
-      circe_perception's scan_pitch_filter lidar_height all hang off it.
-
-      a1_total_height did NOT survive: the CAD is 51.0 mm tall, not 60.0, and every bit
-      of the 9 mm sits ABOVE the scan plane (9.5 mm modelled, 19.0 assumed). It is left
-      at 0.060 deliberately - see the warning on that property.
-
-      Datasheet figures used (RPLIDAR A1M8):
-        body        98.5 x 70.0 x 60.0 mm
-        range       0.15 - 12.0 m, 360 deg
-        scan rate   5.5 Hz nominal, up to 10 Hz
-
-      *** MEASURE BEFORE DRIVING ***
-      lidar_mount_* below are the offsets from chassis_link to the A1's scan plane.
-      x/y are carried over from the S2 mount point; z is an estimate. A wrong z puts
-      obstacles at the wrong height in the costmap, and a wrong yaw makes the whole
-      map rotate relative to the robot. Verify all four against the real build.
-
-      Parented to chassis_link, not payload_link: CIRCE does not use the
-      rover_dev_payload deck.
-
-      lidar_mount_z is set on a RISER above the chassis top deck, not resting on it.
-      The deck top (flipper_chassis.dae) is at z = +0.0630 in chassis_link, so a
-      value of 0.170 puts the A1's base plate 0.170 - 0.041 = 0.129 up, i.e. a
-      66 mm standoff above the deck.
-
-      This clears the wheels, which was the point. The tyres reach 0.252 above
-      ground (radius 0.1266 on a 0.125 axle) and the tracks reach 0.203; resting the
-      A1 straight on the deck would have put the scan plane at 0.229, BELOW the
-      tyre tops, so all four wheels would have shown up as permanent returns in
-      fixed directions and wrecked scan matching. At 0.170 the scan plane is 0.295
-      above ground, clearing the tyres by 43 mm.
-
-      circe_sensor_mast.urdf.xacro derives the camera shelf height from
-      lidar_mount_* and a1_scan_plane_z, so changing the values here moves the
-      shelf too.
-
-      Driver-side params for this sensor live in
-      circe_bringup/config/lidar_a1.yaml; frame_id there must stay "lidar_link".
-
-      NOTE: this is now a hardcoded height, no longer chassis_top_z +
-      a1_scan_plane_z. If the deck height or the A1's internal geometry is
-      remeasured, this value does not follow automatically, so recheck the standoff.
+      RPLidar A1 (A1M8) on a riser on chassis_link; lidar_link is the scan plane
+      (0.295 m above ground, clearing the tyres). Mount offsets need verifying on the build.
+      circe_sensor_mast.urdf.xacro derives the camera shelf height from these values.
     -->
-    <!-- Height of the scan plane above the A1's own base plate (approx). -->
     <xacro:property name="a1_scan_plane_z" value="0.041" />
     <xacro:property name="a1_base_height" value="0.020" />
 
-    <!-- Top face of flipper_chassis.dae, measured from the mesh, in chassis_link. -->
     <xacro:property name="chassis_top_z" value="0.0630" />
     <xacro:property name="lidar_mount_x" value="0.18" />
     <xacro:property name="lidar_mount_y" value="0.0" />
     <xacro:property name="lidar_mount_z" value="0.170" />
-    <!--
-      *** lidar_mount_yaw IS NOW LOAD-BEARING OUTSIDE THIS FILE. ***
-      circe_perception/config/scan_sector_filter.yaml masks the rear half of the sweep
-      by BEARING IN lidar_link, and it is this 180 deg yaw that makes the rover's rear
-      sit at bearing 0 and its front at +/-180. Change this value and that mask rotates
-      with it - at yaw 0 the same config would blind the rover forwards and keep the
-      cable spool. Change both together, then re-check in RViz that the blanked arc is
-      behind the robot.
-    -->
+    <!-- 180 deg yaw: scan_sector_filter.yaml's rear mask depends on it. Change both together. -->
     <xacro:property name="lidar_mount_yaw" value="3.1415" />
-    <!-- base + rotor must total the datasheet's 60 mm so the modelled top matches
-         the collision box and the shelf clearance computed by the mast. -->
+    <!-- base + rotor = datasheet 60 mm. -->
     <xacro:property name="a1_rotor_height" value="0.040" />
     <xacro:property name="a1_rotor_radius" value="0.0355" />
 
-    <!--
-      ===================== MESH PLACEMENT =====================
-      meshes/rplidar_a1.stl is the manufacturer CAD, in MILLIMETRES, with +Y as the
-      spin axis and +X/+Z horizontal. rpy=(pi/2,0,0) maps mesh (x,y,z) -> ros (x,-z,y),
-      i.e. mesh +Y becomes ROS +Z (up) while mesh +X is left as ROS +X.
-
-      a1_mesh_xyz is -R * (37.101, 41.5, 36.518) mm: the point on the turret's spin
-      axis at the scan plane. lidar_link IS the scan plane, so aligning the mesh's own
-      optical midline to this link's origin is the physically meaningful fit and it
-      needs no reference to the A1's ambiguous "base plate" datum. The mesh's bottom
-      then lands at 0.1285 in chassis_link, against the 0.129 this file's header
-      derives independently - a 0.5 mm cross-check that the placement is right.
-
-      *** a1_mesh_yaw IS COSMETIC. ***
-      It spins the drawn body about the scan axis; it cannot move the scan plane and it
-      cannot affect /scan, whose bearings come from the driver. It exists because the
-      CAD gives no marking for the A1's own 0 deg reference, so which way the motor
-      bulge points in RViz is a guess. Set it once you can see the real unit next to the
-      rendered one. Do NOT reach for it to fix a rotated map - that is lidar_mount_yaw,
-      and it is a different problem with real consequences.
-    -->
+    <!-- Mesh is in mm with +Y as spin axis; offset aligns its scan plane to lidar_link.
+         a1_mesh_yaw is cosmetic only. -->
     <xacro:property name="a1_mesh_xyz" value="-0.037101 0.036518 -0.0415" />
     <xacro:property name="a1_mesh_yaw" value="0" />
 
-    <!--
-      lidar_link sits AT the scan plane, because that is the origin the driver
-      stamps /scan with. Visuals are pushed downward from it to sit on the mount.
-    -->
     <link name="lidar_link">
         <visual>
             <origin xyz="${a1_mesh_xyz}" rpy="1.5707963 0 ${a1_mesh_yaw}"/>
@@ -120,17 +32,7 @@
             </geometry>
         </visual>
 
-        <!--
-          Collision is deliberately still the datasheet BOX, not the mesh.
-
-          The box is what every measurement in this workspace was taken against - the
-          spool's blind sector, the mast clearance, the costmap footprint - and swapping
-          in a concave 35 k-triangle hull would invalidate them for no navigational gain:
-          nothing ever collides with the lidar, it sits in the middle of the robot. A
-          mesh collision here would also cost gz-sim's contact solver real time every
-          step. Visual fidelity and collision cheapness are separate concerns; this file
-          takes the mesh for one and keeps the primitive for the other.
-        -->
+        <!-- Collision stays the datasheet box (cheap, and what clearances were measured against). -->
         <collision>
             <origin xyz="0 0 ${-a1_scan_plane_z + 0.030}" rpy="0 0 0"/>
             <geometry>
@@ -152,26 +54,18 @@
                 rpy="0 0 ${lidar_mount_yaw}"/>
     </joint>
 
-    <!--
-      Simulated A1. Sim only - see the sim_mode note in circe_rover.urdf.xacro.
-
-      The Sensors system that renders this used to be declared below, inside the model.
-      It is world-scoped in Harmonic and now lives in circe_gazebo/worlds/*.sdf; a
-      gpu_lidar in a world without it produces no /scan at all.
-    -->
+    <!-- Simulated A1 (sim only). -->
     <xacro:arg name="sim_mode" default="false" />
     <xacro:if value="$(arg sim_mode)">
     <gazebo reference="lidar_link">
         <sensor name='gpu_lidar' type='gpu_lidar'>
             <pose>0 0 0 0 0 0</pose>
             <topic>scan</topic>
-            <!-- gz_frame_id: ignition_frame_id is the Fortress spelling. -->
             <gz_frame_id>lidar_link</gz_frame_id>
             <update_rate>10</update_rate>
             <lidar>
                 <scan>
                 <horizontal>
-                    <!-- ~4000 samples/s at 5.5 Hz standard mode -> ~720 points/rev -->
                     <samples>720</samples>
                     <resolution>1</resolution>
                     <min_angle>-3.14159</min_angle>
@@ -189,17 +83,7 @@
                 <max>12.0</max>
                 <resolution>0.01</resolution>
                 </range>
-                <!--
-                  A real A1 is noisy; a noiseless sim scan makes scan matching look
-                  better than it will be on hardware. 0.01 m sigma is the A1's quoted
-                  accuracy.
-
-                  Must sit inside <lidar>, not <sensor>. SDF silently accepts an
-                  unknown child of <sensor> and only mutters "XML Element[noise] ...
-                  not defined in SDF. Copying as children" during load, so a
-                  misplaced noise block applies nothing at all and looks like it
-                  worked.
-                -->
+                <!-- Must be inside <lidar>; 0.01 m sigma per datasheet. -->
                 <noise>
                     <type>gaussian</type>
                     <mean>0.0</mean>

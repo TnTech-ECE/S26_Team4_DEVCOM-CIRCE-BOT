@@ -9,33 +9,27 @@ namespace {
 
 constexpr uint32_t BMS_BAUD = 115200;
 constexpr uint32_t POLL_MS = 1000;
-constexpr uint32_t NO_DATA_MS = 3000;     // no valid response for this long -> BMS_NO_DATA
+constexpr uint32_t NO_DATA_MS = 3000;
 constexpr uint32_t SILENT_REPORT_MS = 1000;
-constexpr uint32_t BYTE_GAP_MS = 100;     // a frame that stalls this long is abandoned
-// 223 fixed bytes of data + 3 per cell, plus header and trailer, for 24 cells.
+constexpr uint32_t BYTE_GAP_MS = 100;     // abandon a stalled frame
 constexpr size_t MAX_RESPONSE = 400;
-// The whole response lands in ~25 ms at 115200; the core's 64-byte buffer would
-// overflow if loop() is busy for more than ~5 ms of it.
 constexpr size_t RX_EXTRA = 512;
 
-// "Read all data" (command 0x06, source 0x03), checksum 0x0129. Source 0x03 is "PC",
-// the frame chrissank/JKBMSInterface reads a JK-BD4A8S4P's GPS port with.
+// "Read all data" request (cmd 0x06, source 0x03).
 const uint8_t READ_ALL[] = {0x4E, 0x57, 0x00, 0x13, 0x00, 0x00, 0x00, 0x00, 0x06, 0x03, 0x00,
                             0x00, 0x00, 0x00, 0x00, 0x00, 0x68, 0x00, 0x00, 0x01, 0x29};
 
 struct Bms {
-  HardwareSerialIMXRT *port;  // the Teensy 4 class: has addMemoryForRead()
+  HardwareSerialIMXRT *port;
   uint8_t id;
 
   uint8_t rx_extra[RX_EXTRA];
 
-  // Frame assembly.
   uint8_t buf[MAX_RESPONSE];
   size_t pos;
-  size_t frame_len;  // total bytes, known once the length field is in
+  size_t frame_len;
   uint32_t last_byte_ms;
 
-  // Polling and reporting.
   uint32_t last_poll_ms;
   uint32_t last_ok_ms;
   uint32_t last_sent_ms;
@@ -43,10 +37,7 @@ struct Bms {
   BmsCells cells;
 };
 
-// Teensy RX <- BMS TX, Teensy TX -> BMS RX:
-//   bms 0  Serial1  RX1 pin 0, TX1 pin 1
-//   bms 1  Serial2  RX2 pin 7, TX2 pin 8
-// The id is BmsStatus.bms_id, the index into battery_topics on the Pi.
+// bms 0: Serial1 (RX 0, TX 1); bms 1: Serial2 (RX 7, TX 8). id = index into battery_topics.
 Bms g_bms[] = {
   {&Serial1, 0},
   {&Serial2, 1},
@@ -57,13 +48,12 @@ uint32_t be32(const uint8_t *p) {
   return (static_cast<uint32_t>(be16(p)) << 16) | be16(p + 2);
 }
 
-// JK: 0..100 is degrees C, above 100 is negative (101 = -1, 140 = -40).
+// JK temperature: >100 means negative.
 int8_t temperature(uint16_t raw) {
   return static_cast<int8_t>(raw > 100 ? 100 - static_cast<int>(raw) : raw);
 }
 
-// Payload length of a fixed-size field, or -1 for an ID we do not know, after which
-// nothing that follows can be located. Lengths per esphome-jk-bms jk_bms.cpp.
+// Fixed field lengths per esphome-jk-bms; -1 = unknown ID.
 int field_len(uint8_t id) {
   switch (id) {
     case 0x85: case 0x86: case 0x9D: case 0xA9: case 0xAB: case 0xAC: case 0xAE:
@@ -79,7 +69,6 @@ int field_len(uint8_t id) {
     case 0xB7: return 15;
     case 0xBA: return 24;
     default:
-      // Protection settings, all two bytes.
       if ((id >= 0x8E && id <= 0x9C) || (id >= 0x9E && id <= 0xA8)) return 2;
       return -1;
   }
@@ -91,13 +80,13 @@ void report(Bms &b, uint32_t now) {
   b.last_sent_ms = now;
 }
 
-// Walks the TLV data. Returns false if the fields every report needs are missing.
+// Walks the TLV data; false if required fields are missing.
 bool parse_data(Bms &b, const uint8_t *d, size_t n) {
   BmsStatus s = b.status;
   BmsCells cells = {};
   cells.bms_id = b.id;
   uint16_t raw_current = 0;
-  uint8_t version = 0x01;  // newest layout, assumed if 0xC0 is never reached
+  uint8_t version = 0x01;
   bool have_cells = false, have_voltage = false, have_current = false, have_soc = false;
 
   size_t i = 0;
@@ -105,7 +94,6 @@ bool parse_data(Bms &b, const uint8_t *d, size_t n) {
     uint8_t id = d[i];
     const uint8_t *v = d + i + 1;
     if (id == 0x79) {
-      // Cell block: length byte, then (index:u8, mV:u16) per cell.
       if (i + 1 >= n) break;
       uint8_t len = d[i + 1];
       if (i + 2 + len > n) break;
@@ -142,9 +130,7 @@ bool parse_data(Bms &b, const uint8_t *d, size_t n) {
   }
   if (!have_cells || !have_voltage || !have_current || !have_soc) return false;
 
-  // Protocol 0x01: bit 15 set = charging, the rest is magnitude in 0.01 A. Older
-  // firmware encodes it otherwise; esphome-jk-bms reports 0 A for those. Compare the
-  // sign against the JK app before trusting it.
+  // Bit 15 = charging, rest = 0.01 A (protocol 0x01).
   int32_t mag = raw_current & 0x7FFF;
   s.current_ca = static_cast<int16_t>((raw_current & 0x8000) ? mag : -mag);
   s.protocol_version = version;
@@ -156,11 +142,10 @@ bool parse_data(Bms &b, const uint8_t *d, size_t n) {
 }
 
 void handle_frame(Bms &b, uint32_t now) {
-  size_t len = b.frame_len - 2;  // the length field's value
+  size_t len = b.frame_len - 2;
   uint16_t sum = 0;
   for (size_t i = 0; i < len; i++) sum += b.buf[i];
-  // Data runs from byte 11 to just before record(4) + 0x68 + checksum(4). esphome's
-  // slice also takes the record number; walked as TLV, its bytes would read as IDs.
+  // Data is bytes 11 .. before record(4) + 0x68 + checksum(4).
   if (sum != be16(b.buf + len) || b.buf[8] != 0x06 || len < 18 ||
       !parse_data(b, b.buf + 11, len - 18)) {
     b.status.bad_frames++;
@@ -174,9 +159,9 @@ void feed(Bms &b, uint8_t c, uint32_t now) {
   if (b.pos > 0 && now - b.last_byte_ms > BYTE_GAP_MS) b.pos = 0;
   b.last_byte_ms = now;
 
-  if (b.pos == 0 && c != 0x4E) return;  // hunting for the header
+  if (b.pos == 0 && c != 0x4E) return;
   if (b.pos == 1 && c != 0x57) {
-    b.pos = (c == 0x4E) ? 1 : 0;  // 4E 4E 57: the second 4E may be the real start
+    b.pos = (c == 0x4E) ? 1 : 0;
     return;
   }
   b.buf[b.pos++] = c;
@@ -203,7 +188,7 @@ void bms_begin() {
     b.port->begin(BMS_BAUD);
     b.last_ok_ms = now;
     b.last_sent_ms = now;
-    b.last_poll_ms = now - POLL_MS;  // first poll on the first update
+    b.last_poll_ms = now - POLL_MS;
     b.status.bms_id = b.id;
     b.status.status = BMS_NO_DATA;
   }
@@ -216,11 +201,9 @@ void bms_update() {
 
     if (now - b.last_poll_ms >= POLL_MS) {
       b.last_poll_ms = now;
-      // 21 bytes fit the core's TX buffer, so this returns at once.
       b.port->write(READ_ALL, sizeof(READ_ALL));
     }
 
-    // A dead or unwired BMS sends nothing, so silence is reported explicitly.
     if (now - b.last_ok_ms >= NO_DATA_MS && now - b.last_sent_ms >= SILENT_REPORT_MS) {
       b.status.status = BMS_NO_DATA;
       report(b, now);

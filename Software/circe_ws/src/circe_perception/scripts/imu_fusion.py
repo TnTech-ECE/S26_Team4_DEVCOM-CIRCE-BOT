@@ -3,83 +3,11 @@
 
     /camera/camera/imu  ->  imu_fusion  ->  /imu/data
 
-Why this node has to exist
---------------------------
-The D456's IMU is a 6-axis MEMS part with no magnetometer and no on-chip sensor
-fusion, and realsense2_camera reflects that honestly: every message it publishes has
-
-    orientation = (0, 0, 0, 0)
-    orientation_covariance[0] = -1          # "no orientation in this message"
-
-(base_realsense_node.cpp, ImuMessage_AddDefaultValues). `unite_imu_method: 2` does
-NOT change that -- it interleaves the 200 Hz gyro and 100 Hz accel streams onto one
-topic, which is a TIMING merge, not an attitude estimate.
-
-That matters because two nodes in this workspace read /imu/data expecting the
-BNO055's fused quaternion, and both do naive quaternion -> roll/pitch arithmetic:
-
-    circe_perception/scripts/scan_pitch_filter.py   on_imu()
-    circe_perception/scripts/terrain_node.py        _on_imu()
-
-Feed either one a (0,0,0,0) quaternion and it computes roll = 0.00, pitch = 0.00 --
-a perfectly level robot, on every message, forever. Neither node errors, and
-scan_pitch_filter's imu_timeout backstop does NOT fire, because messages ARE
-arriving; they just say nothing. The failure is silent and it reinstates exactly the
-ramp bug those two nodes were written to fix. So "point the EKF at the camera IMU"
-is not a config change -- something has to produce the attitude.
-
-The second problem: frames
---------------------------
-The camera publishes in camera_imu_optical_frame, which is optical convention
-(X right, Y down, Z forward), related to the body by realsense's
-
-    quaternion_optical.setRPY(-pi/2, 0, -pi/2)          # tfs.cpp:124
-
-so that a gyro reading (gx, gy, gz) in optical becomes (gz, -gx, -gy) in the body.
-The robot's YAW RATE is the optical frame's -gy, not gz. robot_localization would
-handle that for itself -- it transforms every IMU input through TF -- but the two
-perception nodes above do not, and cannot: they read the quaternion directly. So the
-rotation into base_link has to happen here, before anything downstream sees it.
-
-What this node does
--------------------
-1. Rotates gyro and accel from the message's own frame into `target_frame` using
-   TF. Looked up once and cached; it is a static transform.
-2. Runs a complementary filter: integrate the gyro for the fast, quiet signal;
-   pull roll and pitch toward the accelerometer's gravity vector slowly, so that
-   gyro drift cannot accumulate. THIS is where "fuse gyro and accel together"
-   actually happens, and its product -- gravity-referenced roll and pitch -- is the
-   thing the rest of CIRCE needs.
-3. Learns the gyro bias while the robot is stationary. Not optional: the EKF takes
-   ONLY yaw rate from the IMU and ONLY vx/vy from the wheels
-   (circe_nav/config/localization_ekf.yaml), so heading is a pure integral of
-   gyro z. An uncorrected 1 deg/s bias -- ordinary for this class of MEMS part --
-   is 1 deg/s of heading drift, straight into map->odom.
-4. Publishes sensor_msgs/Imu in `target_frame` with orientation filled in, i.e. a
-   drop-in replacement for the BNO055 on /imu/data.
-
-Yaw is deliberately published as ZERO
--------------------------------------
-With no magnetometer there is no yaw reference, so an integrated yaw would drift
-without bound while LOOKING valid. Publishing a constant instead is a failure any
-consumer can notice, and orientation_covariance advertises it as untrusted (1e6).
-Nothing here is worse off for it:
-
-  * the EKF takes yaw RATE (imu0_config index 11), never yaw;
-  * scan_pitch_filter and terrain_node extract roll/pitch with the standard ZYX
-    formulas, which are yaw-independent;
-  * terrain_node._attitude_correct already rebuilds body attitude from TF yaw plus
-    IMU roll/pitch -- it was written to take yaw from elsewhere.
-
-QoS
----
-Subscribes with qos_profile_sensor_data because the camera's ~/imu publisher is
-hardcoded to rmw_qos_profile_sensor_data -- BEST_EFFORT -- and is not reachable by
-any driver parameter (rs_node_setup.cpp:384, HID_QOS). A RELIABLE subscriber does
-not match a BEST_EFFORT publisher in ROS 2 and would receive silence.
-
-This node publishes no TF and no /cmd_vel. The one-publisher-per-edge contract is
-untouched.
+The D456 IMU has no orientation (quaternion is all zeros), and its frame is optical.
+This rotates gyro/accel into base_link, runs a complementary filter for roll/pitch,
+learns gyro bias while stationary (the EKF's heading is a pure gyro-z integral), and
+publishes a BNO055-style /imu/data. Yaw is published as 0 with covariance 1e6.
+Subscribes BEST_EFFORT because the camera's IMU publisher is hardcoded to it.
 """
 
 import math
@@ -109,12 +37,7 @@ def _quat_to_rot(x, y, z, w):
 
 
 def _quat_from_roll_pitch(roll, pitch):
-    """ZYX quaternion with yaw = 0.
-
-    Round-trips exactly through the roll/pitch extraction used by
-    scan_pitch_filter.on_imu and terrain_node._on_imu -- see the test at the bottom
-    of this file's git history and the assertion in tools, if you doubt it.
-    """
+    """ZYX quaternion with yaw = 0."""
     cr, sr = math.cos(roll * 0.5), math.sin(roll * 0.5)
     cp, sp = math.cos(pitch * 0.5), math.sin(pitch * 0.5)
     return (sr * cp, cr * sp, -sr * sp, cr * cp)   # x, y, z, w
@@ -126,47 +49,22 @@ class ImuFusion(Node):
         super().__init__('imu_fusion')
 
         self.declare_parameter('target_frame', 'base_link')
-        # Time constant of the complementary filter, in seconds. This is the only
-        # real tuning knob. Large = trust the gyro, smooth but drifts back slowly;
-        # small = trust the accelerometer, tracks gravity fast but every bump and
-        # every hard acceleration shows up as attitude. 1.0 s is deliberately long:
-        # the accel only has to catch slow gyro drift, and on Tennessee terrain the
-        # accelerometer is the noisy input, not the gyro.
+        # Complementary filter time constant (s): larger trusts the gyro more.
         self.declare_parameter('tau', 1.0)
-        # Skip the accelerometer correction whenever |a| is this far from g. A
-        # rover that is accelerating, braking or bouncing is not measuring gravity,
-        # and folding those samples in tilts the estimate toward the direction of
-        # travel. On rejection the filter coasts on the gyro, which is exactly what
-        # a gyro is for over short intervals.
+        # Skip the accel correction when |a| is this far from g.
         self.declare_parameter('accel_gate', 1.5)          # m/s^2
-        # Gyro bias learning. See the docstring: heading is a pure integral of
-        # gyro z, so this is load-bearing, not a refinement.
         self.declare_parameter('learn_gyro_bias', True)
-        # *** THIS THRESHOLD MUST BE LOOSER THAN THE BIAS IT IS LOOKING FOR. ***
-        # It gates on |w - bias|, and before anything is learned that quantity IS
-        # the bias. Set it at 0.02 rad/s and a part with a typical 1 deg/s
-        # (0.0175 rad/s) offset sits right on the limit: sensor noise pushes it over
-        # every few samples, the dwell timer resets, and the bias is never learned at
-        # all -- measured, the residual stayed at the full 1.003 deg/s indefinitely.
-        # 0.06 rad/s is 3.4 deg/s, which comfortably admits an uncalibrated BMI055
-        # while excluding any commanded rotation (Nav2 samples wz over +/-2.0 rad/s).
+        # Must be looser than the bias itself, or the bias is never learned.
         self.declare_parameter('bias_gyro_thresh', 0.06)   # rad/s, ~3.4 deg/s
         self.declare_parameter('bias_accel_thresh', 0.30)  # m/s^2 from g
         self.declare_parameter('bias_dwell', 1.0)          # s of stillness required
         self.declare_parameter('bias_tau', 60.0)           # s, learning time constant
-        # Wheel odometry is the honest stationarity signal, and it is what makes the
-        # loose gyro threshold above safe: a gentle Nav2 path-following turn can sit
-        # under 3.4 deg/s for seconds at a time, and without this the node would
-        # quietly absorb that real rotation into the bias and then subtract it. The
-        # topic is the EKF's own odom0, so it is always present on hardware. If it is
-        # silent the node falls back to the IMU-only test and says so once.
+        # Wheel odometry confirms the robot is still, so slow turns aren't learned as bias.
         self.declare_parameter('odom_topic', '/odometry/wheels')
         self.declare_parameter('bias_odom_lin', 0.01)      # m/s
         self.declare_parameter('bias_odom_ang', 0.01)      # rad/s
         self.declare_parameter('odom_timeout', 0.5)        # s
-        # Integration guard. A gap longer than this means dropped frames or a
-        # stalled camera; integrating across it would smear a large rotation into
-        # one step, so the filter re-seeds from the accelerometer instead.
+        # Re-seed from the accelerometer after a gap longer than this.
         self.declare_parameter('max_dt', 0.1)              # s
         self.declare_parameter('publish_rate_limit', 0.0)  # Hz, 0 = every message
 
@@ -247,9 +145,7 @@ class ImuFusion(Node):
     # ---- filter ---------------------------------------------------------------
 
     def on_imu(self, msg):
-        # A device that DOES supply orientation should not be run through this node --
-        # it would throw away a better estimate. Warn once and carry on, since the
-        # filter output is still valid, just redundant.
+        # A device with its own orientation doesn't need this node; warn once.
         if msg.orientation_covariance[0] >= 0.0 and not self._warned_oriented:
             self._warned_oriented = True
             self.get_logger().warn(
@@ -275,16 +171,14 @@ class ImuFusion(Node):
         a_norm = float(np.linalg.norm(a))
         level = abs(a_norm - GRAVITY) < self.accel_gate and a_norm > 1e-6
 
-        # Accelerometer attitude. Only meaningful while the specific force is
-        # dominated by gravity, which `level` is the test for.
+        # Accelerometer attitude, only while it's measuring mostly gravity.
         if level:
             roll_a = math.atan2(a[1], a[2])
             pitch_a = math.atan2(-a[0], math.hypot(a[1], a[2]))
         else:
             roll_a = pitch_a = None
 
-        # Seed from the accelerometer rather than starting at zero: the first frames
-        # decide whether the rover thinks it is level while parked on a slope.
+        # Seed from the accelerometer so a rover parked on a slope starts correct.
         if not self.seeded:
             if roll_a is None:
                 return
@@ -298,9 +192,7 @@ class ImuFusion(Node):
         wb = w - self.bias
 
         if 0.0 < dt <= self.max_dt:
-            # Euler-angle kinematics, not a naive component-wise add: at non-zero
-            # roll the body's y and z rates both contribute to pitch, and ignoring
-            # that is what makes cheap filters wander on side slopes.
+            # Euler-angle kinematics (matters on side slopes).
             tp = math.tan(self.pitch)
             sr, cr = math.sin(self.roll), math.cos(self.roll)
             self.roll += (wb[0] + wb[1] * sr * tp + wb[2] * cr * tp) * dt
@@ -351,28 +243,17 @@ class ImuFusion(Node):
         if self.still_since is None:
             self.still_since = now
             return
-        # Require a continuous dwell before believing it, so that a momentary lull
-        # mid-manoeuvre cannot contribute.
+        # Require continuous stillness.
         if now - self.still_since < self.bias_dwell:
             return
 
-        # Running mean at first, leaky tracker afterwards. A flat dt/bias_tau gain
-        # gives a 60 s time constant from the very first sample, so the robot would
-        # have to sit still for a minute before its heading was trustworthy; 1/n
-        # converges in the first second and then hands over to the slow tracker,
-        # which is what lets the bias follow temperature drift over a long mission.
+        # Running mean at first, then a slow tracker for temperature drift.
         self.bias_n += 1
         k = max(1.0 / self.bias_n, dt / max(self.bias_tau, 1e-6))
         self.bias += min(k, 1.0) * (w - self.bias)
 
     def _publish(self, src, w, a, t):
-        # *** SCHEDULED FROM WHERE THE LAST SLOT WAS DUE, NOT FROM WHEN IT FIRED. ***
-        # This was `skip if t - last_pub < min_period`, and at publish_rate_limit 100.0 on
-        # the 200 Hz stream it delivered ~75 Hz, not 100. At epoch-scale stamps float64
-        # resolves ~0.24 us, so a sample landing exactly on the 10 ms boundary is a coin
-        # flip -- and every lost flip costs a whole extra input period. Advancing a fixed
-        # schedule keeps the long-run rate exact whatever the jitter. After a gap longer
-        # than a slot it restarts from now instead of bursting to catch up.
+        # Fixed schedule so the long-run rate is exact despite stamp jitter.
         if self.min_period > 0.0:
             if self.next_pub is not None and t < self.next_pub:
                 return
@@ -387,18 +268,16 @@ class ImuFusion(Node):
         out.orientation.x, out.orientation.y = x, y
         out.orientation.z, out.orientation.w = z, qw
 
-        # Bias-corrected rates: this is what the EKF integrates into heading.
+        # Bias-corrected rates.
         out.angular_velocity.x = float(w[0])
         out.angular_velocity.y = float(w[1])
         out.angular_velocity.z = float(w[2])
-        # Gravity is left IN, so that the EKF's imu0_remove_gravitational_acceleration
-        # means what it says if linear acceleration is ever fused.
+        # Gravity left in.
         out.linear_acceleration.x = float(a[0])
         out.linear_acceleration.y = float(a[1])
         out.linear_acceleration.z = float(a[2])
 
-        # Roll and pitch are gravity-referenced and good to a degree or so. Yaw is
-        # not estimated at all -- 1e6 is the conventional "do not use this" marker.
+        # Yaw not estimated: 1e6 = do not use.
         out.orientation_covariance = [0.0004, 0.0, 0.0,
                                       0.0, 0.0004, 0.0,
                                       0.0, 0.0, 1e6]

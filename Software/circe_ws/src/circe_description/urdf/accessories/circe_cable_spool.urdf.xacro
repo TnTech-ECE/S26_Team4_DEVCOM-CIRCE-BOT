@@ -1,133 +1,30 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="circe_cable_spool">
 
     <!--
-      CIRCE tether spool: a motor-driven 6 in Cat6 spool in a two-post pillow-block
-      frame, bolted to the rear of the chassis deck.
-
-      Six STLs exported from one SolidWorks assembly. They share a single assembly
-      coordinate system, so every part is placed with the SAME transform and none of
-      them needed re-origining by hand. Do not "tidy" the meshes by re-centring them
-      individually - that is exactly what makes this file short.
-
-      *** MESH FRAME (derived from the geometry, not guessed) ***
-        +X is the spool rotation axis.  The drum's inertia about X is 0.0047 against
-                                       0.0088 transverse - the 1:2 ratio of a solid of
-                                       revolution. The drum's and the motor's centres
-                                       of mass both land on the line y=139.700,
-                                       z=132.807, which fixes the axis independently.
-        +Y is up.                      Both end blocks have vertices at exactly y=0 and
-                                       nothing below it: that plane is the machined
-                                       mounting face. The axis sits 139.700 mm (5.5 in)
-                                       above it.
-        +Z is the remaining horizontal.
-        Units are MILLIMETRES - the assembly measures 278.1 x 254.0 x 228.6 mm, i.e.
-        10.95 x 10.00 x 9.00 in. Hence scale="0.001 0.001 0.001" on every mesh.
-
-      Mapping that to ROS (x forward, y left, z up) with the axis ACROSS the rover
-      gives rpy = (pi/2, 0, pi/2), i.e. mesh (x,y,z) -> ros (z,x,y). The cable then
-      pays off the drum straight backwards as the rover drives forwards, so no
-      level-wind is needed.
-
-      *** THIS OCCLUDES THE LIDAR, AND THAT IS WHY THE REAR MASK EXISTS. ***
-      The A1's scan plane is at chassis z=0.170. The deck top is at 0.063 and this
-      assembly is 0.254 tall, so it reaches z=0.317 - a solid wall straight through the
-      scan plane. Measured as an exact mesh/plane cross-section at the mount position
-      below, it fills bearings -25.71 .. +25.72 deg in lidar_link at 0.242 .. 0.456 m.
-      That is outside the A1's 0.15 m dead zone, so without intervention it reads as a
-      wall a quarter-metre behind the rover, to both Nav2 and slam_toolbox.
-
-      circe_perception/config/scan_sector_filter.yaml deletes a +/-30 deg rear sector
-      upstream of /scan, which covers this with 4.28 deg to spare each side. That is
-      NOT much: the mask was +/-90 until a cold-start Nav2 failure forced it down, and
-      the spool is now the thing setting its lower bound. If the spool moves, re-measure
-      the sector and confirm it still fits.
+      Tether spool (motor-driven Cat6 drum) on the rear deck. All six STLs share one
+      assembly frame (mm, +X = spool axis, +Y up), so they use the same transform.
+      It blocks the lidar's rear arc (about +/-26 deg); scan_sector_filter.yaml masks +/-30 deg.
     -->
 
-    <!--
-      Re-declared so this file stays independently expandable, matching every other
-      accessory here. See the sim_mode note in circe_rover.urdf.xacro.
-    -->
     <xacro:arg name="sim_mode" default="false" />
 
-    <!--
-      ============================ MOUNT POSE ON THE ROVER =======================
-      *** MEASURE BEFORE DRIVING. ***
-
-      *** THE MESH AND THE NAV FOOTPRINT DISAGREE ABOUT WHERE THE DECK ENDS. ***
-      flipper_chassis.dae runs back to x = -0.348, but circe_nav/config/nav2_params.yaml
-      declares the footprint as x = +/-0.27305 - a 75 mm difference, because the mesh is
-      the FLIPPER chassis and includes arms this rover does not carry.
-
-      RESOLVED IN FAVOUR OF THE FOOTPRINT. spool_mount_x = -0.1588 is the furthest aft
-      the drum fits inside the declared footprint: it puts the drum's rear tangent at
-      x = -0.27308, flush with the footprint's rear edge to within 0.03 mm (and well
-      inside footprint_padding either way). Mounting to the mesh's rear edge instead
-      would need -0.2337, but if the real deck ends where the footprint says it does
-      there would be nothing there to bolt to.
-
-      The cost of being 75 mm further forward is paid to the lidar: the spool sits
-      closer to the A1, so it subtends a WIDER blind sector - measured -25.71 .. +25.72
-      deg here, against -20.64 .. +20.65 deg at -0.2337, and its nearest return closes
-      from 0.314 m to 0.242 m. Still inside the +/-30 deg rear mask in
-      circe_perception/config/scan_sector_filter.yaml, but with only 4.28 deg of margin
-      each side rather than the 9.35 the pre-move sector had - this move used up half
-      the headroom. The measured figures quoted in that file track THIS value. Move the
-      spool again and re-measure them both.
-
-      spool_deck_z is the top face of flipper_chassis.dae. It is the same measured
-      figure as chassis_top_z in rplidar_a1.urdf.xacro, DELIBERATELY duplicated rather
-      than referenced: the include order in circe_rover.urdf.xacro is already
-      load-bearing for the lidar -> mast -> camera chain and this file has no reason
-      to join it. If the deck is ever remeasured, change both.
-    -->
+    <!-- Mount pose: as far aft as the nav2 footprint allows. Re-measure the lidar mask if moved. -->
     <xacro:property name="spool_mount_x" value="-0.1588" />
     <xacro:property name="spool_mount_y" value="0.0" />
     <xacro:property name="spool_deck_z"  value="0.0630" />
 
-    <!--
-      ============================ MESH PLACEMENT ================================
-      One rotation and two translations, shared by all six meshes.
-
-      spool_mount_mesh_xyz is -R * (145.182, 0, 132.807) mm: the centre of the base
-      footprint, on the mounting plane. So spool_mount_link's origin sits exactly
-      where the assembly touches the deck, and spool_mount_z needs no fudge factor.
-
-      spool_drum_mesh_xyz is the same point raised to the rotation axis, so
-      spool_drum_link's origin lies ON the axis and the joint below is a pure
-      translation of spool_axis_height with no rotation. That is the whole reason the
-      two datums are picked this way.
-    -->
+    <!-- Shared mesh transform; spool_drum_link's origin is on the rotation axis. -->
     <xacro:property name="spool_mesh_rpy"       value="1.5707963 0 1.5707963" />
     <xacro:property name="spool_mount_mesh_xyz" value="-0.132807 -0.145182 0" />
     <xacro:property name="spool_drum_mesh_xyz"  value="-0.132807 -0.145182 -0.139700" />
     <xacro:property name="spool_axis_height"    value="0.139700" />
 
-    <!--
-      ============================ MASS ==========================================
-      Mesh volumes are exact (divergence-theorem integration over the closed
-      triangle soup): drum 1280.9 cm3, the five static parts 2312.4 cm3. Multiplied
-      by 1240 kg/m3 for solid PLA/PETG.
-
-      *** BOTH FIGURES ARE UPPER-MIDDLE ESTIMATES, FOR OPPOSITE REASONS. ***
-      A printed part at 20-40 % infill weighs well under the solid figure, so the
-      blocks and drum are over-counted. The gearmotor is NOT plastic: 82.8 cm3 of
-      steel and copper is roughly 0.5 kg, not the 0.103 kg counted here, so the mount
-      is under-counted by ~0.4 kg. They partly cancel. Weigh the real thing.
-
-      The inertia coefficients below are the mesh-derived second moments per
-      kilogram, in m2, about each link's own centre of mass and already rotated into
-      the link frame. Inertia is written as mass * coefficient so that correcting a
-      mass keeps the tensor consistent instead of silently desyncing it - which is
-      the usual way these end up wrong.
-    -->
+    <!-- Masses estimated from mesh volume (PLA); weigh the real parts. Inertia scales with mass. -->
     <xacro:property name="spool_drum_mass"  value="1.588" />
     <xacro:property name="spool_mount_mass" value="2.867" />
 
 
-    <!--
-      ============================ STATIC FRAME ==================================
-      Both end blocks, both top caps, and the gearmotor. Everything that does not turn.
-    -->
+    <!-- Static frame: end blocks, caps, gearmotor. -->
     <link name="spool_mount_link">
 
         <xacro:macro name="spool_static_part" params="mesh">
@@ -146,15 +43,7 @@
         <xacro:spool_static_part mesh="spool_free_end_block_top.stl" />
         <xacro:spool_static_part mesh="spool_motor.stl" />
 
-        <!--
-          Collision is two boxes, not the meshes. The blocks are prismatic, so a box
-          is a tight fit rather than a lazy one, and it keeps the broadphase cheap.
-          The bounds are the real per-part extents in this frame, so the boxes are
-          conservative exactly where the parts have pockets and nowhere else.
-
-          The gearmotor gets no collision volume: it lives between the two blocks,
-          inside the drum's swept cylinder, and can never be the first thing hit.
-        -->
+        <!-- Collision: one box per end block. -->
         <collision>
             <origin xyz="0 -0.1149 0.1053" rpy="0 0 0"/>
             <geometry>
@@ -169,11 +58,6 @@
             </geometry>
         </collision>
 
-        <!--
-          iyz is kept because it is ~11 % of iyy: the motor end is heavier and taller
-          than the free end, so the assembly genuinely is not principal-axis aligned.
-          ixy and ixz are ~4e-06 and dropped.
-        -->
         <inertial>
             <origin xyz="0 -0.0124 0.0931" rpy="0 0 0"/>
             <mass value="${spool_mount_mass}" />
@@ -192,11 +76,7 @@
     </joint>
 
 
-    <!--
-      ============================ DRUM ==========================================
-      The only part that turns. Its link origin is on the rotation axis, so the joint
-      is a pure z translation and the axis is a clean unit vector.
-    -->
+    <!-- Drum: the only rotating part. -->
     <link name="spool_drum_link">
         <visual>
             <origin xyz="${spool_drum_mesh_xyz}" rpy="${spool_mesh_rpy}"/>
@@ -206,16 +86,7 @@
             </geometry>
         </visual>
 
-        <!--
-          A cylinder at the FLANGE diameter, not the mesh. Radius 0.1143 (4.5 in) and
-          length 0.22352 (8.8 in) are the drum's exact extents. Collision against a
-          spool should be against the flanges anyway - the groove between them is not
-          somewhere another body can get to - and a spinning concave collision mesh is
-          the kind of thing that makes gz-sim's contact solver misbehave.
-
-          Offset +0.0216 in y because the drum is not centred on the mount datum; the
-          datum is the centre of the bolt-down footprint, which the motor end skews.
-        -->
+        <!-- Collision cylinder at flange diameter. -->
         <collision>
             <origin xyz="0 0.0216 0" rpy="1.5707963 0 0"/>
             <geometry>
@@ -223,11 +94,6 @@
             </geometry>
         </collision>
 
-        <!--
-          iyy is the axial moment and is half of ixx/izz, as it must be for a solid of
-          revolution. If a future edit makes those three drift out of that ratio, the
-          mesh transform is wrong. Products of inertia are all below 2e-05 and dropped.
-        -->
         <inertial>
             <origin xyz="0 0.0051 0" rpy="0 0 0"/>
             <mass value="${spool_drum_mass}" />
@@ -238,17 +104,7 @@
         </inertial>
     </link>
 
-    <!--
-      Continuous, because a tether spool has no end stops.
-
-      Nothing commands this joint yet. On hardware joint_state_publisher
-      (circe_bringup/launch/rover.launch.py) publishes it at 0 like the wheel joints,
-      so TF below spool_drum_link stays connected; in sim the gz JointStatePublisher
-      system reports it. Neither DRIVES it - the damping and friction below are what
-      stop an uncommanded free joint from windmilling under the rover's own
-      accelerations and shaking the model. Replace them with a real actuator when the
-      payout controller lands.
-    -->
+    <!-- Not driven yet; damping/friction keep it from spinning freely. -->
     <joint name="spool_drum_to_mount" type="continuous">
         <parent link="spool_mount_link"/>
         <child link="spool_drum_link"/>

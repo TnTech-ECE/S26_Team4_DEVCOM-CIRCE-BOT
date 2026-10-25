@@ -7,7 +7,6 @@
 
 namespace {
 
-// COBS adds at most one byte per 254, plus the 0x00 delimiter.
 constexpr size_t MAX_ENCODED = MAX_FRAME + MAX_FRAME / 254 + 2;
 
 BridgeHandler g_handler = nullptr;
@@ -16,7 +15,7 @@ uint8_t g_tx_seq = 0;
 
 uint8_t g_rx_buf[MAX_ENCODED];
 size_t g_rx_len = 0;
-bool g_rx_overflow = false;  // discard until the next 0x00
+bool g_rx_overflow = false;  // discard until next 0x00
 
 uint16_t crc16(const uint8_t *data, size_t len) {
   uint16_t crc = 0xFFFF;
@@ -29,7 +28,6 @@ uint16_t crc16(const uint8_t *data, size_t len) {
   return crc;
 }
 
-// Returns the encoded length. `out` must hold len + len/254 + 1 bytes.
 size_t cobs_encode(const uint8_t *in, size_t len, uint8_t *out) {
   size_t code_idx = 0;
   size_t o = 1;
@@ -52,7 +50,7 @@ size_t cobs_encode(const uint8_t *in, size_t len, uint8_t *out) {
   return o;
 }
 
-// Returns the decoded length, or 0 on malformed input or if it would exceed out_cap.
+// Returns 0 on malformed input or overflow.
 size_t cobs_decode(const uint8_t *in, size_t len, uint8_t *out, size_t out_cap) {
   size_t i = 0;
   size_t o = 0;
@@ -85,14 +83,12 @@ void handle_encoded(const uint8_t *enc, size_t len) {
   }
   g_stats.rx_ok++;
   led_pulse();
-  // frame[1] is the Pi's seq. Gaps are not counted here; the Pi logs its own sends.
   if (g_handler) g_handler(frame[0], frame + 2, n - FRAME_OVERHEAD);
 }
 
 }  // namespace
 
 void bridge_begin() {
-  // USB CDC ignores the baud rate; the link runs at USB speed regardless.
   Serial.begin(115200);
 }
 
@@ -119,7 +115,7 @@ void bridge_poll() {
 
 bool bridge_send(uint8_t msg_id, const void *payload, size_t len) {
   if (len > MAX_PAYLOAD) return false;
-  // dtr() is true only while a program on the Pi holds the port open.
+  // dtr() is true only while the Pi holds the port open.
   if (!Serial.dtr()) return false;
 
   uint8_t frame[MAX_FRAME];
@@ -135,7 +131,6 @@ bool bridge_send(uint8_t msg_id, const void *payload, size_t len) {
   enc[n++] = 0x00;
 
   if (Serial.availableForWrite() < static_cast<int>(n)) {
-    // Not stamped with a seq, so the Pi cannot see this loss; the heartbeat reports it.
     g_stats.tx_dropped++;
     return false;
   }

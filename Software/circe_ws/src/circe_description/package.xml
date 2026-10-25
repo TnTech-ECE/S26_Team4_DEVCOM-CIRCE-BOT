@@ -17,14 +17,10 @@
   <exec_depend>joint_state_publisher</exec_depend>
   <exec_depend>rviz2</exec_depend>
 
-  <!-- urdf/accessories/realsense_d456.urdf.xacro includes _d455.urdf.xacro from
-       here. The D456 is the IP65/M12 D455 and has no model of its own upstream. -->
+  <!-- D456 uses the D455 model. -->
   <exec_depend>realsense2_description</exec_depend>
 
-  <!-- KEEP. urdf/circe_rover.urdf.xacro loads its chassis and wheel meshes
-       (flipper_chassis, flipper_track, pro_tire) straight out of this package
-       rather than duplicating 24 MB of .dae here. Removing this dependency makes
-       the model load with missing geometry, not fail loudly. -->
+  <!-- Chassis and wheel meshes. -->
   <exec_depend>roverrobotics_description</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>

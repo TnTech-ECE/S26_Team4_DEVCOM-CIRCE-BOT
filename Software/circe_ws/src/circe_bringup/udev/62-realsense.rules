@@ -1,56 +1,11 @@
-# /dev access for the Intel RealSense D456.
-#
-# *** THIS RULE IS NOT OPTIONAL AND NOTHING ELSE SUPPLIES IT. ***
-# librealsense talks to the camera over raw libusb, not through a serial device, so
-# unlike the lidar and the motor controller there is no /dev/<name> symlink to create --
-# what is needed is PERMISSION on the USB device node. Verified on this machine:
-#
-#   dpkg -L ros-jazzy-librealsense2 | grep -i rules   ->  (nothing)
-#
-# The ros-jazzy-librealsense2 debian ships NO udev rules at all, and neither does the
-# realsense-ros source in this workspace. Upstream's 99-realsense-libusb.rules only
-# arrives if you build librealsense from source and run its install script, which this
-# workspace does not do. Without this file the D456 enumerates but every stream fails to
-# open unless the driver is run as root, and the failure reads as a camera fault:
-#
-#   sensors.launch.py -> gate "camera" times out on
-#   /camera/camera/depth/image_rect_raw, and rs-enumerate-devices lists the device
-#   while realsense-viewer cannot open it.
-#
-# Install (with the other two in this directory):
-#   sudo cp 6*.rules /etc/udev/rules.d/
-#   sudo udevadm control --reload-rules && sudo udevadm trigger
-# Then REPLUG the camera -- udevadm trigger does not re-apply permissions to a device
-# that is already open.
-#
-# *** MATCHED BY VENDOR, DELIBERATELY. ***
-# 8086 is Intel. Upstream enumerates every D4xx product ID individually, and that list
-# is a maintenance trap: the D455/D456/D457 family does not share one ID, and a camera
-# whose ID is missing from the list fails exactly like a camera with no rule at all.
-# On the Pi 5 the RealSense is the only Intel USB device present, so matching the vendor
-# is both simpler and more robust. Confirm what actually enumerated with:
-#
-#   lsusb | grep 8086
-#
-# and if this machine ever carries a second Intel USB device, narrow the rule by adding
-# the camera's ATTRS{idProduct} from that output.
-#
-# MODE 0666 rather than a plugdev group so the rule works whatever user the bringup runs
-# as -- on the Pi that may be a systemd service account that is not in plugdev.
+# USB permissions for the RealSense D456 (no package ships this rule). Replug after install.
 
 SUBSYSTEM=="usb", ATTRS{idVendor}=="8086", MODE:="0666", GROUP:="plugdev"
 SUBSYSTEM=="usb_device", ATTRS{idVendor}=="8086", MODE:="0666", GROUP:="plugdev"
 
-# The D456 also presents UVC video nodes. librealsense uses these for the depth and
-# infrared streams on the V4L2 backend, which is the default backend on Linux, so they
-# need the same permission as the raw USB node above.
+# UVC video nodes (depth/IR streams).
 SUBSYSTEM=="video4linux", ATTRS{idVendor}=="8086", MODE:="0666", GROUP:="video"
 
-# HID nodes for the IMU. *** THIS IS THE ONE THAT BREAKS /imu/data. ***
-# The D456's gyro and accelerometer are exposed as iio/HID devices, NOT as part of the
-# video interface. Miss these and depth streams fine while /camera/camera/imu stays
-# silent -- which then starves circe_perception/imu_fusion.py, so /imu/data never
-# appears, the EKF loses its only heading reference, and the sensors gate in
-# circe_bringup.launch.py times out naming the camera rather than the permission.
+# HID/iio nodes for the IMU; without these /camera/camera/imu stays silent.
 SUBSYSTEM=="hidraw", ATTRS{idVendor}=="8086", MODE:="0666", GROUP:="plugdev"
 KERNEL=="iio*", ATTRS{idVendor}=="8086", MODE:="0666", GROUP:="plugdev"

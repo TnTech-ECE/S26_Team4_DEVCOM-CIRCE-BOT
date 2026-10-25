@@ -12,23 +12,8 @@ Consumes:  /camera/camera/depth/image_rect_raw   16UC1 (hardware, mm) or 32FC1 (
            TF camera_depth_optical_frame -> base_link (static) and -> odom (per frame)
 Publishes: /terrain/grid                          OccupancyGrid, 0-100, -1 unknown, in odom
 
-Publishes NO TF and NO /cmd_vel. This is a pure topic transform, so the workspace's
-one-publisher-per-edge contract is untouched. It also does not talk to the costmaps --
-whether Nav2 listens is decided in circe_nav/config/nav2_params.yaml.
-
-*** WHY THE GRID IS PERSISTENT ***
-The camera is mounted at pitch 0, so ground is not visible closer than ~0.62 m. A
-per-frame snapshot would therefore forget a hazard exactly as the rover reached it. The
-grid instead accumulates in odom and scrolls with the robot: a patch classified at 4 m is
-still known while driving over it blind. The same accumulation beats depth noise, which is
-~2% of range (+/-8 cm at 4 m, the same order as the step threshold) -- each cell is
-re-observed at shrinking range, so its estimate sharpens as it starts to matter.
-
-*** WHY z IS HEIGHT ABOVE GROUND, WITH NO OFFSET ***
-base_to_chassis puts chassis_link +0.125 above base_link and the axle sits 0.125 above the
-ground, so base_link is at ground level. The EKF runs two_d_mode: true, which pins z, roll
-and pitch to zero, so odom z equals base_link z. Every threshold in config/terrain.yaml is
-therefore a raw height, not a difference from some datum.
+The grid is persistent in odom (ground closer than ~0.62 m is out of view), and
+base_link sits at ground level, so cell z is height above ground.
 """
 
 import math
@@ -114,15 +99,12 @@ class TerrainNode(Node):
         self.res = float(self.cfg['resolution'])
         self.n_cells = int(round(float(self.cfg['grid_size_m']) / self.res))
 
-        # Running sums per cell, all decayed together each frame. Keeping sums rather than
-        # a list of heights is what makes this O(points) with no allocation per frame.
+        # Running per-cell sums, decayed each frame.
         shape = (self.n_cells, self.n_cells)
         self.acc_n = np.zeros(shape, dtype=np.float32)
         self.acc_z = np.zeros(shape, dtype=np.float32)
         self.acc_z2 = np.zeros(shape, dtype=np.float32)
-        # Cells the robot's own footprint has occupied. See _classify: whatever the
-        # terrain maths says about ground the robot is demonstrably standing on, it is
-        # drivable, because the robot drove there.
+        # Cells the robot's footprint has occupied (always drivable).
         self.driven = np.zeros(shape, dtype=bool)
         # World coords (in global_frame) of cell [0, 0]. None until the first robot pose.
         self.origin = None
@@ -131,37 +113,13 @@ class TerrainNode(Node):
         self.k = None            # (fx, fy, cx, cy)
         self.row_band = None     # (v_lo, v_hi) computed once from camera_info + static TF
 
-        # *** THE LISTENER GETS ITS OWN NODE AND THREAD. BOTH ARGUMENTS ARE LOAD-BEARING. ***
-        # Both lookups at a message stamp below wait up to 0.05 s for TF to catch up, and
-        # they always have to: the EKF publishes odom -> base_link only on its 30 Hz tick,
-        # stamped with its latest measurement, so a depth frame routinely arrives ~20 ms
-        # BEFORE the transform for its own stamp. With TransformListener(buffer, self)
-        # the /tf subscription ran on this node's single-threaded executor -- the one the
-        # depth callback was blocking while it waited. No transform could arrive during
-        # the wait, so the timeout was dead code and every frame newer than the last
-        # processed TF was dropped.
-        #
-        # spin_thread=True alone does NOT fix it while `self` is passed: the listener
-        # adds the node it is given to its own executor, rclpy.spin() in main() takes the
-        # node straight back (a node belongs to one executor at a time), and every
-        # callback lands on the blocked thread again -- measured, 109 of 110 frames still
-        # dropped, each callback running the full 50 ms timeout. node=None makes the
-        # listener create a private node that its thread alone spins.
-        #
-        # Measured in circe_sim_nav before the fix: 0 of 77 frames covered on arrival,
-        # the covering TF 20 ms later, 100 of 100 frames dropped. No /terrain/grid ever,
-        # so the local_costmap's terrain_layer never went current and controller_server
-        # aborted every goal with "Costmap timed out waiting for update". Whether it
-        # worked at all depended on the EKF timer's phase against the camera's -- i.e.
-        # on start-up timing -- so it failed per RUN, not per frame. The tf2 buffer core
-        # is thread-safe.
+        # Own node + thread for the listener so TF keeps arriving while the depth
+        # callback waits on it (otherwise every frame was dropped).
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, None, spin_thread=True)
         self._unknown = None     # cached all-unknown grid data; see _publish_unknown
 
-        # Depth is published best-effort by both the RealSense driver (depth_qos:
-        # SENSOR_DATA) and the gz bridge. A RELIABLE subscription would simply never
-        # connect to either.
+        # Depth is best-effort from both the driver and the gz bridge.
         sensor_qos = QoSProfile(
             depth=1,
             reliability=ReliabilityPolicy.BEST_EFFORT,
@@ -196,12 +154,7 @@ class TerrainNode(Node):
         self.k = (msg.k[0], msg.k[4], msg.k[2], msg.k[5])
 
     def _compute_row_band(self, height):
-        """Rows that can contain ground within the ROI, from the real intrinsics and TF.
-
-        Deliberately not hardcoded: it depends on the camera resolution, on the mount
-        height, and on camera_mount_pitch, all of which change. Casting a ray per row and
-        intersecting z=0 in base_link is exact and costs nothing -- it runs once.
-        """
+        """Image rows that can contain ground in the ROI (from intrinsics and TF)."""
         try:
             tf = self.tf_buffer.lookup_transform(
                 self.cfg['robot_frame'], self.camera_frame, rclpy.time.Time())
@@ -230,11 +183,7 @@ class TerrainNode(Node):
         return min(rows), max(rows)
 
     def _decode(self, msg):
-        """Depth image to metres, without cv_bridge.
-
-        Hardware publishes 16UC1 in millimetres; the Gazebo rgbd_camera publishes 32FC1 in
-        metres. Both have to work or the sim-first development path breaks.
-        """
+        """Depth image to metres: 16UC1 mm (hardware) or 32FC1 m (Gazebo)."""
         if msg.encoding == '16UC1':
             buf = np.frombuffer(msg.data, dtype=np.uint16)
             img = buf.reshape(msg.height, msg.step // 2)[:, :msg.width]
@@ -254,38 +203,9 @@ class TerrainNode(Node):
         self.imu_rpy = (roll, pitch)
 
     def _attitude_correct(self, rot_odom_cam, stamp):
-        """Put the body's real roll and pitch back into the camera's rotation.
+        """Put the body's real roll/pitch (IMU) back into the camera rotation.
 
-        *** WHY THIS IS NECESSARY, AND WHY IT IS THE RAMP BUG ***
-
-        The EKF runs with two_d_mode: true (circe_nav/config/localization_ekf.yaml), so
-        odom -> base_link carries yaw only - roll, pitch and z are forced to zero.
-        Measured on the 9 deg test ramp: true IMU pitch 8.64 deg, TF pitch 0.00 deg.
-
-        Everything downstream of that TF therefore believes the robot is level. For this
-        node the consequence is severe, because it deprojects depth into odom THROUGH
-        that transform. Nose-down 9 deg coming off a ramp, the flat floor ahead really
-        does rise at 9 deg in base_link - that is what a level floor looks like from a
-        tilted robot - and a level-assuming rotation leaves it rising in odom too. So
-        the node writes a 9 deg upslope where there is flat concrete.
-
-        Worse, the grid ACCUMULATES. Cells seen while climbing (body pitched up), while
-        cresting (level) and while descending (pitched down) are averaged together at
-        heights that disagree by tens of centimetres. The step and roughness tests then
-        see a discontinuity that exists only in the frame maths, mark the cells lethal,
-        and the terrain_layer hands the local costmap a wall exactly where the rover is
-        about to drive. That is the "stuck half on the ramp" failure: the robot is not
-        physically trapped, it is standing next to an obstacle it invented.
-
-        The fix keeps the camera's static mount rotation from TF - which is correct,
-        being a fixed URDF joint - and rebuilds only the body attitude, taking yaw from
-        TF (the EKF does estimate that) and roll and pitch from the IMU (which is never
-        flattened).
-
-        The residual error is z: TF still reports 0 on a ramp, so heights observed from
-        different elevations are still offset. That is much the smaller term - a 9 deg
-        rotation error costs 0.6 m of height at the 4 m lookahead, an elevation offset
-        costs 0.1-0.2 m - and removing it needs 3D odometry, not a rotation fix.
+        TF is level (EKF two_d_mode), which made ramps read as walls. Yaw stays from TF.
         """
         if self.imu_rpy is None:
             return rot_odom_cam
@@ -310,23 +230,8 @@ class TerrainNode(Node):
         return (rz @ ry @ rx) @ r_bc
 
     def _mark_driven(self, rx, ry):
-        """Record the ground the robot is standing on as proven traversable.
-
-        *** THIS IS THE ANTI-TRAP GUARANTEE. ***
-
-        A terrain classifier can always be wrong, and when it is wrong underneath the
-        robot the robot cannot move at all: every MPPI rollout starts inside a lethal
-        cell, every trajectory scores as a collision, and the controller commands zero.
-        Nothing in the recovery behaviours helps, because spin and backup have to cross
-        the same cells.
-
-        The one piece of evidence that outranks any threshold is that the robot is
-        physically there. Cells its footprint has occupied are marked permanently
-        drivable, so the path it climbed is guaranteed to still be open when it turns
-        around and comes back down. This is what stops "stuck half on the ramp".
-
-        The mask scrolls and is discarded with the grid in _recenter, so it does not
-        accumulate stale claims about ground the robot left long ago.
+        """Mark cells under the footprint as drivable, so the robot can't be trapped by a
+        misclassification under its own wheels. Discarded with the grid on recenter.
         """
         if self.origin is None:
             return
@@ -359,8 +264,7 @@ class TerrainNode(Node):
 
         for arr in (self.acc_n, self.acc_z, self.acc_z2, self.driven):
             arr[...] = np.roll(arr, (-dy, -dx), axis=(0, 1))
-            # Zero whatever wrapped around, so old terrain does not reappear on the
-            # opposite side of the map.
+            # Zero wrapped cells so old terrain doesn't reappear.
             if dx > 0:
                 arr[:, -dx:] = 0
             elif dx < 0:
@@ -410,8 +314,7 @@ class TerrainNode(Node):
 
         stride = int(self.cfg['pixel_stride'])
         v_lo, v_hi = self.row_band
-        # The row-band crop is the real "filter before the CPU": the top ~58% of the frame
-        # cannot contain ground in the ROI, so it is never read.
+        # Only read rows that can contain ground.
         sub = depth[v_lo:v_hi + 1:stride, ::stride]
         vs = np.arange(v_lo, v_hi + 1, stride, dtype=np.float32)
         us = np.arange(0, depth.shape[1], stride, dtype=np.float32)
@@ -472,38 +375,13 @@ class TerrainNode(Node):
             var = np.where(observed, self.acc_z2 / np.maximum(n, 1e-6) - mean * mean, 0.0)
         rough = np.sqrt(np.clip(var, 0.0, None))
 
-        # *** NEVER LET AN UNOBSERVED CELL ACT AS A HEIGHT REFERENCE ***
-        # An earlier version filled unobserved cells with the global median height and ran
-        # the filters over that. On flat ground it looked fine; on a ramp it was a
-        # disaster. Observation is patchy at range, so an elevated ramp cell would find
-        # filled neighbours sitting at floor height and report the ramp's full elevation as
-        # a STEP -- a drivable 9 deg ramp classified 59% lethal, with cost rising along its
-        # length exactly as its height above the fake floor grew.
-        #
-        # The fix is to make unobserved cells invisible to each filter rather than
-        # substituting a value: +BIG for the minimum filter, -BIG for the maximum, and
-        # count-normalised smoothing for the slope. Every observed cell contains itself in
-        # its own window, so low <= mean <= high always holds and no validity mask is
-        # needed on the result.
+        # Unobserved cells must be invisible to the filters (+/-BIG, count-normalised),
+        # not filled with a value, or ramps read as steps.
         BIG = np.float32(1e6)
         obsf = observed.astype(np.float32)
         meanf = np.where(observed, mean, 0.0).astype(np.float32)
 
-        # *** STEP AND SLOPE MUST BE MEASURED AT DIFFERENT SCALES ***
-        # A step is a DISCONTINUITY; a slope is a GRADIENT. Measuring both over the same
-        # window conflates them, and the failure is not subtle: with a single 9-cell
-        # (0.45 m) window, a perfectly drivable 9 deg ramp rises 0.071 m across it and
-        # trips a 0.06 m step threshold, so every ramp reads lethal.
-        #
-        # So: relief over a SMALL window (the scale at which a wheel actually meets an
-        # edge), and slope from the gradient of a SMOOTHED field. Smoothing first also
-        # stops a sharp kerb producing a spurious near-vertical slope reading.
-        #
-        # Sanity check of the two scales, at the shipped defaults:
-        #                     step (3 cells, 0.10 m span)   slope (smoothed)
-        #   9 deg ramp        0.158 x 0.10 = 0.016  free    0.157 rad  below warn
-        #   31 deg ramp       0.600 x 0.10 = 0.060          0.541 rad  LETHAL
-        #   0.08 m kerb       0.080         LETHAL          smoothed away
+        # Step uses a small window, slope a smoothed larger one, so ramps aren't steps.
         sw = int(self.cfg['step_window'])
         low = ndimage.minimum_filter(
             np.where(observed, meanf, BIG), size=sw, mode='nearest')
@@ -513,9 +391,7 @@ class TerrainNode(Node):
         step_up = np.where(observed, meanf - low, 0.0)      # positive discontinuity
         step_down = np.where(observed, high - meanf, 0.0)   # drop-off below local ground
 
-        # Count-normalised box smoothing: the mean of the OBSERVED cells in the window,
-        # not of the window. den is the observed fraction, so it also tells us where the
-        # gradient is trustworthy.
+        # Mean of observed cells only; den = observed fraction.
         lw = int(self.cfg['slope_window'])
         num = ndimage.uniform_filter(meanf, size=lw, mode='nearest')
         den = ndimage.uniform_filter(obsf, size=lw, mode='nearest')
@@ -529,8 +405,7 @@ class TerrainNode(Node):
         np.maximum(cost, _grade(step_up, self.cfg['step_warn'], self.cfg['step_lethal']), cost)
         np.maximum(cost, _grade(slope, self.cfg['slope_warn'], self.cfg['slope_lethal']), cost)
         np.maximum(cost, _grade(step_down, self.cfg['drop_warn'], self.cfg['drop_lethal']), cost)
-        # Roughness is graded only -- it distinguishes gravel from tarmac and should
-        # produce a preference, never a barrier.
+        # Roughness is graded only, never lethal.
         rough_cost = _grade(rough, self.cfg['rough_warn'], self.cfg['rough_max'])
         rough_cost = rough_cost * (float(self.cfg['rough_max_cost']) / 100.0)
         np.maximum(cost, rough_cost, cost)
@@ -541,16 +416,13 @@ class TerrainNode(Node):
             | (step_down >= self.cfg['drop_lethal'])
         ) & (n >= float(self.cfg['min_points_for_lethal']))
 
-        # Confidence: a distant, thinly-observed cell nudges the planner; it does not stop
-        # it. Lethal cells bypass this, having already passed min_points_for_lethal.
+        # Scale non-lethal cost by confidence.
         conf = np.clip(n / float(self.cfg['full_confidence_points']), 0.0, 1.0)
         out = np.clip(cost * conf * 100.0, 0, 99).astype(np.int8)
         out[lethal] = int(self.cfg['lethal_cost'])
         out[~observed] = -1
 
-        # Ground the robot has stood on outranks every threshold above. See _mark_driven:
-        # without this, one bad classification under the wheels stops the rover dead with
-        # no recovery, because spin and backup have to cross the same cells.
+        # Driven ground overrides everything (see _mark_driven).
         if self.cfg['clear_driven']:
             out[self.driven] = 0
         return out
@@ -578,21 +450,8 @@ class TerrainNode(Node):
         self.grid_pub.publish(msg)
 
     def _publish_unknown(self):
-        """An all-unknown grid around the robot, until the first depth frame lands.
-
-        *** WITHOUT THIS, NO DEPTH MEANS NO DRIVING. ***
-        The local_costmap's terrain_layer is a StaticLayer, and on Jazzy a StaticLayer
-        that has never received a map holds the whole costmap "not current":
-        controller_server then aborts every goal after 0.3 s with "Costmap timed out
-        waiting for update". Measured in circe_sim_nav -- the planner found the path,
-        and the rover never moved. So this node only "degraded gracefully" once it had
-        published at least once; use_camera:=false (the documented lidar-only setup), a
-        D456 that never starts, or a TF fault meant Nav2 could plan but never drive.
-
-        Unknown (-1) cells contribute nothing: the layer reads them as free or as no
-        information depending on track_unknown_space, and with use_maximum it can only
-        ever RAISE a cell's cost. This changes no cost anywhere; it lets the layer go
-        current.
+        """Publish an all-unknown grid until depth arrives; otherwise the StaticLayer
+        never goes current and the controller aborts every goal.
         """
         try:
             tf = self.tf_buffer.lookup_transform(

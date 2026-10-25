@@ -12,12 +12,9 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <!-- Maps /joy to /cmd_vel using config/{ps4,ps5}_controller.yaml + joy_topics.yaml. -->
+  <!-- /joy -> /cmd_vel -->
   <exec_depend>roverrobotics_input_manager</exec_depend>
 
-  <!-- `joy`, not `joy_linux`. Upstream's launch file used joy_linux, which is not
-       installed here and not in circe.repos; joy is the maintained driver and
-       publishes the same sensor_msgs/Joy on /joy. -->
   <exec_depend>joy</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>

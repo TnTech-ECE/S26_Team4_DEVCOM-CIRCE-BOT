@@ -1,31 +1,8 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="circe_rover">
 
     <!--
-      CIRCE: Rover Zero 4WD chassis + RPLidar A1 + RealSense D456.
-
-      Derived from roverrobotics_description/urdf/rover_4wd.urdf, which is left
-      PRISTINE upstream. The chassis/wheel geometry below is unchanged from that
-      file; only the accessory includes differ.
-
-      Chassis and wheel MESHES are still loaded from roverrobotics_description
-      (flipper_chassis, flipper_track, pro_tire) rather than copied here — that
-      package is in the workspace anyway and duplicating 24 MB of .dae buys
-      nothing. That is the sole reason for the roverrobotics_description
-      exec_depend in package.xml; do not "clean it up".
-    -->
-
-    <!--
-      sim_mode gates every Gazebo-only element in this model and its accessories.
-
-      false (default) is the hardware path: no <gazebo> tags at all, so the URDF that
-      reaches robot_state_publisher on the real rover is exactly the geometry and
-      nothing else. true adds the gz-sim plugins, sensors, and friction that
-      circe_gazebo needs.
-
-      Each accessory file re-declares this arg with the same default so it stays
-      independently expandable (xacro:arg is global, and a second declaration does not
-      override a value already given on the command line). Pass it through as:
-          xacro circe_rover.urdf.xacro sim_mode:=true
+      CIRCE: Rover Zero 4WD chassis (from rover_4wd.urdf) + RPLidar A1 + RealSense D456.
+      sim_mode:=true adds the Gazebo plugins/sensors; false is the hardware URDF.
     -->
     <xacro:arg name="sim_mode" default="false" />
 
@@ -38,31 +15,13 @@
     <xacro:property name="wheel_mass" value="1.25" />
     <xacro:property name="chassis_mass" value="4.53592" />
 
-    <!-- Part Includes - Sensors, Etc.. -->
-    <!--
-      CIRCE sensor suite: RPLidar A1 + a shelf above it carrying a RealSense D456.
-
-      The rover_dev_payload deck is deliberately NOT included, because CIRCE does
-      not use it. roverrobotics_description's accessories/imu.urdf is not included
-      either, since it parents imu_link to payload_link; accessories/circe_imu.urdf
-      puts imu_link on the chassis instead.
-
-      *** INCLUDE ORDER IS LOAD-BEARING ***
-        rplidar_a1        defines lidar_mount_* and a1_scan_plane_z
-        circe_sensor_mast derives the shelf height from those
-        realsense_d456   mounts onto the shelf's sensor_shelf_link
-      Reordering these makes xacro fail on an undefined property or a missing link.
-    -->
+    <!-- Sensors. Order matters: lidar -> mast -> camera. -->
     <xacro:include filename="$(find circe_description)/urdf/accessories/rplidar_a1.urdf.xacro" />
     <xacro:include filename="$(find circe_description)/urdf/accessories/circe_sensor_mast.urdf.xacro" />
     <xacro:include filename="$(find circe_description)/urdf/accessories/realsense_d456.urdf.xacro" />
     <xacro:include filename="$(find circe_description)/urdf/accessories/circe_imu.urdf.xacro" />
 
-    <!--
-      Tether spool on the rear deck. Independent of the chain above: it derives
-      nothing from the lidar or the mast and can be included in any order relative to
-      them. It DOES occlude the lidar's rear arc - see the note in the file.
-    -->
+    <!-- Tether spool on the rear deck. -->
     <xacro:include filename="$(find circe_description)/urdf/accessories/circe_cable_spool.urdf.xacro" />
 
     <!-- Robot Definition -->
@@ -236,15 +195,7 @@
     </joint>
     
 
-    <!--
-      Gazebo plugins and wheel friction. Sim only.
-
-      What used to live inline here was a verbatim copy of rover_4wd.urdf's plugin
-      block, naming ignition::gazebo::systems::* / ignition-gazebo-*-system. Those are
-      Fortress-era names; gz-sim 8 (Harmonic) ships only libgz-sim8-*-system.so, so
-      every one of them silently failed to load and the model spawned inert. The
-      corrected declarations now live in urdf/gazebo/plugins.xacro.
-    -->
+    <!-- Gazebo plugins and wheel friction (sim only). -->
     <xacro:if value="$(arg sim_mode)">
         <xacro:include filename="$(find circe_description)/urdf/gazebo/plugins.xacro" />
     </xacro:if>

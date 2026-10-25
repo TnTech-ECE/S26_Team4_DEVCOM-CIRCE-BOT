@@ -1,28 +1,5 @@
-# /dev/teensy -> the Teensy 4.0 on USB serial, plus upload permission for its bootloader.
-#
-# Adapted from PJRC's 00-teensy.rules (shipped in ~/.platformio/packages/tool-teensy/).
-# Install with:
-#   sudo cp 63-teensy.rules /etc/udev/rules.d/
-#   sudo udevadm control --reload-rules && sudo udevadm trigger
-# Then REPLUG the Teensy.
-#
-# *** UPLOADS FAIL WITHOUT THIS RULE. ***
-# teensy_loader_cli talks to the HalfKay bootloader (16c0:0478) over raw hidraw, which
-# is root-only by default. Without the hidraw/usb lines below, `pio run -t upload`
-# waits forever for the board or fails with a permission error.
-#
-# 16c0 is PJRC's vendor ID, and 04xx covers every Teensy USB type: 0483 serial,
-# 0486 RawHID (factory blink firmware), 0478 bootloader. Only the serial type gets
-# the /dev/teensy symlink, because that is the one the Pi talks to.
-#
-# The ID_MM_* lines stop ModemManager from probing the port as a modem in the first few
-# seconds after enumeration. That probing writes AT commands into the firmware's serial
-# parser and holds the port open. This file must sort before 77-mm-*.rules, and "63"
-# does.
-#
-# Verify after flashing a USB_SERIAL sketch:
-#   ls -l /dev/teensy
-#   lsusb | grep 16c0          # expect 16c0:0483
+# /dev/teensy -> Teensy 4.0 USB serial, plus bootloader upload permission (from PJRC's
+# 00-teensy.rules). ID_MM_* keeps ModemManager off the port.
 
 ATTRS{idVendor}=="16c0", ATTRS{idProduct}=="04*", ENV{ID_MM_DEVICE_IGNORE}="1", ENV{ID_MM_PORT_IGNORE}="1"
 ATTRS{idVendor}=="16c0", ATTRS{idProduct}=="04[789a]*", ENV{MTP_NO_PROBE}="1"

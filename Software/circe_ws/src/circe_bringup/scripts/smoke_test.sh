@@ -1,67 +1,13 @@
 #!/usr/bin/env bash
-# CIRCE bring-up smoke test.
+# CIRCE bring-up smoke test: launches sim/hardware scenarios and checks READY banner,
+# expected nodes, one TF tree, no crashes, green diagnostics, and (optionally) one Nav2 goal.
 #
-# Launches the stack under a set of argument combinations -- simulation and hardware --
-# and for each one checks, in this order:
+#   smoke_test.sh [sim | hw | all | <scenario>...] [--list]
 #
-#   1. READY    the launch prints its ready banner, i.e. every wait_for.py gate passed in
-#               sequence. A gate that times out fails the scenario at once, naming it.
-#   2. NODES    the expected nodes are up, the switched-off layers' nodes are NOT, and no
-#               node name is duplicated (the signature of a double launch).
-#   3. TF       tf2_tools view_frames shows ONE connected tree with the expected root, the
-#               key transforms resolve, and no edge has two publishers.
-#   4. CRASHES  no process died during the run (respawned or not -- a crash is a finding).
-#   5. GREEN    /diagnostics_toplevel_state holds OK for N consecutive samples.
-#   6. NAV      (sim_full; hardware only on request) one real NavigateToPose goal must
-#               SUCCEED and the rover must end within tolerance of it.
-#
-# *** WHY NAV EXISTS: EVERYTHING ELSE PASSED WHILE THE ROVER COULD NOT DRIVE. ***
-# An earlier version of this test reported sim_full all green -- gates, TF, costmaps
-# published, diagnostics OK -- while every goal aborted after 0.4 s: terrain_node never
-# published /terrain/grid, the local_costmap's terrain_layer never went "current", and
-# controller_server refused to drive ("Costmap timed out waiting for update", error
-# code 107). A published costmap is not a usable one. Only asking Nav2 to drive proves it.
-#
-# Usage, from a sourced workspace (source install/setup.bash):
-#
-#   smoke_test.sh                     sim scenarios + bench_dry + every hardware scenario
-#                                     whose devices are plugged in
-#   smoke_test.sh sim | hw | all      one group ("all" still skips absent hardware)
-#   smoke_test.sh sim_full bench_dry  named scenarios, in the order given
-#   smoke_test.sh --list              what each scenario launches
-#
-# Also installed: `ros2 run circe_bringup smoke_test.sh ...`.
-#
-# *** EVERY RUN IS ISOLATED, AND CLEANED UP BY MARKER, NOT BY NAME. ***
-# Each scenario gets ROS_DOMAIN_ID=$CIRCE_SMOKE_DOMAIN_ID (default 87), localhost-only
-# discovery, and its own GZ_PARTITION, so it cannot talk to the rover's network or to a
-# Gazebo you already have open. Every process it starts inherits CIRCE_SMOKE_RUN=<id>,
-# and teardown kills whatever still carries that marker -- including the children
-# `ros2 launch` sometimes fails to reap, which is exactly how a stale Gazebo server
-# survives to swallow the next spawn (see circe_gazebo/scripts/stop_sim.sh).
-#
-# *** JOB CONTROL IS ON (set -m), AND IT HAS TO BE. ***
-# A non-interactive shell starts background jobs with SIGINT set to SIG_IGN, and the
-# setting survives exec. `ros2 launch` then ignores the Ctrl-C this script sends it, and
-# launch's own shutdown -- which begins by SIGINTing its children -- is ignored by all of
-# them too. Found the hard way while writing this. With job control each launch gets its
-# own process group with default signal dispositions, and the whole group can be
-# signalled at once.
-#
-# Environment knobs:
-#   CIRCE_SMOKE_DOMAIN_ID      ROS_DOMAIN_ID for the runs                  (87)
-#   CIRCE_SMOKE_LOG_DIR        where logs, frames.gv/pdf and summaries go
-#                              (~/.ros/circe_smoke/<timestamp>)
-#   CIRCE_SMOKE_READY_TIMEOUT  seconds to wait for the ready banner        (480)
-#   CIRCE_SMOKE_GREEN_TIMEOUT  seconds to wait for sustained OK            (90)
-#   CIRCE_SMOKE_GREEN_SAMPLES  consecutive OK toplevel samples required    (5)
-#   CIRCE_SMOKE_DISCOVERY      discovery range: LOCALHOST or SUBNET        (LOCALHOST)
-#   CIRCE_SMOKE_SIM_GOAL       "x y yaw" in map for sim_full's NAV check   ("0.0 2.0 1.5708")
-#                              -- clear ground in the default circe_indoor.sdf; set ""
-#                              to skip, or another point if you change the world
-#   CIRCE_SMOKE_HW_GOAL        the same for hw_full and hw_nocam. EMPTY BY DEFAULT BECAUSE IT DRIVES
-#                              THE REAL ROVER. Set it only with the robot on clear ground
-#                              and someone at the e-stop.
+# Each run is isolated (own ROS_DOMAIN_ID / GZ_PARTITION) and cleaned up by marker.
+# Job control (set -m) is required so Ctrl-C reaches ros2 launch.
+# Env: CIRCE_SMOKE_{DOMAIN_ID,LOG_DIR,READY_TIMEOUT,GREEN_TIMEOUT,GREEN_SAMPLES,DISCOVERY,
+#      SIM_GOAL,HW_GOAL}. HW_GOAL drives the real rover; empty by default.
 
 set -u
 set -m
@@ -76,21 +22,9 @@ LOG_ROOT=${CIRCE_SMOKE_LOG_DIR:-$HOME/.ros/circe_smoke/$(date +%Y%m%d_%H%M%S)}
 SIM_SCENARIOS=(sim_full sim_no_nav2 sim_ekf_only)
 HW_SCENARIOS=(hw_full hw_no_nav2 hw_nocam hw_bench bench_dry)
 
-# ---- scenarios ------------------------------------------------------------------------
-# Each sets:
-#   KIND      sim | hw
-#   LAUNCH    package and launch file
-#   ARGS      launch arguments
-#   BANNER    the line the launch prints once its last gate passes
-#   NEEDS     devices that must be present: rover lidar camera
-#   PRESENT   node names that must be in the graph
-#   ABSENT    node names that must NOT be (the layers switched off)
-#   RESOLVE   parent:child transforms that must resolve
-#   ROOT      the one root frame of the TF tree
-#   NOFRAME   frames that must not exist at all
-#   ALLOWDIE  regex of process names allowed to die (headless rviz2 in bench mode)
-#   HEADLESS  1 to strip DISPLAY, for launch files that open RViz unconditionally
-#   GOAL      "x y yaw" in map for the NAV check; empty skips it
+# ---- scenarios ----
+# Each sets KIND, LAUNCH, ARGS, BANNER, NEEDS, PRESENT, ABSENT, RESOLVE, ROOT, NOFRAME,
+# ALLOWDIE, HEADLESS, GOAL.
 
 SIM_CORE="robot_state_publisher gz_bridge scan_sector_filter ekf_filter_node
           scan_pitch_filter terrain_node circe_health_monitor diagnostic_aggregator"
@@ -113,7 +47,6 @@ define_scenario() {
       RESOLVE="map:base_link odom:base_link base_link:lidar_link base_link:imu_link
                base_link:camera_depth_optical_frame"
       ROOT=map
-      # A quarter turn and 2 m of driving, onto ground that is cost 0 for 0.4 m around.
       GOAL=${CIRCE_SMOKE_SIM_GOAL-0.0 2.0 1.5708} ;;
     sim_no_nav2)
       KIND=sim; LAUNCH="circe_gazebo circe_sim_nav.launch.py"
@@ -129,8 +62,6 @@ define_scenario() {
       PRESENT="$SIM_CORE"; ABSENT="$SLAM_NODES $NAV2_NODES"
       RESOLVE="odom:base_link base_link:lidar_link base_link:imu_link"
       ROOT=odom; NOFRAME=map ;;
-    # Each hardware scenario passes use_camera explicitly, so none of them changes
-    # meaning if circe_bringup.launch.py's default is flipped.
     hw_full)
       KIND=hw; LAUNCH="circe_bringup circe_bringup.launch.py"; ARGS="use_camera:=true"
       BANNER="CIRCE IS UP"; NEEDS="rover lidar camera"
@@ -147,10 +78,7 @@ define_scenario() {
       RESOLVE="map:base_link odom:base_link base_link:lidar_link base_link:camera_link"
       ROOT=map ;;
     hw_nocam)
-      # The full stack on the rover with the camera off.
-      # camera_link still resolves (it is in the URDF); the optical frames come only
-      # from realsense2_camera, so their absence proves the camera really is off.
-      # imu_fusion is present but idle, as in hw_bench.
+      # Full stack, camera off.
       KIND=hw; LAUNCH="circe_bringup circe_bringup.launch.py"; ARGS="use_camera:=false"
       BANNER="CIRCE IS UP"; NEEDS="rover lidar"
       PRESENT="$HW_CORE_NOCAM $SLAM_NODES $NAV2_NODES"; ABSENT="camera"
@@ -160,24 +88,18 @@ define_scenario() {
       ROOT=map
       GOAL=${CIRCE_SMOKE_HW_GOAL:-} ;;
     hw_bench)
-      # The desk test: a lidar on a USB lead, no rover. Camera off so a bench without
-      # the D456 still runs; SLAM and Nav2 run on the static odom -> base_link.
+      # Desk test: lidar only, no rover.
       KIND=hw; LAUNCH="circe_bringup circe_bringup.launch.py"
       ARGS="bench_mode:=true use_camera:=false"
       BANNER="CIRCE IS UP"; NEEDS="lidar"
       PRESENT="robot_state_publisher joint_state_publisher bench_odom_to_base_link
                rplidar_a1 scan_sector_filter scan_pitch_filter terrain_node
                circe_health_monitor diagnostic_aggregator $SLAM_NODES $NAV2_NODES"
-      # imu_fusion is NOT absent: with use_imu at its default it starts even without
-      # the camera and idles -- a cost circe_bringup.launch.py documents and accepts.
       ABSENT="roverrobotics_driver ekf_filter_node camera"
       RESOLVE="map:base_link odom:base_link base_link:lidar_link"
       ROOT=map; ALLOWDIE='rviz2'; HEADLESS=1 ;;
     bench_dry)
-      # The HARDWARE launch path with no hardware at all: every device layer off. Runs
-      # on any machine, and still exercises circe_bringup.launch.py's whole gate chain
-      # (each gate with its checks disabled must exit and fire the next layer), the
-      # bench_mode TF, perception, and the diagnostics tree with every sensor check off.
+      # Hardware launch path with every device off.
       KIND=hw; LAUNCH="circe_bringup circe_bringup.launch.py"
       ARGS="bench_mode:=true use_lidar:=false use_camera:=false use_slam:=false use_nav2:=false"
       BANNER="CIRCE IS UP"
@@ -192,7 +114,7 @@ define_scenario() {
   return 0
 }
 
-# ---- helpers ------------------------------------------------------------------------
+# ---- helpers ----
 
 say()  { printf '%s\n' "$*"; }
 hr()   { printf '%.0s-' {1..78}; printf '\n'; }
@@ -201,15 +123,12 @@ have_device() {
   case "$1" in
     rover)  [ -e /dev/rover-control ] ;;
     lidar)  [ -e /dev/rplidar ] ;;
-    # Intel's USB vendor id; see circe_bringup/udev/62-realsense.rules.
     camera) grep -qsx 8086 /sys/bus/usb/devices/*/idVendor ;;
     *)      return 1 ;;
   esac
 }
 
-# Driver processes started by something other than this script (a systemd bringup, a
-# forgotten terminal) hold the serial ports and the camera. Launching a second set does
-# not fail cleanly -- it fails as a gate timeout that looks like a hardware fault.
+# Drivers from another launch hold the ports and would cause gate timeouts.
 foreign_drivers() {
   pgrep -af '[r]overrobotics_driver|[s]llidar_node|[r]ealsense2_camera_node' || true
 }
@@ -231,7 +150,6 @@ stop_run() {
   kill -TERM -- "-$LAUNCH_PID" 2>/dev/null && sleep 3
   kill -KILL -- "-$LAUNCH_PID" 2>/dev/null
   wait "$LAUNCH_PID" 2>/dev/null
-  # Anything launch put in another process group, or failed to reap.
   local left
   left=$(marked_pids)
   if [ -n "$left" ]; then
@@ -244,7 +162,7 @@ stop_run() {
   LAUNCH_PID=
 }
 
-# ---- the graph checker (runs inside the scenario's ROS domain) ------------------------
+# ---- graph checker ----
 
 WORK=$(mktemp -d "${TMPDIR:-/tmp}/circe_smoke.XXXXXX")
 trap 'stop_run; rm -rf "$WORK"; exit 130' INT TERM
@@ -272,7 +190,6 @@ LEVEL = {0: 'OK', 1: 'WARN', 2: 'ERROR', 3: 'STALE'}
 
 
 def lv(level):
-    # DiagnosticStatus.level is a `byte`, which rclpy hands over as bytes.
     return level[0] if isinstance(level, (bytes, bytearray)) else int(level)
 
 
@@ -284,9 +201,7 @@ class Checker(Node):
         self.listener = TransformListener(self.buffer, self, spin_thread=False)
         self.top = []
         self.agg = {}
-        # TF ownership. Jazzy's MessageInfo has no publisher GID, but it has the DDS
-        # writer's publication_sequence_number, which is monotonic PER PUBLISHER: an
-        # edge whose sequence ever goes backwards has at least two publishers.
+        # A /tf edge whose sequence number goes backwards has multiple publishers.
         self.last_seq = {}
         self.writers = defaultdict(lambda: 1)
         self.parents = defaultdict(set)
@@ -335,8 +250,6 @@ def main():
     ap.add_argument('--report', default='')
     ap.add_argument('--goal', default='', help='"x y yaw" in map; empty skips NAV')
     ap.add_argument('--goal-timeout', type=float, default=120.0)
-    # nav2_params.yaml's general_goal_checker xy_goal_tolerance is 0.5; a little slack
-    # for the pose read a moment after SUCCEEDED.
     ap.add_argument('--goal-tolerance', type=float, default=0.6)
     a = ap.parse_args()
 
@@ -356,7 +269,6 @@ def main():
 
     spin(a.listen)
 
-    # -- nodes
     names = [(nm, ns) for nm, ns in n.get_node_names_and_namespaces() if nm != n.get_name()]
     bare = {nm for nm, _ in names}
     dup = [k for k, v in Counter(f'{ns.rstrip("/")}/{nm}' for nm, ns in names).items() if v > 1]
@@ -366,7 +278,6 @@ def main():
     check('switched-off layers absent', not stray, f'still running {stray}')
     check('no duplicated node names', not dup, f'duplicated {dup}')
 
-    # -- TF: view_frames tree shape
     if a.gv:
         try:
             text = open(a.gv).read()
@@ -379,7 +290,6 @@ def main():
         except OSError as exc:
             check('view_frames produced a tree', False, str(exc))
 
-    # -- TF: key transforms resolve, forbidden frames absent, one publisher per edge
     unresolved = []
     for pair in a.resolve.split():
         parent, child = pair.split(':')
@@ -398,15 +308,12 @@ def main():
             conflicts.append(f'{child} has sources {sorted(srcs)}')
         for parent, topic in srcs:
             if topic == '/tf' and n.writers[(parent, child)] > 1:
-                # A respawned publisher restarts its sequence too; the CRASHES check
-                # below tells the two apart.
                 conflicts.append(f'{parent}->{child} has several /tf publishers '
                                  '(or its publisher restarted)')
             if topic == '/tf_static' and n.static_count[(parent, child)] > 1:
                 conflicts.append(f'{parent}->{child} latched by several publishers')
     check('one publisher per TF edge', not conflicts, '; '.join(conflicts))
 
-    # -- diagnostics: sustained green
     deadline = time.monotonic() + a.green_timeout
     run, seen = 0, 0
     while time.monotonic() < deadline and run < a.green_samples:
@@ -426,8 +333,7 @@ def main():
             for name, (level, message) in sorted(n.agg.items()):
                 f.write(f'{LEVEL.get(level, level):5} {name}: {message}\n')
 
-    # -- navigation: one real goal, end to end. Everything above can pass while the
-    # controller refuses to drive; this is the only check that proves it does.
+    # -- navigation: one real goal
     if a.goal:
         from action_msgs.msg import GoalStatus
         from nav2_msgs.action import NavigateToPose
@@ -440,7 +346,6 @@ def main():
             detail = 'no navigate_to_pose action server'
         else:
             goal = NavigateToPose.Goal()
-            # Stamp zero means "latest" to TF, which is valid on sim and wall clocks alike.
             goal.pose.header.frame_id = 'map'
             goal.pose.pose.position.x, goal.pose.pose.position.y = gx, gy
             goal.pose.pose.orientation.z = math.sin(gyaw / 2.0)
@@ -494,7 +399,7 @@ if __name__ == '__main__':
     sys.exit(main())
 PY
 
-# ---- one scenario -------------------------------------------------------------------
+# ---- one scenario ----
 
 RESULTS=()
 record() { RESULTS+=("$(printf '%-14s %-5s %s' "$1" "$2" "$3")"); }
@@ -558,11 +463,11 @@ run_scenario() {
     stop_run; record "$name" FAIL "not ready ($verdict) -- $log"; return
   fi
 
-  # 3a. TF tree as tf2_tools sees it (the PDF is kept for a human to look at)
+  # 3a. TF tree (PDF kept)
   sleep 5
   ( cd "$dir" && timeout 30 ros2 run tf2_tools view_frames -t 5 -o frames ) > "$dir/view_frames.log" 2>&1
 
-  # 2, 3b, 5. graph checks, from inside the scenario's domain
+  # 2, 3b, 5. graph checks
   python3 "$WORK/check_graph.py" \
       --present "$(echo $PRESENT)" --absent "$(echo $ABSENT)" \
       --resolve "$(echo $RESOLVE)" --noframe "$NOFRAME" --root "$ROOT" \
@@ -571,7 +476,7 @@ run_scenario() {
       --goal "$GOAL"
   local graph_fail=$?
 
-  # 4. CRASHES -- read after the checks so late deaths are caught too
+  # 4. CRASHES
   local died
   died=$(grep -E 'process has died' "$log" | grep -vE "$ALLOWDIE" || true)
   if [ -n "$died" ]; then
@@ -590,7 +495,7 @@ run_scenario() {
   fi
 }
 
-# ---- main ---------------------------------------------------------------------------
+# ---- main ----
 
 if [ "${1:-}" = "--list" ]; then
   for s in "${SIM_SCENARIOS[@]}" "${HW_SCENARIOS[@]}"; do

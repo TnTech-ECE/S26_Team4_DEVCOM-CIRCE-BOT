@@ -1,46 +1,6 @@
-# slam_toolbox in LOCALIZATION mode for CIRCE - navigating a KNOWN route without GPS.
-#
-# *** WHAT THIS IS FOR ***
-# mapper_params_circe.yaml runs slam_toolbox in `mapping` mode: it builds the map and
-# corrects map -> odom at the same time, every run, from scratch. That is the right tool
-# for exploring somewhere new and the wrong one for driving a route you have driven
-# before, which is CIRCE's actual job - laying cable along a known corridor.
-#
-# Measured on circe_outdoor.sdf, a 37.9 m route, against the simulator's ground truth:
-#
-#     odom -> base_link  (EKF dead reckoning)   0.36 - 0.56 m final,  3.4 deg
-#     map  -> base_link  (mapping-mode SLAM)    9.5 - 16.7 m final,  50 - 107 deg
-#
-# Mapping mode was not merely unhelpful outdoors, it was destroying a good dead-reckoning
-# estimate - and Nav2 plans in `map`, so the rover drove to the wrong place. Repeats of
-# the identical route disagreed by 7 m, so the failure is unstable rather than a bias.
-#
-# Localization mode removes the part that was failing: the map is FIXED, loaded from
-# disk, and slam_toolbox only ever solves for where the robot is on it. No new nodes,
-# no graph growing without bound, no loop closure rewriting history mid-drive.
-#
-# *** HOW TO USE IT ***
-#   1. Drive the route once in mapping mode:
-#          ros2 launch circe_gazebo circe_sim_nav.launch.py world:=circe_outdoor.sdf
-#   2. Serialize the result:
-#          ros2 service call /slam_toolbox/serialize_map \
-#              slam_toolbox/srv/SerializePoseGraph "{filename: /home/sharif/circe_maps/outdoor}"
-#      That writes outdoor.posegraph and outdoor.data.
-#   3. Point map_file_name below at it (NO extension), then:
-#          ros2 launch circe_nav slam.launch.py params_file:=<this file>
-#
-# *** map_file_name HAS NO DEFAULT THAT CAN WORK ***
-# It is a path on your machine and there is no sensible value to ship. Left pointing at
-# a directory that does not exist ON PURPOSE, so this fails loudly at startup rather
-# than silently localizing against nothing.
-
-# slam_toolbox (async) parameters for the CIRCE rover.
-#
-# Derived from slam_toolbox's mapper_params_online_async.yaml, with the values
-# that are actually specific to this robot called out below. Everything not
-# commented is the upstream default, kept explicit so tuning has a baseline.
-#
-# The node name must stay 'slam_toolbox' to match this top-level key.
+# slam_toolbox in localization mode: fixed, pre-built map, for driving a known route.
+# 1. Map the route, 2. call /slam_toolbox/serialize_map, 3. set map_file_name, then:
+#    ros2 launch circe_nav slam.launch.py params_file:=<this file>
 slam_toolbox:
   ros__parameters:
 
@@ -55,41 +15,16 @@ slam_toolbox:
     # ROS Parameters
     odom_frame: odom
     map_frame: map
-    # CIRCE: rover_4wd.urdf roots the model at base_link. There is no
-    # base_footprint link, so the upstream default would never resolve.
+    # No base_footprint in the URDF.
     base_frame: base_link
-    # *** RAW /scan, DELIBERATELY - NOT /scan_filtered. ***
-    # This was tried the other way and MEASURED WORSE. The reasoning was that ground
-    # returns on a hill form an arc that moves with the robot, which is poison for a
-    # scan matcher. That is true, but circe_perception's scan_pitch_filter cuts every
-    # beam past its ground-strike range, and on an incline that also throws away the
-    # tree trunks BEYOND the strike range - exactly the distant, stable features scan
-    # matching depends on. Starving the matcher of landmarks hurt more than the ground
-    # returns did.
-    #
-    # Measured on circe_outdoor.sdf, identical 37.9 m route over the hill field,
-    # final error against the simulator's ground truth:
-    #
-    #   slam on /scan            9.5 m     (also observed 16.7 m on a repeat run)
-    #   slam on /scan_filtered  15.1 m
-    #
-    # Note the spread between repeats: this failure is unstable, not a fixed bias, so
-    # neither number should be quoted as "the" error. The filter stays where it belongs,
-    # on the COSTMAP's observation source, where removing false obstacles is the whole
-    # point. See nav2_params.yaml.
     scan_topic: /scan
     use_map_saver: true
-    # localization, not mapping: see the header. The map is loaded and never modified.
     mode: localization
 
-    # *** SET THIS. There is no default that can work - see the header. ***
-    # No file extension: slam_toolbox appends .posegraph and .data itself.
+    # SET THIS (no extension). Left invalid on purpose so it fails loudly.
     map_file_name: /home/sharif/circe_maps/CHANGE_ME
 
-    # Where the robot is on that map when it starts, as [x, y, yaw]. Getting this wrong
-    # is the usual reason localization mode "does nothing": the scan matcher searches
-    # near this pose, and from far enough away it never finds the right correlation
-    # peak. If the rover always starts from the same charging point, put that here.
+    # Start pose [x, y, yaw] on the map; must be close or matching never locks on.
     map_start_pose: [0.0, 0.0, 0.0]
 
     debug_logging: false
@@ -98,10 +33,7 @@ slam_toolbox:
     map_update_interval: 5.0
     resolution: 0.05
 
-    # CIRCE: RPLidar A1 is a 0.15 - 12.0 m sensor. Leaving max_laser_range at the
-    # upstream 20.0 makes slam_toolbox raytrace free space out to 20 m along every
-    # beam, carving away unobserved cells and producing a map that claims open
-    # floor where the lidar simply had no return.
+    # RPLidar A1 range.
     min_laser_range: 0.15
     max_laser_range: 12.0
 
@@ -114,14 +46,10 @@ slam_toolbox:
     # General Parameters
     use_scan_matching: true
     use_scan_barycenter: true
-    # CIRCE: the Zero 4WD is a small platform and the A1 is low resolution, so
-    # nodes are added more often than the 0.5 m / 0.5 rad upstream default to
-    # keep the pose graph dense enough for loop closure indoors.
     minimum_travel_distance: 0.2
     minimum_travel_heading: 0.2
     check_min_dist_and_heading_precisely: false
     scan_buffer_size: 10
-    # CIRCE: matched to the A1's real max range rather than the 10.0 default.
     scan_buffer_maximum_scan_distance: 12.0
     link_match_minimum_response_fine: 0.1
     link_scan_maximum_distance: 1.5

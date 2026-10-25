@@ -1,71 +1,38 @@
-# CIRCE health checks -- node: circe_diagnostics / health_monitor.py
-#
-# Keyed on the `/**` wildcard for the same reason as circe_bringup/config/lidar_a1.yaml:
-# keying on a node name loses the whole file silently the day the node is renamed. This
-# file is only ever passed to this one node, so the wildcard costs nothing.
-#
-# *** THE RATES BELOW ARE STARTING VALUES, NOT MEASUREMENTS. ***
-# Run `ros2 topic hz <topic>` for each one on the rover and tighten them to match.
-# A threshold set too tight makes a status that is always yellow, and one of those
-# teaches everybody to stop reading the tree.
-#
-# `enabled` is not set here. diagnostics.launch.py sets it per check from the same
-# use_* arguments circe_bringup.launch.py uses, so a layer deliberately switched off
-# is not reported as broken. Run the node without the launch file and everything is on.
-#
-# Labels: start with the group word analyzers.yaml files them under (Lidar, Camera,
-# IMU, Odometry), and never contain '/' -- rqt_robot_monitor splits names on it. See
-# health_monitor.py's docstring.
-#
-# *** ONE FILE FOR SIM AND HARDWARE, SO EVERY THRESHOLD MUST CLEAR BOTH. ***
-# circe_sim_nav.launch.py runs this node with this file, unchanged. Where the simulated
-# sensor and the real one publish at different rates, the floor sits under the slower of
-# the two and the comment says so. Do not fork this file per environment -- a forked
-# config is how sim and hardware quietly drift apart. Rates are per SIM second under
-# Gazebo; see _Rate in health_monitor.py.
+# CIRCE health checks (health_monitor.py). One file for sim and hardware, so each floor
+# must clear both. Rates are starting values; tune with `ros2 topic hz`.
+# `enabled` is set per check by diagnostics.launch.py. Labels must not contain '/'.
 
 /**:
   ros__parameters:
-    diagnostic_updater.period: 1.0    # seconds between published statuses
+    diagnostic_updater.period: 1.0
 
-    # Rates are averaged over this many update periods, so a source that stops goes
-    # "too low" at once and "no messages" once a whole window has passed with nothing.
+    # Rates averaged over this many update periods.
     window_size: 5
 
     rate_checks: [lidar_raw, lidar_masked, lidar_filtered, camera_depth, imu_raw, imu_fused,
                   odom_wheels]
 
-    # ---- Lidar: one check per stage, so the tree says WHICH stage stopped ------------
-    # The A1's rotation rate is set by its motor, not by scan_frequency in lidar_a1.yaml;
-    # its datasheet typical is 5.5 Hz. Hence the low floor.
-    lidar_raw:                          # sllidar_node -> the sweep as the driver sees it
+    # ---- Lidar: one check per pipeline stage (A1 ~5.5 Hz) ----
+    lidar_raw:
       label: Lidar raw scan
       topic: /scan_raw
       type: sensor_msgs/msg/LaserScan
       min_hz: 4.0
       max_hz: 15.0
-    lidar_masked:                       # scan_sector_filter -> rear half masked
+    lidar_masked:
       label: Lidar masked scan
       topic: /scan
       type: sensor_msgs/msg/LaserScan
       min_hz: 4.0
       max_hz: 15.0
-    lidar_filtered:                     # scan_pitch_filter -> what Nav2 and SLAM read
+    lidar_filtered:
       label: Lidar filtered scan
       topic: /scan_filtered
       type: sensor_msgs/msg/LaserScan
       min_hz: 4.0
       max_hz: 15.0
 
-    # ---- Camera ----------------------------------------------------------------------
-    # camera_info, not the image: it is published once per depth frame, so it has the
-    # same rate at a tiny fraction of the bytes.
-    #
-    # Hardware runs depth_profile 424x240x15 (15 Hz); the simulated rgbd_camera runs at
-    # update_rate 10. The floor was 10.0, i.e. EXACTLY the sim's nominal rate, so one
-    # late frame turned it yellow -- measured 9.995 Hz, WARN, with nothing wrong. 8.0
-    # clears the sim with margin and still catches a D456 that has fallen back to a
-    # degraded mode on hardware.
+    # ---- Camera (camera_info has the depth rate; hw 15 Hz, sim 10 Hz) ----
     camera_depth:
       label: Camera depth
       topic: /camera/camera/depth/camera_info
@@ -73,66 +40,42 @@
       min_hz: 8.0
       max_hz: 20.0
 
-    # ---- IMU: raw and fused, so a camera fault and an imu_fusion fault look different -
-    # unite_imu_method 2 publishes at the gyro rate, gyro_fps 200. No upper bound: the
-    # interleaving means the exact rate is not worth pinning. Hardware only: Gazebo's
-    # rgbd_camera has no IMU stream, and diagnostics.launch.py's camera_imu:=false (which
-    # circe_sim_nav passes) switches this check off there.
-    imu_raw:                            # realsense2_camera
+    # ---- IMU: raw (hardware only) and fused ----
+    imu_raw:
       label: IMU raw
       topic: /camera/camera/imu
       type: sensor_msgs/msg/Imu
       min_hz: 150.0
-    # *** /imu/data IS NOT THE GYRO RATE. *** It was checked against 150 Hz, which it can
-    # never reach: circe_bringup/config/imu_d456.yaml caps imu_fusion.py at
-    # publish_rate_limit 100.0, so this check sat at WARN on the real robot permanently.
-    # 100 Hz on hardware; the simulated IMU (circe_imu.urdf.xacro) runs at the same 100.
-    # 60 is the floor imu_d456.yaml itself names: below it the EKF's heading, a pure
-    # integral of gyro z, starts to thin out.
-    imu_fused:                          # circe_perception/imu_fusion.py -> EKF imu0
+    # imu_fusion is capped at 100 Hz; 60 is the EKF's floor.
+    imu_fused:
       label: IMU fused
       topic: /imu/data
       type: sensor_msgs/msg/Imu
       min_hz: 60.0
 
-    # ---- Odometry: the EKF's odom0, and the motor driver's only proof of life ----------
-    # roverrobotics_driver publishes at odometry_frequency 15.0 (rover_zero_4wd.yaml); the
-    # gz DiffDrive plugin at odom_publish_frequency 50. No upper bound, so one file serves
-    # both. A driver that has lost /dev/rover-control keeps running and goes quiet, which
-    # is exactly what this catches -- the respawn in rover.launch.py only helps once the
-    # process actually exits. Off in bench_mode, where no driver runs.
+    # ---- Odometry (hw 15 Hz, sim 50 Hz; off in bench_mode) ----
     odom_wheels:
       label: Odometry wheels
       topic: /odometry/wheels
       type: nav_msgs/msg/Odometry
       min_hz: 10.0
 
-    # ---- SLAM ------------------------------------------------------------------------
-    # slam_toolbox broadcasts map -> odom every transform_publish_period (0.02 s in
-    # circe_nav/config/mapper_params_circe.yaml), i.e. ~50 Hz.
+    # ---- SLAM: map -> odom (~50 Hz) ----
     slam:
       parent_frame: map
       child_frame: odom
       min_hz: 20.0
 
-    # ---- Host (the Pi 5) ---------------------------------------------------------------
+    # ---- Host ----
     host:
-      # First type found wins. cpu-thermal is the Pi 5's SoC sensor; x86_pkg_temp lets
-      # the same config run on a dev laptop under Gazebo. Neither -> the hottest zone is
-      # shown for information, at OK. No zones at all (a VM, a container) -> OK.
+      # First matching thermal zone wins (Pi 5, then x86 laptop).
       thermal_zone_types: [cpu-thermal, x86_pkg_temp]
-      # One limit per type above, in the same order.
-      #   cpu-thermal   the Pi 5's firmware starts throttling at 80 C, hard limit 85 C.
-      #   x86_pkg_temp  Intel parts throttle at TjMax, typically 100 C. These were the
-      #                 Pi's 70/80 for every host, and the dev laptop running the sim
-      #                 measured 71-78 C -- the Computer group sat yellow, two degrees
-      #                 from red, on a machine that was nowhere near throttling.
+      # One limit per type above.
       temp_warn_c: [70.0, 90.0]
       temp_error_c: [80.0, 100.0]
       cpu_warn_percent: 90.0
       memory_warn_percent: 85.0
       memory_error_percent: 95.0
-      # Where rosbags land. A full root filesystem takes down far more than the bag.
       disk_path: /
       disk_warn_percent: 85.0
       disk_error_percent: 95.0

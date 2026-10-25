@@ -1,226 +1,91 @@
-# Terrain traversability parameters for CIRCE.
-#
-# Top-level key is the `/**` wildcard, matching the convention in circe_bringup's sensor
-# configs: hardcoding a node name here means a rename or namespace change silently drops
-# every value below with no error.
-#
-# *** EVERY THRESHOLD IN THE TRAVERSABILITY SECTION IS DERIVED, NOT MEASURED ***
-# They are computed from the URDF and from published D456 specs, and tuned in simulation.
-# Four numbers that would make them real do not exist anywhere in this workspace yet:
-#
-#   1. ground clearance (belly height) -- needed for the straddle case, where an obstacle
-#      is too short to trip step_lethal but tall enough to high-centre the rover between
-#      its wheels. That failure mode is currently INVISIBLE to this node.
-#   2. centre-of-gravity height -- sets the true lateral tip-over angle,
-#      atan(0.178 / h_cog) using the half-track. slope_lethal below is a guess until this
-#      is known.
-#   3. real max climbable step, measured by driving at increasing timber heights. The
-#      flipper tracks probably beat the 0.5 x wheel-radius rule of thumb used below.
-#   4. max safe descent, for drop_lethal.
-#
-# Treat these the same way as the *** MEASURE BEFORE DRIVING *** blocks in the URDFs.
+# Terrain traversability (terrain_node) and lidar ground filter (scan_pitch_filter).
 
 /**:
   ros__parameters:
 
-    # ---- Frames and topics -------------------------------------------------------------
-    # The grid is published in odom, not map: odom is continuous, so the terrain memory
-    # does not jump sideways every time slam_toolbox corrects the map frame.
+    # ---- terrain_node.py ----
+    # odom, not map, so the grid doesn't jump on SLAM corrections.
     global_frame: odom
     robot_frame: base_link
 
-    # ---- Region of interest ------------------------------------------------------------
-    # At pitch 0 with camera_link at z=0.345 and a 58 deg vertical FOV, ground is first
-    # visible at 0.345/tan(29deg) = 0.62 m. Starting the ROI at 0.6 costs nothing and
-    # avoids a hard edge exactly at the geometric limit.
-    #
-    # 4.0 m is the lookahead the 2 m/s design needs: 0.8 m braking at 2.5 m/s^2, plus
-    # ~0.5 m of pipeline latency, plus 0.4 m for the global costmap at 5 Hz -- about 1.7 m
-    # total, so 4 m is roughly 2x margin. Do not raise it expecting more warning: D456
-    # depth noise is ~2% of range, i.e. +/-8 cm at 4 m, which is already the same order as
-    # step_lethal. Beyond 4 m you would be classifying noise.
+    # Ground first visible at ~0.62 m. Past 4 m depth noise ~ step_lethal.
     roi_min_range: 0.6
     roi_max_range: 4.0
     roi_half_width: 2.0
 
-    # Depth values outside this are discarded before anything else. The D456 cannot
-    # measure closer than ~0.4 m regardless of what the ROI says.
+    # D456 minimum depth.
     depth_min: 0.4
     depth_max: 4.5
 
-    # ---- Sampling ----------------------------------------------------------------------
-    # Take every Nth pixel in both axes within the row band. At 424x240 with the band
-    # covering ~101 rows, stride 4 gives ~2,650 points per frame, ~40k points/s at 15 Hz.
-    # That is a few percent of one Pi core. Lower it only if cells are starving for points.
     pixel_stride: 4
 
-    # ---- Grid --------------------------------------------------------------------------
-    # 0.05 matches the costmap resolution in circe_nav/config/nav2_params.yaml. If you
-    # change one, change the other, or StaticLayer will resample and blur the terrain.
+    # Must match the costmap resolution in nav2_params.yaml.
     resolution: 0.05
-    # 12 m square at 0.05 = 240x240 cells. Comfortably covers the 8x8 m rolling local
-    # costmap plus enough history to remember ground driven over in the 0-0.62 m blind zone.
     grid_size_m: 12.0
 
-    # ---- Accumulation ------------------------------------------------------------------
-    # The grid is persistent, which is what makes pitch 0 workable: a patch classified at
-    # 4 m is still known while the rover drives over it blind. It also beats depth noise --
-    # a cell is re-observed continuously at shrinking range, so its estimate sharpens as it
-    # matters more.
-    #
-    # Applied to the running sums every processed frame. 0.98 at 15 Hz is a ~2.3 s
-    # half-life: long enough to accumulate confidence, short enough that a moved obstacle
-    # stops haunting the map.
+    # Per frame; ~2.3 s half-life at 15 Hz.
     decay: 0.98
-    # Cells with fewer than this many (decayed) observations publish as UNKNOWN (-1), never
-    # as lethal. Marking unobserved ground as blocked makes the rover refuse to enter space
-    # it simply has not looked at yet.
+    # Below this a cell is UNKNOWN (-1), never lethal.
     min_points_per_cell: 3.0
-    # Observation count at which a cell is fully trusted. Below it, non-lethal cost is
-    # scaled down so distant low-confidence cells nudge the planner instead of blocking it.
+    # Low-confidence cells get scaled-down cost.
     full_confidence_points: 12.0
-    # A lethal verdict is withheld until a cell has at least this much support, so a single
-    # noisy return at 4 m cannot stop the rover.
     min_points_for_lethal: 6.0
 
-    # ---- Traversability thresholds (SEE THE HEADER -- ALL DERIVED) ----------------------
-    # Height of a cell above the local ground reference. ~0.5 x wheel radius (0.1266 m) is
-    # the classic limit for a driven wheel.
+    # Thresholds are derived from the URDF/specs, not measured on hardware.
+    # Step: height above local ground (~0.5 x wheel radius).
     step_warn: 0.03
     step_lethal: 0.06
 
-    # Local surface tilt, radians. 0.17 rad = 10 deg, 0.44 rad = 25 deg. Lateral tip-over
-    # binds before climbing traction on a skid-steer, and it is the unmeasured CoG height
-    # that really sets this.
+    # Radians (10 / 25 deg).
     slope_warn: 0.17
     slope_lethal: 0.44
 
-    # Std-dev of height within a cell. Never lethal by itself -- this is the term that
-    # distinguishes gravel from tarmac and produces a preference rather than a barrier.
+    # Height std-dev in a cell; graded cost only, never lethal.
     rough_warn: 0.010
     rough_max: 0.040
     rough_max_cost: 60
 
-    # Depth of a cell below the local ground reference. Nothing else on this robot can see
-    # a drop-off: the lidar plane at 0.295 m passes straight over a hole, and the spool
-    # ultrasonics look at clearance height.
+    # Depth below local ground; the lidar can't see holes.
     drop_warn: 0.04
     drop_lethal: 0.08
 
-    # *** STEP AND SLOPE ARE MEASURED AT DIFFERENT SCALES, ON PURPOSE ***
-    # A step is a discontinuity; a slope is a gradient. One shared window conflates them,
-    # and this was a real bug caught in simulation: with a single 9-cell (0.45 m) window,
-    # a drivable 9 deg ramp rises 0.071 m across it and trips step_lethal (0.06), so every
-    # ramp classified LETHAL. Two windows fix it.
-    #
-    # step_window: small, the scale at which a wheel actually meets an edge. 3 cells is a
-    # 0.10 m span, over which a 9 deg ramp rises only 0.016 m (free) while an 0.08 m kerb
-    # still reads its full 0.08 m (lethal).
+    # Step and slope use different windows, or ramps read as steps.
     step_window: 3
-    # slope_window: larger than step_window, smoothed before the gradient is taken.
-    # Smoothing is what stops a sharp kerb reading as a near-vertical slope.
-    #
-    # 5 cells = 0.25 m, NOT the 0.45 m first tried. Sized against the visible RUN of a
-    # feature, not against the footprint: a steep up-ramp only presents ~0.5 m of surface
-    # before it occludes itself against a camera mounted at 0.345 m, so a 0.45 m window
-    # made almost every cell an edge cell and halved the measured gradient -- a 31 deg
-    # ramp read as 16 deg and escaped slope_lethal entirely. At 0.25 m an 0.08 m kerb
-    # still smooths to 0.32 rad (18 deg), safely under slope_lethal, so it is caught by
-    # the step test rather than double-counted here.
     slope_window: 5
-    # Minimum observed fraction of the slope window before its gradient is believed. A
-    # gradient measured across a mostly-empty neighbourhood is noise, not terrain, and at
-    # 4 m the grid is genuinely patchy. Below this the slope test is skipped for that cell
-    # -- step, roughness and drop-off still apply.
+    # Skip the slope test where the window is mostly empty.
     min_slope_support: 0.25
 
-    # ---- Output ------------------------------------------------------------------------
-    # Accumulate at the full camera rate but publish slower: the costmaps consume at 5-10
-    # Hz, and a 240x240 OccupancyGrid at 15 Hz would be ~860 kB/s of pure overhead.
     publish_rate: 5.0
-    # Cost written for a lethal cell. 100 is OccupancyGrid's occupied value, which
-    # StaticLayer maps to a lethal costmap cost when trinary_costmap is false.
+    # 100 = OccupancyGrid occupied -> lethal in StaticLayer.
     lethal_cost: 100
-    # Publishes /terrain/debug_points for RViz. Off by default -- it is the most expensive
-    # thing this node can do and exists purely to eyeball the deprojection.
     publish_debug_cloud: false
 
-    # ---- lidar ground-return filter (scan_pitch_filter.py) ------------------------
-    #
-    # *** THIS IS A SEPARATE NODE FROM terrain_node.py, SHARING THIS FILE. ***
-    # The `/**` wildcard above applies both sets of parameters to both nodes; each one
-    # declares only the names it uses, and undeclared keys are ignored.
-    #
-    # Why it exists, measured on circe_indoor.sdf:
-    #
-    #   ramp        true IMU pitch   beams under 1.5 m
-    #   9 deg          9.11 deg        116 of 720
-    #   31 deg        83.92 deg        367 of 430   (85% of the scan)
-    #
-    # and in every one of those samples TF reported pitch 0.00 deg and z 0.000 m,
-    # because localization_ekf.yaml runs the EKF with two_d_mode: true. The costmap
-    # therefore places each ground return at the lidar's own height and cannot tell it
-    # from a wall - min_obstacle_height is powerless. See the node docstring.
+    # ---- scan_pitch_filter.py (same file; each node declares only its keys) ----
+    # Removes ground returns when the body tilts; the EKF's TF stays level (two_d_mode).
     scan_in: /scan
     scan_out: /scan_filtered
     imu_topic: /imu/data
 
-    # lidar_mount_z from circe_description/urdf/accessories/rplidar_a1.urdf.xacro.
-    # It doubles as a height above GROUND only because base_link sits at ground level
-    # on this robot (the chassis is +0.125 above it, and the axle 0.125 above ground).
-    # *** IF THE LIDAR IS EVER REMOUNTED, CHANGE THIS. *** The filter cuts at
-    # height/sin(tilt), so a wrong height scales every cut range with it.
+    # lidar_mount_z; change if the lidar is remounted.
     lidar_height: 0.295
 
-    # Cut this fraction of the geometric strike range. Beam divergence, floors that are
-    # not perfectly flat, and the ramp's own lip all put returns slightly nearer than
-    # the ideal intersection. 1.0 leaves a ring of survivors right at the strike range,
-    # which is exactly the phantom wall this node is meant to remove.
+    # Fraction of the geometric ground-strike range to cut at.
     range_margin: 0.85
 
-    # Below this tilt, do nothing. At 5 deg the strike range is 3.38 m, already past
-    # the voxel_layer's obstacle_max_range of 2.5 m, so filtering would only throw away
-    # real coverage on ground that is effectively level.
     min_tilt_deg: 3.0
 
-    # Never cut nearer than this. At 31 deg the strike range is 0.57 m and range_margin
-    # would pull the cut to 0.48 m; without this floor, a steep enough attitude would
-    # blind the rover to a genuine obstacle directly in front of it. This is the
-    # safety backstop on the whole filter - raise it, never lower it.
+    # Safety floor; raise it, never lower it.
     min_keep_range: 0.35
 
-    # A dead or stalled IMU must not silently disable the filter on a stale attitude.
-    # On timeout the node FAILS OPEN and passes the raw scan through, with a warning:
-    # unfiltered lidar on level ground (where the rover mostly lives) is far safer than
-    # a blanked lidar.
+    # On timeout, pass the raw scan through (fail open).
     imu_timeout: 0.5
 
-    # ---- attitude compensation and the anti-trap guarantee ------------------------
-    #
-    # Take the body's roll and pitch from the IMU instead of from TF. The EKF's
-    # two_d_mode zeroes them, so without this the node deprojects depth through a
-    # rotation that insists the robot is level: nose-down on a ramp it writes a 9 deg
-    # upslope where there is flat floor, and because the grid accumulates, cells seen
-    # while climbing, cresting and descending average together at heights that disagree
-    # by tens of centimetres. The step test then invents a wall exactly where the rover
-    # is about to drive. Measured: true pitch 8.64 deg, TF pitch 0.00 deg.
-    # Set false only to reproduce that failure deliberately.
+    # ---- terrain_node attitude ----
+    # Use IMU roll/pitch, since TF reports level (two_d_mode).
     use_imu_attitude: true
-    # The topic is imu_topic in the scan filter block above -- one key serves both
-    # nodes. It used to be repeated here; a duplicate YAML key is silently last-wins,
-    # so editing only the upper copy would have changed nothing.
 
-    # *** THE ANTI-TRAP GUARANTEE - DO NOT DISABLE ON HARDWARE. ***
-    # Cells the robot's own footprint has occupied are published as free, whatever the
-    # thresholds say. A classifier can be wrong; when it is wrong UNDERNEATH the robot
-    # the robot cannot move at all, because every MPPI rollout starts in a lethal cell
-    # and spin and backup have to cross the same ground. The robot standing somewhere is
-    # stronger evidence than any threshold, and it means the route the rover climbed is
-    # still open when it turns around to come back down.
+    # Cells the robot has driven over are always free. Keep on.
     clear_driven: true
 
-    # Slightly over the footprint's circumscribed radius of 0.326 m, so the cleared
-    # track covers the wheels rather than a point. Larger clears a wider corridor and
-    # risks erasing a genuine hazard the rover passed close to; smaller can leave a
-    # lethal ring inside the robot's own footprint.
+    # Just over the footprint's circumscribed radius (0.326 m).
     driven_radius: 0.4

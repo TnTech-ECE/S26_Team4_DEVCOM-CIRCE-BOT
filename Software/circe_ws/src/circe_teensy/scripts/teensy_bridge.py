@@ -2,42 +2,10 @@
 """
 USB serial bridge between the Pi 5 and the CIRCE Teensy 4.0.
 
-    ros2 launch circe_teensy teensy_bridge.launch.py
-
-Frames from the Teensy become ROS topics, and ROS topics become frames to the Teensy:
-
-    Teensy -> Pi    TEENSY_HEARTBEAT  -> /teensy/heartbeat (std_msgs/UInt32), log file
-                    ULTRASONIC        -> ultrasonic_topics[id] (sensor_msgs/Range), log
-                    GPS_FIX           -> /gps/fix (sensor_msgs/NavSatFix), log file
-                    ESTOP             -> /teensy/estop (std_msgs/Bool, latched), and
-                                         estop_trigger_topic while latched
-                    SPOOL_STATUS      -> log file only, until the motor exists
-                    BMS_CELLS+STATUS  -> battery_topics[id] (sensor_msgs/BatteryState), log
-    Pi -> Teensy    /spool/cmd        (std_msgs/Bool)      -> SPOOL_CMD
-                    odom_topic        (nav_msgs/Odometry)  -> ODOM_SPEED
-                    estop_reset_topic (std_msgs/Bool)      -> ESTOP_RESET
-                    heartbeat_hz timer                     -> PI_HEARTBEAT
-    status          /teensy/connected (std_msgs/Bool, latched): true only while the
-                    port is open AND Teensy heartbeats are arriving
-
-*** THE E-STOP REACHES THE DRIVE MOTORS THROUGH THIS NODE. ***
-The button is wired to the Teensy, and the rover driver only hears of it as
-/soft_estop/trigger from here. One reset (/soft_estop/reset, the joystick's B button)
-clears both: it reaches the driver directly and the Teensy through this node. The
-Teensy refuses a reset while the button is still down, and this node re-triggers the
-driver every second for as long as the Teensy stays latched.
-
-Every frame received is also appended to a .txt log, one decoded line per frame,
-including the ones that fail their CRC, so the log alone shows the link's health.
-
-*** THE PROTOCOL IS DEFINED TWICE. ***
-The other copy is circe_teensy/include/protocol.h. Change a message in one and change
-it in the other: a CRC still passes on a payload the two sides lay out differently.
-
-*** THE PORT IS EXPECTED TO COME AND GO. ***
-Unplugging the Teensy, or re-flashing it, closes /dev/teensy under us. The node keeps
-running, publishes connected=false, and reopens the port once a second until it is
-back. Losing the Teensy never takes the rest of the stack down.
+Teensy frames -> ROS topics (heartbeat, ultrasonic, GPS, e-stop, BMS) and ROS topics ->
+Teensy frames (spool cmd, odom speed, e-stop reset, heartbeat). Every frame is logged.
+The e-stop reaches the drive motors through this node. Protocol mirrors
+include/protocol.h. Reconnects automatically if /dev/teensy goes away.
 """
 
 import datetime
@@ -55,8 +23,7 @@ from sensor_msgs.msg import BatteryState, NavSatFix, NavSatStatus, Range
 import serial
 from std_msgs.msg import Bool, UInt32
 
-# --- Protocol: mirror of include/protocol.h ---------------------------------------
-# frame = COBS( msg_id:u8 | seq:u8 | payload | crc16:u16 LE ) + 0x00
+# --- Protocol: mirror of include/protocol.h ---
 MAX_FRAME = 64
 FRAME_OVERHEAD = 4
 
@@ -74,7 +41,7 @@ MSG_ESTOP_RESET = 0x12
 
 BMS_MAX_CELLS = 24
 
-# msg_id -> (name, struct format, field names). Teensy -> Pi messages only.
+# msg_id -> (name, struct format, field names), Teensy -> Pi only.
 INCOMING = {
     MSG_TEENSY_HEARTBEAT: (
         'TEENSY_HEARTBEAT', '<IIIHHIBfB',
@@ -98,17 +65,14 @@ INCOMING = {
         ('bms_id', 'voltage_cv', 'current_ca', 'alarms', 'mode', 'cycles', 'capacity_ah',
          'bad_frames', 'temp_mos_c', 'temp_1_c', 'temp_2_c', 'soc_pct', 'cell_count',
          'battery_type', 'protocol_version', 'status')),
-    # The fixed array is folded into one 'cell_mv' list of length count on receipt.
     MSG_BMS_CELLS: (
         'BMS_CELLS', f'<BB{BMS_MAX_CELLS}H',
         ('bms_id', 'count') + tuple(f'_cell{i}' for i in range(BMS_MAX_CELLS))),
 }
 
-# Fields logged by name rather than number. Mirrors UltrasonicStatus in protocol.h.
 ULTRASONIC_OK = 0
 ULTRASONIC_OUT_OF_RANGE = 1
 ULTRASONIC_TIMEOUT = 2
-# Mirrors MIN_MM / MAX_MM in src/ultrasonic.cpp: the A02YYUW's blind zone and rated range.
 ULTRASONIC_MIN_M = 0.03
 ULTRASONIC_MAX_M = 4.5
 
@@ -121,18 +85,14 @@ ENUMS = {
 GPS_STATUS_FIX = 0
 BMS_OK = 0
 
-# Bitmask fields, bit 0 first. Logged as the names of the set bits.
-# HeartbeatFlags in protocol.h.
+# Bitmask names, bit 0 first.
 HB_FLAGS = ('pi_alive', 'estop', 'spool_run')
-# SpoolFlags in protocol.h.
 SPOOL_FLAGS = ('run', 'at_reserve', 'full', 'saturated')
-# JK field 0x8B, per esphome-jk-bms. 'low_capacity' is a warning, not a fault.
 BMS_ALARMS = ('low_capacity', 'mos_overtemp', 'charge_overvoltage',
               'discharge_undervoltage', 'battery_overtemp', 'charge_overcurrent',
               'discharge_overcurrent', 'cell_imbalance', 'box_overtemp',
               'battery_undertemp', 'cell_overvoltage', 'cell_undervoltage',
               'protection_309_a', 'protection_309_b')
-# JK field 0x8C.
 BMS_MODE = ('charge_on', 'discharge_on', 'balancing', 'battery_dropped')
 BITS = {
     ('TEENSY_HEARTBEAT', 'flags'): HB_FLAGS,
@@ -141,8 +101,7 @@ BITS = {
     ('BMS_STATUS', 'mode'): BMS_MODE,
 }
 
-# BMS_ALARMS bit -> BatteryState health, most serious first. Unlisted bits other
-# than low_capacity are UNSPEC_FAILURE.
+# BMS alarm -> BatteryState health, most serious first.
 BMS_HEALTH = (
     ({'mos_overtemp', 'battery_overtemp', 'box_overtemp'},
      BatteryState.POWER_SUPPLY_HEALTH_OVERHEAT),
@@ -158,11 +117,9 @@ BMS_TECHNOLOGY = {0: BatteryState.POWER_SUPPLY_TECHNOLOGY_LIFE,
 FMT_PI_HEARTBEAT = '<I'
 FMT_SPOOL_CMD = '<B'
 FMT_ODOM_SPEED = '<f'
-# ----------------------------------------------------------------------------------
 
 
 def crc16(data: bytes) -> int:
-    """CRC-16/CCITT-FALSE: poly 0x1021, init 0xFFFF."""
     crc = 0xFFFF
     for b in data:
         crc ^= b << 8
@@ -232,7 +189,6 @@ class TeensyBridge(Node):
         log_file = self.declare_parameter('log_file', '').value
         self._gps_frame = self.declare_parameter('gps_frame', 'gps_link').value
         self._gps_sigma_per_hdop = self.declare_parameter('gps_sigma_per_hdop', 2.5).value
-        # Index = the sensor_id the Teensy sends (its table in src/ultrasonic.cpp).
         us_topics = self.declare_parameter(
             'ultrasonic_topics', ['/ultrasonic/sensor_0', '/ultrasonic/sensor_1']).value
         self._us_frames = self.declare_parameter(
@@ -240,7 +196,6 @@ class TeensyBridge(Node):
         self._us_fov = self.declare_parameter('ultrasonic_fov_rad', 1.047).value
         if len(us_topics) != len(self._us_frames):
             raise ValueError('ultrasonic_topics and ultrasonic_frames differ in length')
-        # Index = the bms_id the Teensy sends (its table in src/bms.cpp).
         battery_topics = self.declare_parameter(
             'battery_topics', ['/battery/bms_0', '/battery/bms_1']).value
         self._battery_frame = self.declare_parameter('battery_frame', 'base_link').value
@@ -255,19 +210,18 @@ class TeensyBridge(Node):
             log_file = f'~/circe_logs/teensy_rx_{stamp}.txt'
         log_path = Path(log_file).expanduser()
         log_path.parent.mkdir(parents=True, exist_ok=True)
-        # Line-buffered: every frame is on disk the moment it arrives, so the log
-        # survives the node being killed.
+        # Line-buffered so the log survives the node being killed.
         self._log = open(log_path, 'a', buffering=1)
         self.get_logger().info(f'Logging Teensy frames to {log_path}')
 
         self._port = None
         self._rx = bytearray()
-        self._synced = False      # discard up to the first 0x00 after (re)connecting
+        self._synced = False
         self._expected_seq = None
         self._tx_seq = 0
         self._pi_counter = 0
-        self._connected = None    # last value published on /teensy/connected
-        self._last_teensy_hb = None  # monotonic time of the last TEENSY_HEARTBEAT
+        self._connected = None
+        self._last_teensy_hb = None
         self._estop_active = None
         self._last_estop_trigger = 0.0
         self._bms_cells = [[] for _ in battery_topics]
@@ -293,7 +247,6 @@ class TeensyBridge(Node):
         self.create_timer(1.0, self._connect)
         self._connect()
 
-    # --- port lifecycle -----------------------------------------------------------
 
     def _set_connected(self, connected):
         if connected != self._connected:
@@ -302,7 +255,7 @@ class TeensyBridge(Node):
 
     def _connect(self):
         if self._port is not None:
-            # Open but silent: a hung or crashed firmware keeps the USB port up.
+            # Port open but firmware silent.
             stale = (self._last_teensy_hb is None or
                      time.monotonic() - self._last_teensy_hb > self._teensy_timeout)
             if stale and self._connected:
@@ -314,9 +267,7 @@ class TeensyBridge(Node):
                 self._set_connected(False)
             return
         try:
-            # timeout=0: reads return at once with whatever is waiting. The baud rate
-            # is ignored by USB CDC. write_timeout bounds a write to a Teensy that has
-            # stopped reading, so it can never stall the executor.
+            # Non-blocking reads; write_timeout keeps a stuck Teensy from stalling us.
             self._port = serial.Serial(self._port_name, timeout=0, write_timeout=0.05)
         except (serial.SerialException, OSError):
             return
@@ -324,7 +275,6 @@ class TeensyBridge(Node):
         self._rx.clear()
         self._synced = False
         self._expected_seq = None
-        # /teensy/connected goes true with the first heartbeat, not here.
         self._last_teensy_hb = None
         self._write_log(f'CONNECTED {self._port_name}')
         self.get_logger().info(f'Connected to {self._port_name}')
@@ -339,7 +289,6 @@ class TeensyBridge(Node):
         self._write_log(f'DISCONNECTED {reason}')
         self.get_logger().warning(f'Lost {self._port_name}: {reason}; retrying every 1 s')
 
-    # --- receive --------------------------------------------------------------------
 
     def _poll(self):
         if self._port is None:
@@ -359,12 +308,11 @@ class TeensyBridge(Node):
             encoded = bytes(self._rx[:end])
             del self._rx[:end + 1]
             if not self._synced:
-                # Opened mid-frame: the bytes before the first delimiter are a tail.
+                # Skip the partial frame before the first delimiter.
                 self._synced = True
                 continue
             if encoded:
                 self._handle_encoded(encoded)
-        # No delimiter in far more than a frame's worth of bytes: noise, resync.
         if len(self._rx) > 2 * MAX_FRAME:
             self._write_log(f'BAD_OVERFLOW len={len(self._rx)}')
             self._rx.clear()
@@ -433,8 +381,7 @@ class TeensyBridge(Node):
             elif self._estop_active is not None:
                 self.get_logger().info('E-stop cleared on the Teensy')
         now = time.monotonic()
-        # Repeated while latched: a reset from the joystick clears the driver even with
-        # the button still down, and this puts it back within a second.
+        # Re-trigger every second while latched.
         if active and (not self._estop_active or now - self._last_estop_trigger >= 1.0):
             self._pub_estop_trigger.publish(Bool(data=True))
             self._last_estop_trigger = now
@@ -471,7 +418,6 @@ class TeensyBridge(Node):
 
         msg.present = True
         msg.voltage = v['voltage_cv'] / 100.0
-        # JK and BatteryState agree: positive is charging.
         msg.current = v['current_ca'] / 100.0
         msg.temperature = float(max(v['temp_1_c'], v['temp_2_c']))
         msg.percentage = v['soc_pct'] / 100.0
@@ -506,8 +452,6 @@ class TeensyBridge(Node):
                 f'{len(self._pub_us)} entries', throttle_duration_sec=10.0)
             return
         msg = Range()
-        # Pi arrival time. The sensor's own filtering adds ~100 ms before that, which
-        # nothing downstream can see; fine for obstacle stops, not for fusion.
         msg.header.stamp = self.get_clock().now().to_msg()
         msg.header.frame_id = self._us_frames[sid]
         msg.radiation_type = Range.ULTRASOUND
@@ -518,14 +462,11 @@ class TeensyBridge(Node):
         status = v['status']
         if status == ULTRASONIC_OK:
             msg.range = distance
-            # Datasheet accuracy: +/-(1 cm + 0.3% of distance), taken as 1 sigma.
             msg.variance = (0.01 + 0.003 * distance) ** 2
         elif status == ULTRASONIC_OUT_OF_RANGE:
-            # Range.msg convention: -inf too close to quantify, +inf nothing in range.
             msg.range = float('-inf') if distance < ULTRASONIC_MIN_M else float('inf')
         else:
-            # TIMEOUT: the sensor is silent. NaN, never the last good distance, so a
-            # dead sensor cannot read as a clear path.
+            # Sensor silent: NaN so it can't read as a clear path.
             msg.range = float('nan')
         self._pub_us[sid].publish(msg)
 
@@ -536,23 +477,17 @@ class TeensyBridge(Node):
         msg.status.service = (NavSatStatus.SERVICE_GPS | NavSatStatus.SERVICE_GLONASS
                               | NavSatStatus.SERVICE_GALILEO)
         if v['status'] != GPS_STATUS_FIX:
-            # navsat_transform_node drops NO_FIX messages; they keep the topic alive so
-            # a searching receiver is distinguishable from a dead bridge.
             msg.status.status = NavSatStatus.STATUS_NO_FIX
             msg.latitude = msg.longitude = msg.altitude = float('nan')
             msg.position_covariance_type = NavSatFix.COVARIANCE_TYPE_UNKNOWN
             self._pub_gps.publish(msg)
             return
-        # GGA quality 2 is differential, which on this receiver means SBAS (WAAS etc.).
         msg.status.status = (NavSatStatus.STATUS_SBAS_FIX if v['fix_quality'] == 2
                              else NavSatStatus.STATUS_FIX)
         msg.latitude = v['lat_e7'] / 1e7
         msg.longitude = v['lon_e7'] / 1e7
-        # MSL, not the WGS84 ellipsoid NavSatFix specifies: TinyGPS++ does not expose
-        # GGA's geoid separation. Harmless in 2D, where navsat_transform zeroes altitude.
+        # MSL altitude, not ellipsoid.
         msg.altitude = float(v['alt_m'])
-        # Datasheet: <2.5 m CEP. Horizontal sigma scales with HDOP; vertical is
-        # conventionally ~2x worse.
         sigma = max(v['hdop'], 0.5) * self._gps_sigma_per_hdop
         msg.position_covariance = [sigma ** 2, 0.0, 0.0,
                                    0.0, sigma ** 2, 0.0,
@@ -572,7 +507,6 @@ class TeensyBridge(Node):
             return f'{value / 1e7:.7f}'
         return f'{value:.3f}' if isinstance(value, float) else str(value)
 
-    # --- send -------------------------------------------------------------------------
 
     def _send(self, msg_id, payload):
         if self._port is None:
@@ -580,7 +514,6 @@ class TeensyBridge(Node):
         try:
             self._port.write(build_frame(msg_id, self._tx_seq, payload))
         except serial.SerialTimeoutException:
-            # Teensy connected but not draining USB: drop this frame, keep the port.
             self.get_logger().warning('Teensy not reading; dropped a frame',
                                       throttle_duration_sec=5.0)
             return
@@ -603,7 +536,6 @@ class TeensyBridge(Node):
         if msg.data:
             self._send(MSG_ESTOP_RESET, b'')
 
-    # --- log --------------------------------------------------------------------------
 
     def _write_log(self, line):
         stamp = datetime.datetime.now().isoformat(timespec='milliseconds')
@@ -622,11 +554,9 @@ def main():
     try:
         rclpy.spin(node)
     except (KeyboardInterrupt, ExternalShutdownException):
-        # SIGTERM from `ros2 launch` shutting down arrives as the latter.
         pass
     finally:
-        # Ctrl-C under `ros2 launch` arrives twice: from the terminal and forwarded by
-        # launch. The second would land inside destroy_node() as a traceback.
+        # Ignore a second Ctrl-C during shutdown.
         signal.signal(signal.SIGINT, signal.SIG_IGN)
         node.destroy_node()
         if rclpy.ok():

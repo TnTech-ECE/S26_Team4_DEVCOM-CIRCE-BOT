@@ -1,37 +1,5 @@
-# CIRCE diagnostics tree -- node: diagnostic_aggregator / aggregator_node
-#
-# Sorts the flat /diagnostics stream into /diagnostics_agg:
-#
-#   CIRCE
-#   ├── Sensors       Lidar · Camera · IMU        circe_health_monitor
-#   │                 Lidar                       + scan_sector_filter (its own heartbeat)
-#   │                 Odometry                    circe_health_monitor (/odometry/wheels)
-#   ├── Localization  EKF                         ekf_filter_node (robot_localization)
-#   │                 SLAM                        circe_health_monitor + lifecycle_manager_localization
-#   ├── Navigation                                lifecycle_manager_navigation
-#   └── Computer                                  circe_health_monitor (the Pi 5)
-#
-# A group's level is the worst of its children, and /diagnostics_toplevel_state is the
-# worst thing on the robot. Anything that matches no analyzer lands in "Other" rather
-# than being dropped -- a renamed check turns up there.
-#
-# Matching is on the status NAME, which diagnostic_updater prefixes with the publishing
-# node's name ("ekf_filter_node: ..."). find_and_remove_prefix both matches on that
-# prefix and strips it from the displayed name.
-#
-# *** EVERY LEAF HAS num_items: 0. DO NOT REMOVE IT. ***
-# A GenericAnalyzer with no items reports STALE, and a STALE group next to healthy
-# ones rolls up to ERROR (generic_analyzer_base.hpp, report()). So without it,
-# use_nav2:=false -- a legitimate configuration -- turns the whole robot red because
-# the Navigation group is empty. num_items: 0 is the one setting that makes an EMPTY
-# group read OK without also penalising a group that has items.
-#
-# What it does NOT hide: a producer that published and then stopped. Its items go
-# STALE after `timeout` seconds and its group reports ERROR. That is the crashed-node
-# case, and catching it is the aggregator's whole job. A producer that never started
-# at all is left to circe_bringup's gates, which already stop the bringup and name it.
-#
-# Keyed on `/**`, like the rest of this workspace's params files.
+# CIRCE diagnostics tree (diagnostic_aggregator): Sensors, Localization, Navigation, Computer.
+# num_items: 0 keeps an empty group (e.g. use_nav2:=false) from reading STALE/ERROR.
 
 /**:
   ros__parameters:
@@ -42,10 +10,7 @@
       type: diagnostic_aggregator/AnalyzerGroup
       path: Sensors
       analyzers:
-        # scan_sector_filter is laser_filters' scan_to_scan_filter_chain, which
-        # publishes a diagnostic_updater Heartbeat of its own. Unmatched, it sat in
-        # "Other" -- and Other discards stale items, so a crashed sector filter simply
-        # VANISHED from the tree. Filed here, its heartbeat going stale turns Lidar red.
+        # Includes scan_sector_filter's own heartbeat.
         lidar:
           type: diagnostic_aggregator/GenericAnalyzer
           path: Lidar
@@ -81,9 +46,6 @@
           find_and_remove_prefix: ['ekf_filter_node']
           num_items: 0
           timeout: 5.0
-        # Two sources. The lifecycle manager says slam_toolbox was ACTIVATED; the
-        # map -> odom rate says it is still WORKING. The manager alone cannot tell the
-        # difference -- it runs with bond_timeout 0.0 -- see health_monitor.py.
         slam:
           type: diagnostic_aggregator/GenericAnalyzer
           path: SLAM

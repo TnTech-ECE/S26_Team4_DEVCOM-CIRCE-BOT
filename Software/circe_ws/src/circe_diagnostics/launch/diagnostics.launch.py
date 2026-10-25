@@ -1,27 +1,9 @@
 #!/usr/bin/env python3
 """CIRCE health monitoring: circe_health_monitor + diagnostic_aggregator.
 
-    ros2 launch circe_diagnostics diagnostics.launch.py
-    ros2 launch circe_diagnostics diagnostics.launch.py use_camera:=false
-
-Started by BOTH top-level launch files -- circe_bringup.launch.py on the robot and
-circe_gazebo's circe_sim_nav.launch.py under Gazebo -- with the same config files and
-the same node names, so the tree reads identically in both. Each passes its own layer
-arguments through. The arguments here have the same names and defaults as in
-circe_bringup.launch.py, and they mean the same thing: a layer switched off on purpose
-is not a layer that is broken, so its checks are disabled rather than left to report
-silence as an error.
-
-The simulation differs in exactly two facts, and each is an argument rather than a
-forked config: use_sim_time:=true, and camera_imu:=false (Gazebo's rgbd_camera has no
-IMU stream; the simulated IMU publishes /imu/data directly).
-
-Output:
-    /diagnostics_agg              the tree   (ros2 run rqt_robot_monitor rqt_robot_monitor)
-    /diagnostics_toplevel_state   one status: the worst thing on the robot right now
-
-The EKF and Nav2 publish their own diagnostics and need no argument here: when they are
-not running their groups are simply empty, which config/analyzers.yaml reads as OK.
+Started by circe_bringup.launch.py and circe_sim_nav.launch.py with the same layer
+arguments, so disabled layers aren't reported as broken.
+Output: /diagnostics_agg (tree) and /diagnostics_toplevel_state (worst status).
 """
 
 from pathlib import Path
@@ -47,29 +29,23 @@ def generate_launch_description():
     use_perception = LaunchConfiguration('use_perception')
     use_sim_time = LaunchConfiguration('use_sim_time')
 
-    # Same expression as circe_bringup.launch.py's imu_will_publish, and for the same
-    # reason: with imu_source:=d456 the publisher is imu_fusion.py, which has nothing
-    # to republish when the camera is off.
+    # Same as circe_bringup.launch.py's imu_will_publish.
     imu_will_publish = AndSubstitution(
         use_imu,
         OrSubstitution(
             AndSubstitution(use_camera, EqualsSubstitution(imu_source, 'd456')),
             EqualsSubstitution(imu_source, 'bno055')))
 
-    # One entry per check in config/health_monitor.yaml. A check missing from here is
-    # always on, so a new check in the YAML is watched until somebody decides otherwise.
+    # One entry per check in health_monitor.yaml; missing = always on.
     enabled = {
         'lidar_raw.enabled': use_lidar,
         'lidar_masked.enabled': use_lidar,
         # scan_pitch_filter publishes /scan_filtered only in response to /scan.
         'lidar_filtered.enabled': AndSubstitution(use_perception, use_lidar),
         'camera_depth.enabled': use_camera,
-        # realsense_d456.yaml enables the gyro and accelerometer unconditionally, so the
-        # raw IMU stream exists whenever the real camera does, whichever device backs
-        # /imu/data. The simulated camera has none -- hence camera_imu.
+        # The simulated camera has no raw IMU stream.
         'imu_raw.enabled': AndSubstitution(use_camera, LaunchConfiguration('camera_imu')),
         'imu_fused.enabled': imu_will_publish,
-        # No motor driver runs in bench_mode, so nothing publishes /odometry/wheels.
         'odom_wheels.enabled': NotSubstitution(LaunchConfiguration('bench_mode')),
         'slam.enabled': LaunchConfiguration('use_slam'),
         'host.enabled': LaunchConfiguration('monitor_host'),
@@ -108,9 +84,7 @@ def generate_launch_description():
             parameters=[str(analyzers), {'use_sim_time': use_sim_time}],
         ),
 
-        # *** THE NAME IS LOAD-BEARING. *** diagnostic_updater prefixes every status
-        # with it, and config/analyzers.yaml matches on "circe_health_monitor: ...".
-        # Rename it here and every check drops out of its group into "Other".
+        # Name must match analyzers.yaml's "circe_health_monitor: ..." prefixes.
         Node(
             package='circe_diagnostics',
             executable='health_monitor.py',

@@ -9,30 +9,25 @@
 
 namespace {
 
-// Datasheet: 9600 bps at power-up, 4800-115200 configurable; 1 Hz default (up to 10 Hz).
 constexpr uint32_t GPS_BAUD = 9600;
-// Rates the receiver might be at when it goes quiet: power-up, or an earlier PMTK251.
+// Rates the receiver may be at (power-up or after an earlier PMTK251).
 constexpr uint32_t GPS_PROBE_BAUDS[] = {9600, 115200};
-constexpr uint32_t NO_DATA_MS = 2000;   // no valid sentence for this long -> GPS_NO_DATA
-constexpr uint32_t RECONFIGURE_MS = 3000;  // ...and for this long -> resend the baud rate
-constexpr uint32_t STALE_FIX_MS = 2000; // position older than this -> GPS_NO_FIX
+constexpr uint32_t NO_DATA_MS = 2000;
+constexpr uint32_t RECONFIGURE_MS = 3000;  // silent this long -> resend baud command
+constexpr uint32_t STALE_FIX_MS = 2000;
 constexpr uint32_t SILENT_REPORT_MS = 1000;
 
-HardwareSerialIMXRT &g_port = Serial3;  // the Teensy 4 class: has addMemoryForRead()
+HardwareSerialIMXRT &g_port = Serial3;
 TinyGPSPlus g_gps;
 
-// A full 1 Hz NMEA burst is ~500 bytes; the core's 64-byte buffer would overflow if
-// loop() ever stalls for ~70 ms, and the sentences that lose bytes fail their checksum.
+// Extra RX buffer so a ~500-byte NMEA burst survives a loop() stall.
 uint8_t g_rx_extra[512];
 
-// Valid sentences, not raw characters: at the wrong baud rate bytes still arrive, but
-// none of them passes a checksum.
 uint32_t g_last_sentence_ms = 0;
 uint32_t g_last_sentences = 0;
 uint32_t g_last_sent_ms = 0;
 uint32_t g_last_configure_ms = 0;
 
-// Sends "$<body>*<checksum>\r\n". The checksum is the XOR of every byte of body.
 void send_nmea(const char *body) {
   uint8_t sum = 0;
   for (const char *c = body; *c; c++) sum ^= static_cast<uint8_t>(*c);
@@ -43,9 +38,7 @@ void send_nmea(const char *body) {
   g_port.write(tail);
 }
 
-// Tells the receiver to use GPS_BAUD, sent at every rate it might currently be at, then
-// listens at GPS_BAUD. flush() blocks for the ~25 ms the command takes at 9600; it only
-// runs while the GPS is silent anyway.
+// Send PMTK251 at every probe rate, then listen at GPS_BAUD (blocks ~25 ms).
 void configure_baud(uint32_t now) {
   char cmd[20];
   snprintf(cmd, sizeof(cmd), "PMTK251,%lu", static_cast<unsigned long>(GPS_BAUD));
@@ -60,8 +53,7 @@ void configure_baud(uint32_t now) {
 
 uint8_t status_now(uint32_t now) {
   if (now - g_last_sentence_ms >= NO_DATA_MS) return GPS_NO_DATA;
-  // TinyGPS++ keeps location.isValid() true forever once set, so freshness and the
-  // latest GGA fix quality are what tell a live fix from a lost one.
+  // location.isValid() stays true once set, so also check age and fix quality.
   if (!g_gps.location.isValid() || g_gps.location.age() > STALE_FIX_MS ||
       g_gps.location.FixQuality() == TinyGPSLocation::Invalid) {
     return GPS_NO_FIX;
@@ -111,12 +103,10 @@ void gps_update() {
     configure_baud(now);
   }
 
-  // hdop only comes from GGA, so this fires once per GGA: one report per epoch even
-  // though RMC updates the location too.
+  // hdop updates once per GGA: one report per epoch.
   if (g_gps.hdop.isUpdated()) {
     report(now);
   } else if (now - g_last_sent_ms >= SILENT_REPORT_MS && status_now(now) == GPS_NO_DATA) {
-    // A dead receiver sends nothing, so silence is reported explicitly.
     report(now);
   }
 }

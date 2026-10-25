@@ -1,5 +1,5 @@
 CIRCE TEENSY I/O BOARD - STATUS REPORT
-Written: 2026-10-23    Last updated: 2026-10-24 21:05 CDT (see section 0)
+Written: 2026-10-23    Last updated: 2026-10-24 21:53 CDT (see section 0)
 Scope: Teensy 4.0 firmware + Pi bridge node (circe_teensy package).
        The JK BMS is excluded from the percentages and tracked separately, but BMS
        changes still change the Teensy <-> Pi message format, so they are logged here.
@@ -25,6 +25,16 @@ fine. The rule is that every commit message has a "Prompted-by: <name>" line for
 person who actually did the work, and the same name goes in the "Who:" line here. For
 now, everyone works from this one clone, one person at a time.
 
+------------------------------------------------------------------------------------------
+[2026-10-24 21:53 CDT]
+  Who:          gmostar, with Claude Code
+  Done:         Recorded the signal voltages given by gmostar: the TB6600 and the
+                17HS15-1504D-E1K are 3 V (3.3 V) parts, and the 17HS19-2004D-E1K is
+                5 V. Per Sharif, the encoders are built into the motors. Report only.
+  State:        No code changed. Not committed yet (the 21:05 push does not include
+                this entry).
+  Pick up here: Same as 21:05. Before wiring the 17HS19, settle the open point in
+                concern 3: are its encoder's 5 V outputs read by the Teensy?
 ------------------------------------------------------------------------------------------
 [2026-10-24 21:05 CDT]
   Who:          gmostar, with Claude Code
@@ -234,10 +244,14 @@ Spool motor hardware (on hand, 2026-10-24):
       17HS15-1504D-E1K   1.5 A/phase, lower torque (~40-45 Ncm)
     Figures for the 17HS19 come from a StepperOnline eBay listing. No listing for the
     exact 17HS15 part was found. Check both against the real datasheets or labels.
-  - Encoder (both motors, "E1K"): 1000 PPR optical incremental, = 4000 counts/rev after
-    quadrature decoding. The 17HS19 listing says it has DIFFERENTIAL outputs
-    (A+/A-/B+/B-). Supply voltage (probably 5 V) not yet confirmed. The encoder goes to
-    the Teensy (the TB6600 has no encoder input), so the Teensy does the stall and
+  - Signal voltage (from gmostar, 2026-10-24):
+      TB6600              3 V (3.3 V) logic, matches the Teensy
+      17HS15-1504D-E1K    3 V (3.3 V)
+      17HS19-2004D-E1K    5 V
+  - Encoder (both motors, "E1K"): built into the motor (per Sharif). 1000 PPR optical
+    incremental, = 4000 counts/rev after quadrature decoding. The 17HS19 listing says
+    it has DIFFERENTIAL outputs (A+/A-/B+/B-). The TB6600 has no encoder input, so if
+    the encoder is used, its wires go to the Teensy, and the Teensy does the stall and
     missed-step checking.
   - Speed: a stepper's speed comes straight from the step rate, so no speed control
     loop is needed. At 1/8 microstepping, 150 rpm is 4000 steps/s. The encoder confirms
@@ -310,12 +324,14 @@ Safety
      The Pi must stop the rover when this happens (next step 5d).
   3. The Teensy's pins are 3.3 V only. Any 5 V signal can damage it. Check the
      signal voltage of the ultrasonics (when powered at 5 V) before wiring.
-     Spool encoder: if it runs on 5 V, its outputs must not go straight to the Teensy.
-     With differential outputs, use a line receiver that has 3.3 V outputs (e.g.
-     AM26LV32), or level-shift A+ and B+.
-     TB6600 inputs: the module is rated for 3.3-24 V control signals, and others
-     drive it from 3.3 V. Clone boards vary, so check that it steps reliably at
-     3.3 V; if not, add a transistor or buffer.
+     Spool encoder: the 17HS15-1504D-E1K is 3.3 V, so it can wire straight to the
+     Teensy. The 17HS19-2004D-E1K is 5 V. The encoder being built into the motor
+     does not change that: if its signal wires go to Teensy pins, a 5 V high can
+     damage them. With that motor, use a line receiver that has 3.3 V outputs (e.g.
+     AM26LV32), or level-shift A+ and B+. This only doesn't matter if the encoder
+     is not connected to the Teensy at all. OPEN: confirm which applies before
+     wiring.
+     TB6600 inputs: 3.3 V logic (gmostar, 2026-10-24), the same as the Teensy.
  15. Stepper on e-stop: disabling the TB6600 (ENA) removes holding torque, so cable
      tension can turn the spool backwards. Decide whether the spool should hold
      (stay enabled at zero speed) or go limp. The encoder will keep counting either
@@ -371,7 +387,9 @@ System
   - Gear ratio between motor and spool (or direct drive).
   - TB6600 DIP switch settings: microstepping and current (1.5 A for the 17HS15,
     2.0 A for the 17HS19).
-  - Encoder supply voltage and output type (differential or single-ended), from the
-    datasheet or the cable colours/labels.
+  - Known since 2026-10-24: signal voltage is 3.3 V for the TB6600 and the
+    17HS15-1504D-E1K, and 5 V for the 17HS19-2004D-E1K. Encoders are built in.
+  - Whether the encoder wires go to the Teensy (needed for the cable count and
+    stall check), and the encoder output type (differential or single-ended).
   - Cable outer diameter and length loaded on the spool.
   - E-stop button model (does it have two normally-closed contacts?).

@@ -1,52 +1,10 @@
 #!/usr/bin/env python3
 """Runtime health checks for CIRCE, published on /diagnostics.
 
-    ros2 launch circe_diagnostics diagnostics.launch.py
-
-circe_bringup's gates (circe_bringup/scripts/wait_for.py) prove each layer works ONCE,
-at startup. This node keeps asking the same questions for as long as the rover runs, and
-answers them as diagnostic_msgs so diagnostic_aggregator can fold them into one tree
-(config/analyzers.yaml) alongside the statuses other nodes already publish themselves:
-
-    ekf_filter_node                  robot_localization, print_diagnostics: true
-    lifecycle_manager_navigation     "Nav2 Health"
-    lifecycle_manager_localization   "Nav2 Health", for slam_toolbox
-
-Nothing else on this robot reports on itself, so the rest is watched from OUTSIDE, by
-its output -- the same rule wait_for.py follows, for the same reason: a driver that has
-lost its device usually keeps running and simply goes quiet.
-
-CHECKS
-    rate    a topic's message rate against [min_hz, max_hz]     config: rate_checks
-    SLAM    how often map -> odom is broadcast on /tf           config: slam.*
-    Host    CPU temperature, under-voltage/throttling, CPU load, memory, disk
-
-*** RATE CHECKS NEVER DESERIALISE A MESSAGE. ***
-Their subscriptions use raw=True, so an arrival costs one callback and a counter
-increment, not a conversion into Python objects. That matters on the Pi 5: the camera
-IMU alone arrives at ~200 Hz. It is also why the camera is watched through
-depth/camera_info -- published once per depth frame -- and never through the image.
-
-*** RATES ARE MEASURED ON THIS NODE'S CLOCK, SO use_sim_time MEANS WHAT IT SAYS. ***
-Under Gazebo every sensor publishes per SIM second, and that is the rate the EKF and
-Nav2 consume. diagnostic_updater's own FrequencyStatus cannot measure it -- see _Rate.
-
-*** THE SUBSCRIBER QoS MATCHES EVERY PUBLISHER. ***
-BEST_EFFORT + VOLATILE is the permissive end of both QoS axes, so one profile connects
-to the RealSense's BEST_EFFORT IMU, the lidar's sensor-data QoS and a RELIABLE publisher
-alike. wait_for.py mirrors each publisher's profile because it must receive the latched
-message on TRANSIENT_LOCAL topics; a rate check never needs that, so it takes the simple
-route.
-
-*** STATUS NAMES ARE HOW THE AGGREGATOR FILES THEM. ***
-diagnostic_updater prefixes every name with this node's name, so a check labelled
-"Lidar raw scan" arrives as "circe_health_monitor: Lidar raw scan", and analyzers.yaml
-matches on that. Two rules follow:
-  - Labels start with their group word: Lidar, Camera, IMU, Odometry, SLAM, Host. Rename
-    one and it lands in the aggregator's "Other" bucket rather than vanishing -- that is
-    the clue.
-  - Labels contain no '/'. rqt_robot_monitor builds its tree by splitting names on '/',
-    so a topic name in a label becomes spurious nesting. Topics go in the key/values.
+Watches sensors from outside by their output rate (raw subscriptions, no deserialising),
+SLAM by its map -> odom broadcast rate, and the host (temperature, throttling, CPU,
+memory, disk). Rates use the node clock, so use_sim_time works. Labels start with their
+analyzer group word (Lidar, Camera, IMU, Odometry, SLAM, Host) and contain no '/'.
 """
 
 import os
@@ -72,21 +30,16 @@ OK = DiagnosticStatus.OK
 WARN = DiagnosticStatus.WARN
 ERROR = DiagnosticStatus.ERROR
 
-# Permissive on both axes; see the module docstring. Depth 10 rather than 1 so a burst
-# that arrives while the executor is busy is counted rather than dropped, which would
-# otherwise read as a rate dip that never happened.
+# Permissive QoS so one profile matches every publisher.
 _ANY_PUBLISHER = QoSProfile(history=HistoryPolicy.KEEP_LAST, depth=10,
                             reliability=ReliabilityPolicy.BEST_EFFORT,
                             durability=DurabilityPolicy.VOLATILE)
 
-# /tf carries every dynamic edge in the tree -- the EKF's odom -> base_link, the wheel
-# joints, slam_toolbox's map -> odom -- so it needs a deeper queue than a single topic.
 _TF_QOS = QoSProfile(history=HistoryPolicy.KEEP_LAST, depth=100,
                      reliability=ReliabilityPolicy.BEST_EFFORT,
                      durability=DurabilityPolicy.VOLATILE)
 
-# vcgencmd get_throttled bits. The low nibble is "right now", the same bits shifted by 16
-# are "has happened since boot".
+# vcgencmd get_throttled bits; << 16 = "since boot".
 _THROTTLE_BITS = (
     (0x1, 'under-voltage', ERROR),
     (0x2, 'ARM frequency capped', WARN),
@@ -94,10 +47,7 @@ _THROTTLE_BITS = (
     (0x8, 'soft temperature limit', WARN),
 )
 
-# Raspberry Pi kernels expose the same flags vcgencmd reads as a sysfs attribute on the
-# firmware node. The node's name differs between boards (soc/soc:firmware on a Pi 4,
-# soc@107c000000/soc@107c000000:firmware on a Pi 5), hence the patterns. Deliberately
-# not a recursive glob: /sys is full of symlink cycles.
+# Pi 4 / Pi 5 sysfs paths for the throttle flags.
 _THROTTLE_SYSFS = ('/sys/devices/platform/*/*firmware/get_throttled',
                    '/sys/devices/platform/*firmware/get_throttled')
 
@@ -111,8 +61,7 @@ def _level(value, warn, error):
 
 
 def _fixed(level, message):
-    """A task that always reports the same thing -- used to put a config error IN the
-    tree, where someone will see it, rather than only in a log nobody is reading."""
+    """Task that always reports the same status (puts config errors in the tree)."""
     def run(stat):
         stat.summary(level, message)
         return stat
@@ -120,25 +69,8 @@ def _fixed(level, message):
 
 
 class _Rate(DiagnosticTask):
-    """Message rate over the last `window` update periods, timed on the NODE's clock.
-
-    *** NOT diagnostic_updater.FrequencyStatus, AND THE CLOCK IS WHY. ***
-    Jazzy's FrequencyStatus times its window with a Clock(ROS_TIME) it constructs for
-    itself in clear() and run() (diagnostic_updater/_update_functions.py). That clock
-    belongs to no node, never receives /clock, and so reads WALL time even under
-    use_sim_time:=true -- while the Updater that calls run() fires on the node's clock,
-    i.e. SIM time. Under Gazebo every rate therefore came out as nominal x real-time
-    factor. Measured in circe_sim_nav at RTF 1.00: 50 depth frames over a 5.0024 s
-    "window" = 9.995 Hz, WARN against a 10 Hz floor, with not one frame lost. On a host
-    that runs the sim at RTF 0.6 every sensor reads 40% slow. Timing the window on the
-    node's own clock is what makes use_sim_time reach the measurement.
-
-    It also names what went quiet. The stock message for a silent source is "No events
-    recorded.", which in rqt_robot_monitor gives no hint of which topic to look at.
-
-    min_hz and max_hz are the real limits -- no hidden tolerance is taken off them.
-    Callbacks and run() share this node's single-threaded executor, so no lock.
-    """
+    """Message rate over the last `window` update periods, timed on the node's clock
+    (FrequencyStatus uses wall time even with use_sim_time)."""
 
     def __init__(self, label, source, min_hz, max_hz, window, clock):
         super().__init__(label)
@@ -147,9 +79,6 @@ class _Rate(DiagnosticTask):
         self.max_hz = max_hz
         self._clock = clock
         self._count = 0
-        # (time, count) at each of the last `window` updates, oldest first. Empty until
-        # the first update: the construction time is no baseline under use_sim_time,
-        # where the clock reads zero until the first /clock arrives.
         self._history = deque(maxlen=max(int(window), 1) + 1)
 
     def tick(self):
@@ -158,8 +87,7 @@ class _Rate(DiagnosticTask):
     def run(self, stat):
         now = self._clock.now()
         if self._history and now < self._history[-1][0]:
-            # Time went backwards: the simulation was reset. A window spanning the jump
-            # measures nothing, so start a new one.
+            # Clock jumped back (sim reset): start a new window.
             self._history.clear()
         if now.nanoseconds > 0:
             self._history.append((now, self._count))
@@ -211,24 +139,18 @@ class HealthMonitor(Node):
             self.get_logger().warn('every check is disabled; publishing nothing useful')
 
     def _num(self, name, default):
-        """A numeric parameter that accepts 5 as happily as 5.0.
-
-        A plain declare_parameter(name, 5.0) rejects an integer from the YAML with a
-        type error at startup, which is a poor reward for writing `min_hz: 5`.
-        """
+        """Numeric parameter that accepts int or float."""
         return float(self.declare_parameter(
             name, default, ParameterDescriptor(dynamic_typing=True)).value)
 
     def _nums(self, name, default):
-        """A list of numbers, with the same tolerance as _num -- and a bare number is
-        accepted as a one-element list."""
+        """List of numbers (a bare number becomes a one-element list)."""
         value = self.declare_parameter(
             name, default, ParameterDescriptor(dynamic_typing=True)).value
         if isinstance(value, (int, float)):
             return [float(value)]
         return [float(v) for v in value]
 
-    # ---- rate checks ----------------------------------------------------------------
 
     def _add_rate_checks(self, window):
         names = self.declare_parameter('rate_checks', Parameter.Type.STRING_ARRAY).value
@@ -263,19 +185,9 @@ class HealthMonitor(Node):
                                      _ANY_PUBLISHER, raw=True)
             self._updater.add(check)
 
-    # ---- SLAM -----------------------------------------------------------------------
 
     def _add_slam_check(self, window):
-        """Count map -> odom broadcasts as they ARRIVE.
-
-        lifecycle_manager_localization already reports on slam_toolbox, but it runs with
-        bond_timeout 0.0 (circe_nav/launch/slam.launch.py), so it cannot tell when
-        slam_toolbox dies -- it goes on reporting the state it last set. The transform
-        is the one output that stops when SLAM stops.
-
-        Counting arrivals rather than reading the transform's stamp out of a TF buffer
-        keeps this independent of how slam_toolbox chooses to stamp it.
-        """
+        """Count map -> odom broadcasts (the lifecycle manager can't see SLAM die)."""
         enabled = self.declare_parameter('slam.enabled', True).value
         parent = self.declare_parameter('slam.parent_frame', 'map').value
         child = self.declare_parameter('slam.child_frame', 'odom').value
@@ -297,7 +209,6 @@ class HealthMonitor(Node):
         self.create_subscription(TFMessage, '/tf', on_tf, _TF_QOS)
         self._updater.add(check)
 
-    # ---- host -----------------------------------------------------------------------
 
     def _add_host_checks(self):
         if not self.declare_parameter('host.enabled', True).value:
@@ -306,8 +217,6 @@ class HealthMonitor(Node):
 
         zone_types = list(self.declare_parameter(
             'host.thermal_zone_types', ['cpu-thermal', 'x86_pkg_temp']).value)
-        # One limit per zone type, in the same order -- a Pi 5's SoC and a laptop's CPU
-        # package do not share a safe temperature. A single number applies to all.
         temp_warn = self._nums('host.temp_warn_c', [70.0, 90.0])
         temp_error = self._nums('host.temp_error_c', [80.0, 100.0])
         self._cpu_warn = self._num('host.cpu_warn_percent', 90.0)
@@ -317,15 +226,12 @@ class HealthMonitor(Node):
         self._disk_warn = self._num('host.disk_warn_percent', 85.0)
         self._disk_error = self._num('host.disk_error_percent', 95.0)
 
-        # The Pi 5's SoC sensor is "cpu-thermal". Elsewhere (the dev laptop) fall back
-        # to a named package sensor, and failing that to the hottest zone there is.
         self._zones = {}
         for zone in sorted(Path('/sys/class/thermal').glob('thermal_zone*')):
             try:
                 self._zones.setdefault((zone / 'type').read_text().strip(), zone / 'temp')
             except OSError:
                 continue
-        # (type, path, warn, error) for the first configured type present, else None.
         self._temp_zone = next(
             ((t, self._zones[t],
               temp_warn[i if len(temp_warn) > 1 else 0],
@@ -334,8 +240,7 @@ class HealthMonitor(Node):
 
         self._throttle_source = self._find_throttle_source()
 
-        # The first cpu_percent() call has nothing to compare against and returns 0.0.
-        # Priming it here means the first published value is real.
+        # Prime cpu_percent so the first reading is real.
         psutil.cpu_percent(None)
 
         if {len(temp_warn), len(temp_error)} - {1, len(zone_types)}:
@@ -367,20 +272,12 @@ class HealthMonitor(Node):
         out = subprocess.run([where, 'get_throttled'], capture_output=True, text=True,
                              timeout=2.0, check=False)
         if out.returncode != 0 or '=' not in out.stdout:
-            # Typically "VCHI initialization failed": the user running ROS is not in
-            # the `video` group, so /dev/vcio is unreadable.
+            # Usually: user not in the `video` group.
             raise OSError((out.stderr or out.stdout).strip() or f'exit {out.returncode}')
         return int(out.stdout.strip().split('=', 1)[1], 16)
 
     def _host_temperature(self, stat):
-        """CPU temperature, held to the limits for THIS kind of computer.
-
-        Off the Pi it degrades instead of alarming. A VM or a container has no thermal
-        zones at all, which is not a fault, so it reads OK. A host with zones but none
-        of the configured types (an AMD laptop, say) shows its hottest zone for
-        information only: there is no honest limit for an unknown sensor, and some of
-        them -- wifi cards, ACPI placeholders -- report numbers that mean nothing.
-        """
+        """CPU temperature against the limits for this zone type; info-only off the Pi."""
         if not self._zones:
             stat.summary(OK, 'no thermal sensor on this host (VM or container?)')
             return stat
@@ -415,13 +312,7 @@ class HealthMonitor(Node):
         return stat
 
     def _host_power(self, stat):
-        """Under-voltage and throttling, as the Pi's firmware sees them.
-
-        Only the "right now" bits set the level. The "since boot" bits are shown but
-        never raise it: one brown-out at power-on would otherwise hold the whole rover
-        at WARN until the next reboot, and a status that is always yellow stops being
-        read.
-        """
+        """Under-voltage/throttling. Only current flags raise the level."""
         if self._throttle_source is None:
             stat.summary(OK, 'throttle flags unavailable on this host (not a Raspberry Pi)')
             return stat
@@ -483,7 +374,6 @@ def main():
     try:
         rclpy.spin(node)
     except (KeyboardInterrupt, ExternalShutdownException):
-        # SIGTERM from `ros2 launch` shutting down arrives as the latter.
         pass
     finally:
         node.destroy_node()

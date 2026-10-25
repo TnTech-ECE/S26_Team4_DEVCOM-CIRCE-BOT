@@ -1,60 +1,25 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="circe_sensor_mast">
 
     <!--
-      CIRCE sensor mast: a shelf above the RPLidar A1 carrying the RealSense D456.
-
-      Replaces the rover_dev_payload deck, which CIRCE does not use. The lidar keeps
-      its original height; this structure holds it there and continues upward to a
-      deck above it for the camera.
-
-      *** WHY POSTS AND NOT A DECK RESTING ON THE LIDAR ***
-      The A1's upper housing rotates in normal operation, so nothing can physically
-      bolt to the top of it. The shelf is therefore modelled as four posts rising
-      from the lidar's own mounting plate, spanning past the spinning head, to a
-      deck plate above. Build it that way too.
-
-      *** INCLUDE ORDER MATTERS ***
-      This file must be included AFTER rplidar_a1.urdf.xacro. It derives the deck height
-      from that file's lidar_mount_* and a1_scan_plane_z properties, so moving the
-      lidar automatically moves the shelf with it rather than silently desyncing.
-      If included first, xacro fails with an undefined-property error.
-
-      sensor_shelf_link is placed at the TOP surface of the deck, so anything
-      mounted on the shelf attaches at z=0 with no extra arithmetic.
+      Sensor mast: four posts over the RPLidar A1 to a deck carrying the D456.
+      Include after rplidar_a1.urdf.xacro (uses its properties).
+      sensor_shelf_link is the top surface of the deck.
     -->
 
-    <!--
-      Overall A1 height from its datasheet (98.5 x 70.0 x 60.0 mm).
-
-      *** THE CAD SAYS 0.051, NOT 0.060, AND THIS IS LEFT WRONG ON PURPOSE. ***
-      circe_description/meshes/rplidar_a1.stl measures 51.0 mm tall, with the scan
-      plane 41.5 mm up - so the A1 stands only 9.5 mm above its own scan plane, not the
-      19.0 mm this figure implies. The mesh agrees with a1_scan_plane_z to 0.5 mm, so
-      the error is entirely in the part ABOVE the scan plane.
-
-      Correcting it to 0.051 would drop shelf_deck_top_z by 9.5 mm and MOVE THE CAMERA.
-      That changes every depth-to-base transform the terrain layer and the costmaps
-      depend on, and on hardware it invalidates whatever extrinsics were measured
-      against the current build. The error is in the safe direction - the shelf clears
-      the lidar by 19.5 mm where 10 mm was intended - so it stays until someone is in a
-      position to re-measure the camera afterwards. Change it deliberately, not in
-      passing.
-    -->
+    <!-- A1 datasheet height. The mesh says 0.051; kept at 0.060 so the camera doesn't move. -->
     <xacro:property name="a1_total_height" value="0.060" />
 
     <!-- Tunables. -->
     <xacro:property name="shelf_clearance_above_lidar" value="0.010" />
     <xacro:property name="shelf_deck_thickness" value="0.006" />
     <xacro:property name="shelf_deck_size_x" value="0.110" />
-    <!-- The D456 is 124 mm wide, so the deck must be wider than that in y. -->
     <xacro:property name="shelf_deck_size_y" value="0.130" />
     <xacro:property name="shelf_post_radius" value="0.004" />
     <xacro:property name="shelf_post_x" value="0.045" />
-    <!-- Posts must clear the A1's 70 mm body in y, i.e. more than 0.035. -->
     <xacro:property name="shelf_post_y" value="0.052" />
     <xacro:property name="shelf_mass" value="0.150" />
 
-    <!-- Derived geometry. All z values are in the chassis_link frame. -->
+    <!-- Derived geometry (chassis_link frame). -->
     <xacro:property name="a1_top_above_scan" value="${a1_total_height - a1_scan_plane_z}" />
     <xacro:property name="shelf_post_length"
                     value="${a1_scan_plane_z + a1_top_above_scan + shelf_clearance_above_lidar}" />
@@ -63,7 +28,6 @@
 
     <link name="sensor_shelf_link">
 
-        <!-- Deck plate, hanging just below the mounting surface at z=0. -->
         <visual>
             <origin xyz="0 0 ${-shelf_deck_thickness/2}" rpy="0 0 0"/>
             <geometry>
@@ -78,7 +42,6 @@
             </geometry>
         </collision>
 
-        <!-- Four support posts, spanning from the lidar mount plate to the deck. -->
         <xacro:macro name="shelf_post" params="sx sy">
             <visual>
                 <origin xyz="${sx * shelf_post_x} ${sy * shelf_post_y}
@@ -101,11 +64,7 @@
         </inertial>
     </link>
 
-    <!--
-      Deliberately yaw 0, unlike the lidar joint. The A1 carries a 180 deg yaw as
-      part of its own frame convention; inheriting that here would point the camera
-      out the back of the robot.
-    -->
+    <!-- Yaw 0 (the lidar joint's 180 deg yaw would point the camera backwards). -->
     <joint name="sensor_shelf_to_chassis" type="fixed">
         <parent link="chassis_link"/>
         <child link="sensor_shelf_link"/>

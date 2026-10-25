@@ -1,85 +1,5 @@
-# amcl:
-#   ros__parameters:
-#     use_sim_time: False
-#     alpha1: 0.3
-#     alpha2: 0.3
-#     alpha3: 0.3
-#     alpha4: 0.3
-#     alpha5: 0.3
-#     always_reset_initial_pose: false
-#     base_frame_id: base_link
-#     beam_skip_distance: 0.5
-#     beam_skip_error_threshold: 0.9
-#     beam_skip_threshold: 0.3
-#     do_beamskip: true
-#     first_map_only: true
-#     global_frame_id: map
-#     initial_pose:
-#       x: 0.0
-#       y: 0.0
-#       yaw: 0.0
-#       z: 0.0
-#     lambda_short: 0.1
-#     laser_likelihood_max_dist: 4.0
-#     laser_max_range: 100.0
-#     laser_min_range: -1.0
-#     laser_model_type: beam
-#     map_topic: map
-#     max_beams: 60
-#     max_particles: 2000
-#     min_particles: 500
-#     odom_frame_id: odom
-#     pf_err: 0.05
-#     pf_z: 0.99
-#     qos_overrides:
-#       /tf:
-#         publisher:
-#           depth: 100
-#           durability: volatile
-#           history: keep_last
-#           reliability: reliable
-#     recovery_alpha_fast: 0.0
-#     recovery_alpha_slow: 0.0
-#     resample_interval: 1
-#     robot_model_type: nav2_amcl::DifferentialMotionModel
-#     save_pose_rate: 0.2
-#     scan_topic: scan
-#     set_initial_pose: false
-#     sigma_hit: 0.1
-#     tf_broadcast: false
-#     transform_tolerance: 1.2
-#     update_min_a: 0.2
-#     update_min_d: 0.25
-#     use_sim_time: false
-#     z_hit: 1.2
-#     z_max: 0.05
-#     z_rand: 0.5
-#     z_short: 0.05
-
-
-# *** DO NOT PUT use_sim_time IN THIS FILE ***
-#
-# There used to be 18 `use_sim_time: False` entries here, one per node. They made
-# `use_sim_time:=true` impossible to honour, which is not obvious from any error
-# message.
-#
-# nav2_bringup's navigation_launch.py supplies sim time with
-# SetParameter('use_sim_time', use_sim_time), which reaches each node as
-# `-p use_sim_time:=True` on the command line. That flag is placed BEFORE
-# `--params-file`, and later sources win in ROS 2, so anything written here overrides
-# it. RewrittenYaml does not help either: its param_substitutions is
-# `{'autostart': autostart}` only, so use_sim_time is never rewritten.
-#
-# The failure this caused is worth remembering, because nothing in it mentions time:
-# every Nav2 node ran on wall clock while the simulated scan carried sim-time stamps,
-# so collision_monitor rejected the lidar with
-#   "[scan]: Latest source and current collision monitor node timestamps differ on
-#    1786747706.066409 seconds. Ignoring the source."
-# and then silently stopped publishing /cmd_vel. Nav2 accepted goals and planned paths
-# perfectly; the robot just never moved.
-#
-# Note that nav2_bringup's OWN default nav2_params.yaml contains zero use_sim_time
-# entries, for exactly this reason.
+# Nav2 for CIRCE. No AMCL: map -> odom comes from slam_toolbox.
+# No use_sim_time here; it would override the value nav2_bringup passes in.
 
 bt_navigator:
   ros__parameters:
@@ -88,115 +8,44 @@ bt_navigator:
     odom_topic: /odometry/filtered
     bt_loop_duration: 10
     default_server_timeout: 20
-    # 'default_nav_through_poses_bt_xml' and 'default_nav_to_pose_bt_xml' are use defaults:
-    # nav2_bt_navigator/navigate_to_pose_w_replanning_and_recovery.xml
-    # nav2_bt_navigator/navigate_through_poses_w_replanning_and_recovery.xml
-    # They can be set here or via a RewrittenYaml remap from a parent launch file to Nav2.
-    # *** DO NOT RE-ADD plugin_lib_names ***
-    # This used to list all ~48 built-in BT nodes explicitly, which is the Humble
-    # pattern. Jazzy's bt_navigator registers the built-in set automatically, so
-    # naming them again registers each twice and the node dies at startup with
-    #   "Failed to create navigator id navigate_to_pose.
-    #    Exception: ID [ComputePathToPose] already registered"
-    # taking the whole Nav2 bringup with it. Jazzy's own default params file has this
-    # key commented out with the note "Built-in plugins are added automatically".
-    # Only list plugin_lib_names here if CIRCE ever gains CUSTOM BT nodes, and then
-    # list only those.
+    # No plugin_lib_names: Jazzy registers built-in BT nodes itself (duplicates crash).
+
 controller_server:
   ros__parameters:
-    # *** REVERTED TO STOCK SPEED (2026-09-01) ***
-    # The 2 m/s experiment is rolled back: vx_max, vx_std, batch_size,
-    # controller_frequency, prune_distance, repulsion_weight, the velocity_smoother
-    # caps and the global_costmap rates are all back at the roverrobotics_driver
-    # values. Only the terrain work (terrain_layer in local_costmap) is kept, so
-    # that circe_perception can be evaluated without speed as a confounding
-    # variable. See the note above velocity_smoother before raising speed again:
-    # braking distance at 2 m/s (0.80 m) exceeded xy_goal_tolerance (0.5 m), and the
-    # goal/path critics' threshold_to_consider was never scaled to match.
-    # *** SIZED FOR A RASPBERRY PI 5 (4x Cortex-A76, no GPU offload). ***
-    # MPPI's cost is batch_size x time_steps x controller_frequency trajectory points
-    # per second, each scored by all 8 critics:
-    #
-    #   stock Nav2   2000 x 56 x 30 Hz = 3.36 M/s   - will not hold on four A76 cores
-    #   was           600 x 40 x 20 Hz = 0.48 M/s   - missed 20 Hz on hardware
-    #   here          400 x 30 x 15 Hz = 0.18 M/s   - well under half (model_dt 0.0667)
-    #
-    # 15 Hz, not 20 (2026-10-19). On the first lidar-only drive the rover logged 66
-    # "Control loop missed its desired rate of 20 Hz": median 17.9 Hz, worst 7.3 Hz,
-    # with SLAM, Nav2 and the EKF sharing the Pi. Both knobs came down together, and
-    # CostCritic (below) replaced ObstaclesCritic at the same time. At 15 Hz the rover
-    # moves 33 mm between cycles at 0.5 m/s. A controller that MISSES its deadline is
-    # far worse than a coarser search - keep watching for "Control loop missed" here.
+    # Sized for the Pi 5 (400 samples x 30 steps x 15 Hz); 20 Hz missed its rate.
     controller_frequency: 15.0
     min_x_velocity_threshold: 0.001
     min_y_velocity_threshold: 0.5
     min_theta_velocity_threshold: 0.01
     failure_tolerance: 0.3
     progress_checker_plugin: "progress_checker"
-    goal_checker_plugins: ["general_goal_checker"] # "precise_goal_checker"
+    goal_checker_plugins: ["general_goal_checker"]
     controller_plugins: ["FollowPath"]
     odom_topic: "odometry/filtered"
 
-    # Publish /cmd_vel as unstamped Twist, not TwistStamped.
-    #
-    # Pinned explicitly rather than left to the Jazzy default, because both consumers
-    # require Twist and a silent default change on a distro upgrade would break them
-    # with nothing more informative than a topic that never arrives:
-    #   hardware  roverrobotics_driver, speed_topic /cmd_vel in rover_zero_4wd.yaml
-    #   sim       the gz DiffDrive plugin, which takes gz.msgs.Twist, bridged by
-    #             circe_gazebo/config/gz_bridge.yaml as geometry_msgs/msg/Twist
-    # If this is ever flipped to true, the bridge row has to change to TwistStamped
-    # at the same time.
+    # Driver and gz bridge both take unstamped Twist.
     enable_stamped_cmd_vel: false
 
-    # Progress checker parameters
     progress_checker:
       plugin: "nav2_controller::SimpleProgressChecker"
       required_movement_radius: 0.5
       movement_time_allowance: 10.0
-    # Goal checker parameters
-    #precise_goal_checker:
-    #  plugin: "nav2_controller::SimpleGoalChecker"
-    #  xy_goal_tolerance: 0.25
-    #  yaw_goal_tolerance: 0.25
-    #  stateful: True
     general_goal_checker:
       stateful: True
       plugin: "nav2_controller::SimpleGoalChecker"
       xy_goal_tolerance: 0.5
       yaw_goal_tolerance: 0.5
-    # DWB parameters
     FollowPath:
       plugin: "nav2_mppi_controller::MPPIController"
-      # 40, not 56. The horizon is time_steps x model_dt = 2.0 s, which at the current
-      # vx_max of 0.5 m/s is 1.0 m of lookahead - still comfortably longer than the
-      # 0.55 m inflation radius and vastly longer than the 0.05 m braking distance at
-      # this speed. The extra 16 steps were planning distance the rover cannot use, and
-      # they cost the same as extra samples.
-      # *** IF vx_max GOES BACK UP, RAISE THIS FIRST. *** At 2 m/s a 2.0 s horizon is
-      # 4 m and the trade changes completely.
-      # *** model_dt MUST BE >= 1 / controller_frequency. ***
-      # MPPI refuses to configure otherwise ("Controller period more then model dt, set
-      # it equal to model dt"), which aborts the whole Nav2 bringup. At 15 Hz the period
-      # is 0.0667 s, so model_dt went 0.05 -> 0.0667 (2026-10-19), and time_steps
-      # 40 -> 30 to keep the same 2.0 s horizon (30 x 0.0667). Change all three together.
+      # model_dt must be >= 1/controller_frequency. Horizon = 30 x 0.0667 = 2 s.
       time_steps: 30
       model_dt: 0.0667
-      # 600. Cutting the HORIZON is the cheaper economy than cutting the SAMPLE COUNT:
-      # samples are what find a way around an obstacle, and below roughly 500 the
-      # sampled set gets thin enough that the chosen trajectory visibly jitters between
-      # cycles. 600 x 40 x 20 Hz costs about the same as 400 x 56 x 20 Hz would, with
-      # 50% more sample diversity for the money.
-      # 400 since 2026-10-19, together with controller_frequency 15: the Pi did not hold
-      # 20 Hz at 600 (see controller_frequency above). If the trajectory now visibly
-      # jitters between cycles, raise this back toward 600 before raising the rate.
+      # Raise toward 600 if trajectories jitter.
       batch_size: 400
       vx_std: 0.2
       vy_std: 0.2
       wz_std: 0.4
-      # Stock 0.5 m/s. The platform tops out at 2.59 m/s (5.8 mph); circe_perception's
-      # 4 m lookahead in terrain.yaml was sized for 2 m/s and so is now generously
-      # over-margined, which is the safe direction while the terrain node is tuned.
+      # Stock speed (platform max 2.59 m/s).
       vx_max: 0.5
       vx_min: -0.35
       vy_max: 0.5
@@ -232,56 +81,25 @@ controller_server:
       PreferForwardCritic:
         enabled: true
         cost_power: 1
-        # 20.0, not the stock 5.0. This is the only term telling a diff-drive rover to
-        # turn to face its goal rather than reverse into it. At 5.0 it was outweighed by
-        # PathAlignCritic and PathFollowCritic, both of which are perfectly happy to
-        # track the path backwards, so the rover drove to waypoints in reverse.
-        # Reverse is still AVAILABLE (vx_min above is -0.35, and the backup behavior
-        # needs it) - it is now merely expensive, so MPPI spends a moment rotating in
-        # place instead. Raise further if it still backs into goals; lower if it starts
-        # doing needless three-point turns in tight spaces.
+        # Was 5.0; the rover reversed into goals.
         cost_weight: 20.0
         threshold_to_consider: 0.5
-      # *** CostCritic, NOT ObstaclesCritic (2026-10-19). ***
-      # Nav2's recommended obstacle critic on Jazzy. It scores trajectories straight off
-      # the local costmap's inflated cost, so its gradient is the inflation_layer below
-      # (0.55 / 3.0), and it checks the real rectangular footprint. ObstaclesCritic ran
-      # with consider_footprint false, i.e. a circle, which is what logged
-      # "Inconsistent configuration in collision checking" at every startup.
-      # CostCritic has no collision_margin_distance: its clearance is the costmap
-      # footprint, so the margin was widened via local_costmap footprint_padding
-      # (0.01 -> 0.05) instead.
+      # Replaced ObstaclesCritic; scores the real footprint against inflated cost.
       CostCritic:
         enabled: true
         cost_power: 1
-        # Nav2's Jazzy defaults. critical_cost is the inflated cost above which a
-        # trajectory point is penalised hard; collision_cost is applied to a point in
-        # collision, which effectively rejects that trajectory.
         cost_weight: 3.81
         critical_cost: 300.0
         collision_cost: 1000000.0
-        # true: check the padded rectangle, not a circle. Cheap on Jazzy as long as
-        # inflation_radius exceeds the footprint's circumscribed radius (0.55 > 0.395 m
-        # with padding 0.05); otherwise it falls back to a full footprint check per point
-        # and logs "Inflation layer either not found or inflation is not set
-        # sufficiently". Watch controller_server's startup log for that line.
+        # Needs inflation_radius > circumscribed radius (0.395 m).
         consider_footprint: true
         near_goal_distance: 1.0
-        # Named explicitly so the critic reads the local costmap's inflation_layer
-        # rather than guessing; must match the plugin name in local_costmap.
         inflation_layer_name: "inflation_layer"
         trajectory_point_step: 2
       PathAlignCritic:
         enabled: true
         cost_power: 1
-        # 8.0, not the stock 14.0. This is the term that pins MPPI to the global path,
-        # and at 14.0 against ObstaclesCritic's repulsion_weight of 3.0 (since replaced by
-        # CostCritic, cost_weight 3.81) it outvoted
-        # obstacle avoidance nearly 5:1 -- the rover tracked the line through an
-        # obstacle rather than arcing around it. Lowering it lets the local deviation
-        # win where it matters while still following the route.
-        # Raise it back toward 14.0 if the rover starts wandering off the path in open
-        # space; lower it further if it still refuses to deviate near obstacles.
+        # Was 14.0, which overruled obstacle avoidance.
         cost_weight: 8.0
         max_path_occupancy_ratio: 0.05
         trajectory_point_step: 3
@@ -315,67 +133,24 @@ local_costmap:
       height: 8
       resolution: 0.05
       footprint: "[[0.27305, 0.1778],[0.27305, -0.1778],[-0.27305, -0.1778],[-0.27305, 0.1778]]"
-      # 0.05, was 0.01 (2026-10-19): the collision margin MPPI's CostCritic keeps, since
-      # it checks this padded footprint. Circumscribed radius becomes
-      # hypot(0.32305, 0.2278) = 0.395 m, still inside inflation_radius 0.55.
+      # CostCritic collision margin (was 0.01).
       footprint_padding: 0.05
-      # terrain_layer sits between the sensor layer and inflation so its cost gets
-      # inflated like any obstacle. See the block below for why it is a StaticLayer.
+      # terrain_layer before inflation so its cost gets inflated.
       plugins: ["voxel_layer", "terrain_layer", "inflation_layer"]
+      # StaticLayer on live /terrain/grid: graded cost, add-only (use_maximum).
       terrain_layer:
-        # *** A StaticLayer POINTED AT A LIVE TOPIC, NOT AT THE MAP ***
-        # circe_perception publishes /terrain/grid, a rolling OccupancyGrid in odom whose
-        # values are graded traversability cost rather than occupancy. StaticLayer is used
-        # here instead of a custom plugin because two of its options do exactly what is
-        # needed:
-        #   trinary_costmap: false  stops it collapsing everything to free/occupied/unknown
-        #                           and passes the full 0-100 range through as real cost
-        #                           gradient, which is what lets MPPI PREFER better ground
-        #                           rather than only avoiding lethal ground.
-        #   use_maximum: true       makes the layer additive-only. It can never clear an
-        #                           obstacle the lidar saw, which matters because the
-        #                           camera cannot see anything above ~1 m.
-        # Unknown cells (-1) are published by cells with too few observations; they must
-        # not read as lethal or the rover refuses to enter ground it has not looked at.
         plugin: "nav2_costmap_2d::StaticLayer"
         map_topic: /terrain/grid
         trinary_costmap: false
         use_maximum: true
         subscribe_to_updates: false
         map_subscribe_transient_local: false
-        # Same guard as the global costmap's static_layer, for the same reason: a
-        # StaticLayer cannot be cleared by any recovery (isClearable() is false), so one
-        # bad cell under the robot would stop it dead with no way out -- and MPPI fails
-        # harder than the planner here, because every rollout starts inside the lethal
-        # cell and the rover cannot even spin or back up to escape.
-        #
-        # terrain_node has its own defence (clear_driven in circe_perception/config/
-        # terrain.yaml forces ground the wheels have already crossed to 0), but that only
-        # covers cells the robot has ALREADY driven over. It does nothing about a cell
-        # misclassified just beside the robot whose inflation still reaches the robot's
-        # centre, which is the case that actually bites. This closes that gap, and it
-        # matters more on hardware than in sim: the real D456's depth noise is ~2% of
-        # range (+/-8 cm at 4 m, above both step_lethal 0.06 and drop_lethal 0.08),
-        # against a flat 7 mm in the simulated sensor.
+        # StaticLayers ignore clear-costmap recoveries; never mark the robot's own cells.
         footprint_clearing_enabled: True
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
-        # *** THIS IS THE MAIN OBSTACLE-AVOIDANCE TUNING KNOB. ***
-        # The footprint's circumscribed radius is hypot(0.27305, 0.1778) = 0.326 m.
-        # At inflation_radius 0.35 the graded region beyond the robot's own body was
-        # 0.024 m wide -- cost jumped from free to inscribed in under 3 cm, so MPPI's
-        # ObstaclesCritic had essentially no gradient to steer along and only reacted
-        # once a trajectory was already in collision. That reads as "the rover clips
-        # obstacles instead of arcing around them".
-        # 0.55 leaves ~0.22 m of usable gradient outside the body - nearly ten times
-        # the old margin, without sealing the world shut. 0.70 was tried first and was
-        # too much for circe_indoor.sdf: with 1.2 m gaps between the dividers, inflation
-        # from both sides met in the middle, and a rover parked near the ramp found its
-        # OWN cell at cost 99 with no free corridor out, so NavFn returned
-        # "Failed to create plan with tolerance of: 0.500000" for every goal.
-        # *** THE CEILING HERE IS THE NARROWEST GAP THE ROVER MUST FIT THROUGH. ***
-        # gap/2 must stay above the inscribed radius plus a working margin.
         cost_scaling_factor: 3.0
+        # Main avoidance knob. Must leave room in the narrowest gap (0.70 closed indoor doorways).
         inflation_radius: 0.55
       voxel_layer:
         plugin: "nav2_costmap_2d::VoxelLayer"
@@ -388,18 +163,7 @@ local_costmap:
         mark_threshold: 0
         observation_sources: scan
         scan:
-          # *** /scan_filtered, NOT /scan. ***
-          # circe_perception's scan_pitch_filter removes lidar returns that are the
-          # ground, seen because the chassis-fixed scan plane tilts with the body on a
-          # ramp. Measured on circe_indoor.sdf: at 9 deg true pitch, 116 of 720 beams
-          # came back under 1.5 m; at 31 deg, 367 of 430 - 85% of the scan reading as a
-          # wall a half-metre ahead, which is what stalls the controller mid-ramp.
-          # The costmap cannot filter these itself: localization_ekf.yaml runs the EKF
-          # with two_d_mode: true, so TF reports pitch 0.00 deg and z 0.000 m no matter
-          # what the robot is doing, every ground point lands at the lidar's own height,
-          # and min_obstacle_height has nothing to bite on.
-          # If circe_perception is not running this topic is silent and the costmap sees
-          # NO lidar at all - launch them together, or set this back to /scan.
+          # scan_pitch_filter removes ground returns on slopes.
           topic: /scan_filtered
           max_obstacle_height: 2.0
           clearing: True
@@ -424,79 +188,18 @@ global_costmap:
       footprint: "[[0.27305, 0.1778],[0.27305, -0.1778],[-0.27305, -0.1778],[-0.27305, 0.1778]]"
       footprint_padding: 0.025
 
-      # *** 0.05 IS THE VERIFIED VALUE, NOT THE OPTIMISED ONE. READ BOTH PARAGRAPHS. ***
-      #
-      # SmacPlanner2D searches the grid directly, so its cost scales with CELL COUNT --
-      # unlike NavFn, which propagated a potential field. Measured on this desktop
-      # (22 cores), ten goals 8-26 m out, timed end to end through ComputePathToPose
-      # on an idle sim with zero clock jumps:
-      #
-      #     0.05 m  (1200x1200)   median  52.2 ms   max 217.0 ms
-      #     0.10 m  ( 600x600)    median  13.1 ms   max  53.7 ms
-      #     NavFn, earlier                4.3-5.1 ms
-      #
-      # 0.10 is 4x cheaper and its routing looked fine, BUT it has never completed a
-      # mission on an uncontaminated sim: all three attempts were wrecked by TF
-      # "jump back in time" storms (576-4679 per run) from overlapping Gazebo
-      # instances and a shared machine. Notably every one of those runs logged
-      # `planner failures: 0`, so nothing actually implicates the coarser grid -- it
-      # is simply UNPROVEN. 0.05 is the last resolution that drove a full
-      # out-and-back cleanly (6 of 6 legs, home to 0.02 m), so it stays until 0.10
-      # earns a clean pass.
-      #
-      # *** THIS IS ALMOST CERTAINLY TOO EXPENSIVE FOR THE PI 5. ***
-      # Those timings are desktop timings. A Cortex-A76 is roughly 3-5x slower per
-      # core, which puts 0.05 m at an estimated 150-260 ms median and 0.65-1.1 s
-      # worst case per plan -- against a 1 Hz replan, on four cores already shared
-      # with MPPI (600 x 40 x 20 Hz) and slam_toolbox. That estimate is ARITHMETIC,
-      # not measurement: nothing in this workspace has ever been profiled on a Pi.
-      # Measure it there before the first real run; if it does not fit, 0.10 is the
-      # first thing to reach for, and it needs a clean sim verification first.
+      # 0.10 is 4x cheaper but unverified; profile planning time on the Pi.
       resolution: 0.05
 
-      # *** ROLLING, AND THAT IS WHAT MAKES UNKNOWN-TERRAIN WAYPOINTS POSSIBLE. ***
-      # With rolling_window false the global costmap takes its size and origin from
-      # the static map, which in SLAM mapping mode covers ONLY what has already been
-      # explored. Measured on circe_outdoor.sdf: 40 s after boot /map ran
-      # x -1.8..8.6, y -11.4..10.0, and a goal at (4, -12) -- 12.6 m out, well within
-      # sensor+mission range -- was refused outright:
-      #
-      #   planner_server: GridBased plugin failed to plan from (0.00, 0.00) to
-      #   (4.00, -12.00): "Goal Coordinates of(4.000000, -12.000000) was outside bounds"
-      #   bt_navigator: Goal failed
-      #
-      # allow_unknown: true on the planner does NOT help here. It lets the planner route
-      # THROUGH unknown cells, but a goal outside the costmap's extent never reaches
-      # the planner's search at all. The whole premise -- drive to a surveyed waypoint
-      # in terrain nobody has mapped -- requires the costmap to exist before the map
-      # does, so it must be anchored to the ROBOT, not to the explored region.
-      #
-      # 60 x 60 m is the window, centred on the rover: +/-30 m of planning horizon.
-      # *** THAT IS ALSO A HARD LIMIT ON LEG LENGTH. *** A goal further than 30 m away
-      # is refused outright -- measured, a 34.93 m goal failed with "outside bounds".
-      # A 100 m cable run must therefore be a SEQUENCE of goals, not one goal.
-      # Cost is 1200x1200 cells ~= 1.4 MB per layer. If the Pi 5 complains, drop
-      # `resolution` here to 0.10 before shrinking the window.
+      # Rolling 60 x 60 m, so goals in unmapped terrain work; legs must stay < 30 m.
       rolling_window: true
       width: 60
       height: 60
 
-      # Unexplored ground is UNKNOWN, not free. Combined with allow_unknown on the
-      # planner, that means "route through it optimistically, but let the obstacle
-      # layer overwrite it the moment we actually see it". Setting this false would
-      # paint all unseen ground as free and hide the distinction between "looked, and
-      # it is clear" and "never looked".
+      # Unseen ground stays unknown, not free.
       track_unknown_space: true
 
-      # *** NO terrain_layer HERE. THIS WAS TRIED AND IT BROKE PLANNING. ***
-      # A StaticLayer in a NON-rolling costmap RESIZES the costmap to match its
-      # incoming map, and this costmap already has one StaticLayer taking /map from
-      # slam_toolbox. Two of them fought over the bounds and planning died with
-      #   "Start Coordinates of(-1.63, 2.64) was outside bounds"
-      # NOTE: this costmap is now rolling_window: true, which suppresses that resize --
-      # so the original objection may no longer apply and this is worth retrying.
-      # Terrain currently influences local avoidance only: MPPI steers around bad
-      # ground, but the global route does not re-plan around it.
+      # No terrain_layer here yet (it fought /map over bounds before rolling_window).
       plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
       obstacle_layer:
         plugin: "nav2_costmap_2d::ObstacleLayer"
@@ -515,63 +218,19 @@ global_costmap:
       static_layer:
         plugin: "nav2_costmap_2d::StaticLayer"
         map_subscribe_transient_local: True
-        # *** THIS ONE LINE IS WHAT STOPS A WEDGED ROVER. MEASURED, NOT THEORETICAL. ***
-        # This layer is slam_toolbox's /map -- a GLOBALLY consistent grid that the robot
-        # is located in only as well as scan matching manages. Measured in the outdoor
-        # world, |map -> base_link| disagreed with ground truth by 0.88 m after ~15 m of
-        # driving among sparse trees. When an error that size lands the robot's BELIEVED
-        # pose within the inscribed radius (0.2028 m for this footprint) of a cell the map
-        # calls occupied, the inflation layer raises the robot's own cell to
-        # INSCRIBED_INFLATED_OBSTACLE (253) and SmacPlanner2D refuses every goal with
-        #
-        #     GridBased plugin failed to plan from (1.11, 9.29) to (3.00, 4.00):
-        #     "Start occupied"
-        #
-        # *** AND NOTHING RECOVERS FROM IT. *** nav2_costmap_2d::StaticLayer::isClearable()
-        # returns FALSE (static_layer.hpp:94), so ClearEntireCostmap and
-        # ClearCostmapAroundRobot -- the two recoveries the BT runs on a planning failure --
-        # both skip this layer. The map obstacle is re-applied on the next update cycle,
-        # forever. Observed: three consecutive goals aborted this way with the rover
-        # stationary in open ground, the lidar obstacle_layer reporting ZERO lethal cells
-        # anywhere near it, and no sequence of goals able to free it.
-        #
-        # footprint_clearing_enabled writes FREE_SPACE over the robot's own footprint in
-        # THIS layer every cycle, before it reaches the master grid. The robot can then
-        # never be inside a mapped obstacle, because the one place the map is not allowed
-        # to claim is the space the robot physically occupies. Nothing else is weakened:
-        # clearing is confined to the footprint polygon, and the live obstacle_layer above
-        # is untouched, so a real obstacle the lidar can see is still lethal.
+        # SLAM pose error can put the robot "inside" a mapped obstacle; this clears it.
         footprint_clearing_enabled: True
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 3.0
-        # *** IGNORE SmacPlanner2D's WARNING ABOUT THIS VALUE. ***
-        # At startup the planner logs, as an ERROR:
-        #   "Inflation layer either not found or inflation is not set sufficiently
-        #    for optimized non-circular collision checking capabilities. It is HIGHLY
-        #    recommended to set the inflation radius to be at MINIMUM half of the
-        #    robot's largest cross-section."
-        # Half the largest cross-section is the circumscribed radius: with this
-        # footprint and footprint_padding 0.025 that is 0.3508 m, so 0.55 already
-        # exceeds it by 57%. Tested: the message still appears at inflation_radius
-        # 1.20, so it is the "layer not found" branch, not the radius branch -- and
-        # the layer plainly IS found; the launch log shows
-        #   838.273  Initialized plugin "inflation_layer"
-        #   838.304  ERROR: Inflation layer either not found ...
-        # 31 ms apart, in that order. Nav2 quirk; nothing to fix from config.
-        #
-        # The performance half of the warning WAS real, and was fixed by dropping
-        # `resolution` to 0.10 above -- see the measurements there. Do not raise this
-        # radius chasing the message: at 1.20 the 2.6 m gaps between trees leave only
-        # 0.2 m of free corridor and the rover cannot route between them at all.
+        # SmacPlanner's "Inflation layer not found" startup error is a Nav2 quirk; ignore it.
         inflation_radius: 0.55
       always_send_full_costmap: True
 
 map_server:
   ros__parameters:
     use_sim_time: False
-    # Unused while SLAM is running -- slam_toolbox publishes /map itself. Kept so a
-    # saved map can be served in localization mode without adding a node.
+    # Unused while slam_toolbox publishes /map.
     yaml_filename: ""
 
 map_saver:
@@ -587,86 +246,25 @@ planner_server:
     expected_planner_frequency: 20.0
     planner_plugins: ["GridBased"]
 
-    # *** SmacPlanner2D, NOT NavFn. NavFn COULD NOT PLAN ACROSS UNKNOWN GROUND. ***
-    # NavFn kept failing to extract a path from a potential field it had just
-    # computed successfully:
-    #
-    #   planner_server: Failed to create a plan from potential when a legal
-    #   potential was found. This shouldn't happen.
-    #   GridBased plugin failed to plan from (7.34, -1.95) to (16.00, -7.00)
-    #
-    # Measured on one out-and-back mission on circe_outdoor.sdf: 42 occurrences,
-    # aborting 3 of 4 legs. It is NOT the A*/Dijkstra choice -- use_astar was already
-    # false for that run. NavFn's gradient descent simply does not cope with a mostly
-    # UNKNOWN 60x60 m rolling costmap, which is exactly the situation this rover is
-    # built for: driving to a waypoint in terrain nobody has mapped.
-    #
-    # SmacPlanner2D is Nav2's modern grid planner and searches the grid directly
-    # instead of descending a potential field, so it has no equivalent failure.
-    # use_astar/allow_unknown from the NavFn block are gone: allow_unknown lives on
-    # below, and Smac is always A*.
-    #
-    # *** MEASURED, FULL OUT-AND-BACK MISSION ON circe_outdoor.sdf ***
-    # Four legs, 74.6 m of driving. Outbound goals stamped in `odom` (EKF only,
-    # SLAM maps but does not steer); return goals stamped in `map` (SLAM drives).
-    #
-    #                       NavFn            SmacPlanner2D
-    #   legs completed      1 of 4           4 of 4
-    #   planner failures    42               0
-    #   recovery behaviours several          0
-    #   goals aborted       3                0
-    #
-    #   EKF error at turnaround : 0.61 m over 36.5 m driven  (1.7%)
-    #   error on arriving HOME  : 0.13 m from the true start
-    #   |map -> odom|           : max 0.449 m, 2.0 deg; biggest 1 s step 0.245 m
-    #
-    # That is the mission profile working end to end: dead reckoning outbound,
-    # SLAM to come home, 13 cm from where it started after 74.6 m.
+    # SmacPlanner2D: NavFn failed on mostly-unknown rolling costmaps.
     GridBased:
       plugin: "nav2_smac_planner::SmacPlanner2D"
 
-      # Route through ground that has never been observed. Without this a goal in
-      # unexplored terrain is unreachable by definition, which defeats the mission.
-      # Unknown is still costed above free (global_costmap keeps track_unknown_space
-      # true), so known-good ground is preferred where it exists.
+      # Plan through unexplored ground.
       allow_unknown: true
 
-      # Same 0.5 m the NavFn config used: how far from the exact goal pose counts as
-      # arriving, for PLANNING purposes. The goal checker decides the real thing.
       tolerance: 0.5
 
-      # Search limits. max_iterations is the hard stop for an unreachable goal;
-      # max_on_approach_iterations bounds the final approach once inside `tolerance`.
-      # Stock values -- raise max_iterations if large goals start reporting failure
-      # on open ground.
       max_iterations: 1000000
       max_on_approach_iterations: 1000
       max_planning_time: 2.0
 
-      # *** THE PI 5 LEVER. ***
-      # Plan on a 2x coarser grid (0.05 -> 0.10 m), which cuts the search space 4x.
-      # Global routing does not need 5 cm; the local costmap keeps its own fine grid
-      # and MPPI does the precise avoidance. Turn this off first if the global route
-      # starts clipping gaps between trees.
-      # *** OFF. IT REPORTED IN-BOUNDS GOALS AS OUT OF BOUNDS. ***
-      # With downsampling on, every goal was refused --
-      #   "Goal Coordinates of(18.000000, -8.000000) was outside bounds"
-      # -- while the published global costmap plainly covered x -30.0..30.1,
-      # y -30.0..30.1 at that moment. 19.7 m out is nowhere near the edge. The
-      # downsampler builds its own costmap and does not appear to track this one's
-      # ROLLING origin, so its bounds check runs against the wrong window.
-      # Re-enable only if you verify a rolling costmap is handled; the 4x search
-      # saving is real but worthless if no goal is plannable.
+      # Off: mis-checks goal bounds on a rolling costmap.
       downsample_costmap: false
       downsampling_factor: 2
 
-      # How hard the planner prefers low-cost ground over a short path. 2.0 is the
-      # documented default. Raising it makes the route hug clear ground and swing
-      # wider around inflation -- worth trying if the rover keeps shaving obstacles.
       cost_travel_multiplier: 2.0
 
-      # The path ends pointing along its final segment rather than at the commanded
-      # goal yaw. Cheaper, and MPPI's GoalAngleCritic settles the final heading.
       use_final_approach_orientation: false
 
 smoother_server:
@@ -717,11 +315,7 @@ velocity_smoother:
     smoothing_frequency: 20.0
     scale_velocities: False
     feedback: "OPEN_LOOP"
-    # *** THIS, NOT controller_server's vx_max, IS THE REAL CAP. *** The smoother is
-    # last in the chain, so a mismatch here silently overrides the controller.
-    # Back at the stock 0.4 m/s, which is BELOW controller_server's vx_max of 0.5 -
-    # that is the roverrobotics_driver default and is deliberately left as-is so this
-    # file matches the vendor baseline exactly.
+    # The real speed cap: last in the chain.
     max_velocity: [0.4, 0.0, 2.0]
     min_velocity: [-0.4, 0.0, -2.0]
     max_accel: [2.5, 0.0, 3.0]
@@ -733,14 +327,7 @@ velocity_smoother:
 
 docking_server:
   ros__parameters:
-    # Also REQUIRED despite CIRCE having no dock. Jazzy's navigation_launch.py starts
-    # opennav_docking unconditionally and it refuses to configure without
-    # dock_plugins:
-    #   "Charging dock plugins not given!"
-    # which aborts the whole bringup exactly like collision_monitor does. Declaring
-    # one dock TYPE below satisfies it; no dock INSTANCE is declared (`docks:` is
-    # deliberately absent), so nothing can actually be docked to and the server just
-    # idles. Add a `docks:` list here if CIRCE ever gets a charging dock.
+    # Required by the Jazzy bringup even without a dock; no docks declared.
     controller_frequency: 50.0
     base_frame: "base_link"
     fixed_frame: "odom"
@@ -755,21 +342,9 @@ docking_server:
 
 collision_monitor:
   ros__parameters:
-    # This block is REQUIRED, not optional. Jazzy's
-    # nav2_bringup/navigation_launch.py starts collision_monitor unconditionally, and
-    # the node refuses to configure without observation_sources:
-    #   "Error while getting parameters: parameter 'observation_sources' is not
-    #    initialized"
-    # which aborts the ENTIRE Nav2 bringup, not just this node. The section was absent
-    # here because this params file predates collision_monitor being in the default
-    # bringup.
-    #
-    # base_frame_id is base_link, NOT the upstream default base_footprint: CIRCE has
-    # no base_footprint link at all (see the note in mapper_params_circe.yaml).
+    # Required by the Jazzy bringup. Last in the cmd_vel chain.
     base_frame_id: "base_link"
     odom_frame_id: "odom"
-    # Sits at the end of the velocity chain: controller_server -> cmd_vel_nav ->
-    # velocity_smoother -> cmd_vel_smoothed -> here -> cmd_vel -> the base.
     cmd_vel_in_topic: "cmd_vel_smoothed"
     cmd_vel_out_topic: "cmd_vel"
     state_topic: "collision_monitor_state"
@@ -791,8 +366,7 @@ collision_monitor:
     scan:
       type: "scan"
       topic: "scan"
-      # The A1 scan plane is at z = 0.295 and the tyres top out at 0.252, so a floor
-      # of 0.15 keeps ground returns out without clipping real obstacles.
+      # Above ground returns, below real obstacles.
       min_height: 0.15
       max_height: 2.0
       enabled: True

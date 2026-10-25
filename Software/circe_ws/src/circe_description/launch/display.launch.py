@@ -1,17 +1,7 @@
 #!/usr/bin/env python3
-"""Show the CIRCE robot model in RViz, with no hardware attached.
+"""Show the CIRCE robot model in RViz with no hardware attached.
 
-This is the fast feedback loop for URDF work: it renders circe_rover.urdf.xacro,
-publishes the full TF tree from robot_state_publisher, and lets joint_state_publisher
-drive the wheel joints so you can confirm they spin about the right axes.
-
-    ros2 launch circe_description display.launch.py
     ros2 launch circe_description display.launch.py gui:=true    # joint sliders
-
-Nothing here talks to the rover, the lidar, or the camera. The camera_* frames below
-camera_link will be ABSENT, because realsense2_camera publishes those from the
-device's factory calibration at runtime -- see the use_nominal_extrinsics note in
-urdf/accessories/realsense_d456.urdf.xacro. Their absence here is correct.
 """
 
 from ament_index_python.packages import get_package_share_path

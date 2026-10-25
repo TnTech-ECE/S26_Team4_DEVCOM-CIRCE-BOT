@@ -1,22 +1,6 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="circe_imu">
 
-    <!--
-      CIRCE IMU frame, parented to chassis_link.
-
-      This replaces roverrobotics_description's accessories/imu.urdf, which parents
-      imu_link to payload_link. CIRCE removed the payload deck, and that file is
-      included by 16 other robot models in the upstream package, so it cannot be
-      repointed without breaking all of them.
-
-      An IMU wants to be rigidly fixed to the chassis anyway, not to a removable
-      deck, so chassis_link is the better parent regardless.
-
-      frame_id "imu_link" matches circe_bringup/config/bno055.yaml, which is NOT
-      launched by default (no BNO055 is fitted). Nothing currently publishes on
-      imu_link; see the imu0 note in circe_nav/config/localization_ekf.yaml.
-      If CIRCE ends up using the D456's internal IMU instead of an external BNO055,
-      that data arrives on camera_* frames and this link becomes unused.
-    -->
+    <!-- IMU frame, fixed to chassis_link. -->
 
     <link name="imu_link"/>
 
@@ -26,25 +10,7 @@
         <origin xyz="0 0 0" rpy="0 0 0"/>
     </joint>
 
-    <!--
-      Simulated IMU. Sim only - see the sim_mode note in circe_rover.urdf.xacro.
-
-      Worth knowing: on hardware imu/data is synthesised by circe_perception/imu_fusion.py
-      from the D456's raw 6-axis IMU (no BNO055 is fitted), so its yaw is unreferenced and
-      its gyro bias is learned only after the rover has stood still. This sensor has
-      neither limitation, so sim heading will be better behaved than the real robot's.
-      See the divergence note in circe_gazebo/config/gz_bridge.yaml.
-
-      *** update_rate 100 MATCHES THE HARDWARE /imu/data RATE. KEEP THEM EQUAL. ***
-      imu_fusion.py is capped at publish_rate_limit 100.0 (circe_bringup/config/
-      imu_d456.yaml), so that is what the EKF's imu0 receives on the robot. This was 50,
-      which halved the EKF's IMU input in sim relative to hardware and made one health
-      threshold impossible to share: circe_diagnostics checks /imu/data against a single
-      floor in both environments (config/health_monitor.yaml, imu_fused).
-
-      The Imu system that drives this used to be declared below, inside the model. It
-      is world-scoped in Harmonic and now lives in circe_gazebo/worlds/*.sdf.
-    -->
+    <!-- Simulated IMU (sim_mode only). 100 Hz matches hardware /imu/data. -->
     <xacro:arg name="sim_mode" default="false" />
     <xacro:if value="$(arg sim_mode)">
     <gazebo reference="imu_link">
@@ -54,7 +20,6 @@
             <visualize>true</visualize>
             <topic>imu/data</topic>
             <enable_metrics>true</enable_metrics>
-            <!-- gz_frame_id: ignition_frame_id is the Fortress spelling. -->
             <gz_frame_id>imu_link</gz_frame_id>
         </sensor>
     </gazebo>

@@ -1,91 +1,6 @@
-# Angular mask for the RPLidar A1: throw away the rear half of every sweep.
-#
-# Runs as laser_filters' scan_to_scan_filter_chain, wired between the scan SOURCE and
-# /scan:
-#
-#     sllidar_node (or the gz bridge)  ->  /scan_raw
-#     scan_sector_filter               ->  /scan
-#     scan_pitch_filter                ->  /scan_filtered
-#
-# *** WHY IT SITS BEFORE /scan AND NOT INSIDE scan_pitch_filter ***
-# /scan forks. slam_toolbox and both costmaps now read /scan_filtered (see the measured
-# note on scan_topic in circe_nav/config/mapper_params_circe.yaml), but Nav2's
-# collision_monitor still reads /scan directly. Masking only inside scan_pitch_filter
-# would leave collision_monitor stopping the rover for its own spool -- and SLAM was on
-# raw /scan when this was written, so the fork has moved once already. Upstream of the
-# fork every consumer gets the mask whichever branch it is on, which is also why nothing
-# downstream needed a config change.
-#
-# *** WHY THERE IS ANYTHING TO MASK ***
-# The cable spool sits on the rear deck and stands straight through the scan plane.
-# Measured from the model (exact mesh/plane cross-section, not a bounding box) it fills
-# bearings -25.71 .. +25.72 deg at 0.242 .. 0.456 m. The A1's dead zone is 0.15 m, so
-# it is comfortably inside the sensor's usable range and WILL be reported as a wall.
-# Those figures are tied to spool_mount_x in circe_cable_spool.urdf.xacro (-0.1588).
-# They were -20.64 .. +20.65 deg at 0.314 m when the spool sat 75 mm further aft, so
-# re-measure them if it moves again.
-# The trailing tether is the other half of the reason, and the one a tight 51 deg mask
-# would not catch: it pays out behind the rover and moves.
-#
-# The sensor mast's four posts do NOT need masking. They never reach the scan plane,
-# and at 0.069 m they are inside the dead zone regardless.
-#
-# ===========================================================================
-# *** BEARING 0 IS THE ROVER'S REAR, NOT ITS FRONT. READ THIS BEFORE EDITING. ***
-# ===========================================================================
-# rplidar_a1.urdf.xacro mounts lidar_link with lidar_mount_yaw = 3.1415, because the A1
-# carries a 180 deg yaw as part of its own frame convention. Bearings in this file are
-# in lidar_link, so:
-#
-#     rover FRONT  ->  bearing +/-180 deg
-#     rover LEFT   ->  bearing  -90 deg
-#     rover REAR   ->  bearing    0 deg
-#     rover RIGHT  ->  bearing  +90 deg
-#
-# So the half to DELETE is the one centred on zero. The intuitive-looking config -
-# "keep -90 to +90, that's the front" - keeps precisely the wrong half: it blinds the
-# rover forwards and preserves the spool. This was verified by transforming the spool
-# geometry into lidar_link, not by reading the yaw off the URDF.
-#
-# A happy consequence: the region to delete is contiguous in bearing, while the region
-# to KEEP wraps through +/-180 and cannot be expressed as one interval at all. That is
-# why this is AngularBoundsFilterInPlace (deletes INSIDE the bounds) rather than
-# LaserScanAngularBoundsFilter (keeps inside them, and would have needed two passes).
-#
-# *** ANGLE CONVENTION OF THE INCOMING SCAN ***
-# Both sources publish angle_min = -pi, angle_max = +pi, so one config serves both:
-#   hardware  sllidar_node with angle_compensate: true takes the 0..2*pi branch, and
-#             publish_scan() rewrites it as (pi - angle_max) .. (pi - angle_min).
-#   sim       the gpu_lidar in rplidar_a1.urdf.xacro declares -3.14159 .. 3.14159.
-#
-# *** WHAT "REMOVED" MEANS ***
-# The filter overwrites masked beams with range_max + 1.0, i.e. beyond range_max, which
-# is the ROS convention for "no valid return". It is NOT max-range, so nothing treats it
-# as free space: laser_geometry drops out-of-range readings when projecting for the
-# costmap (inf_is_valid is unset in nav2_params.yaml, so the default false applies), and
-# karto ignores any reading >= maxRange outright. Beam count and message geometry are
-# unchanged, which keeps sim and hardware scans structurally identical.
-#
-# *** TUNING ***
-# The mask below is +/-30 deg, NOT the full rear half-plane. +/-90 was tried first and
-# had to be abandoned: it broke Nav2's very first goal, and the measured account of that
-# sits on the parameters themselves. What survives from the attempt is the reason a wide
-# cut was attractive in the first place - it covered the trailing tether, which +/-30
-# does not.
-#
-# Widening again is not free in two separate ways. circe_nav's mapper_params_circe.yaml
-# records that starving the scan matcher of distant landmarks measured WORSE for
-# localisation (9.5 m against 15.1 m final error over a 37.9 m route), and +/-90 on top
-# of that costs the cold-start map. If the tether becomes a real obstacle problem, a
-# "drive 2 m before the first goal" workflow is the cheaper answer than a wider mask.
-#
-# The FLOOR is set by the spool, measured at +/-25.72 deg: below about +/-27 the mask
-# stops covering the hardware it exists for. It is a change to these two numbers only.
-#
-# The top-level key is the /** wildcard for the same reason lidar_a1.yaml uses one:
-# keying on a node name is how an entire params file goes missing silently when the node
-# is renamed or namespaced. Here that would fail OPEN - an empty filter chain republishes
-# the scan untouched - so the spool would quietly come back with nothing logged.
+# Rear-sector lidar mask: /scan_raw -> /scan (before the /scan_filtered fork).
+# Bearing 0 in lidar_link is the rover's REAR (lidar is yawed 180 deg), so the
+# masked sector is centred on 0. Masked beams become range_max + 1 (no return).
 
 /**:
   ros__parameters:
@@ -93,39 +8,7 @@
       name: rear_sector
       type: laser_filters/LaserScanAngularBoundsFilterInPlace
       params:
-        # Radians in lidar_link. Deletes bearings strictly BETWEEN these two.
-        #
-        # *** +/-30 deg, NOT the +/-90 deg rear half-plane. MEASURED REASON BELOW. ***
-        # The half-plane mask made the rover unable to accept its FIRST Nav2 goal. With
-        # nothing behind the lidar ever observed, slam_toolbox's initial map begins at
-        # the lidar itself - x = +0.180, which is exactly lidar_mount_x - and base_link
-        # sits 0.18 m behind that, OUTSIDE the map. The global costmap inherits those
-        # bounds from the static layer, so NavFn rejected every goal instantly with
-        #     "Start Coordinates of(0.000000, -0.000000) was outside bounds"
-        # which surfaces in RViz as a goal that goes straight to ABORTED.
-        #
-        # Cold-start map origin, measured, identical world and spawn:
-        #     mask +/-90 deg   origin x = +0.180   base_link inside: NO
-        #     no mask (360)    origin x = -4.929   base_link inside: YES
-        #
-        # Spinning does not rescue it: slam_toolbox gates scan processing on TRANSLATION
-        # only. 294 deg of in-place rotation added 0 pose-graph nodes; 2.5 m of driving
-        # added 5. Confirmed against the unmasked 360 deg scan too, so that is
-        # slam_toolbox behaviour, not something this filter causes.
-        #
-        # +/-30 deg still fully covers the spool, which the model puts at -25.71 ..
-        # +25.72 deg - 4.28 deg of margin each side - while leaving 300 deg of sweep.
-        # (-20.64 .. +20.65 was the sector before spool_mount_x moved 75 mm forward to
-        # -0.1588; the margin is now half what that figure implied, so re-measure rather
-        # than assume if the spool moves again.)
-        # That is enough to surround the robot, so the first scan alone produces a map
-        # containing base_link and the first goal plans.
-        #
-        # WHAT THIS GIVES UP: the trailing tether. +/-90 covered it; +/-30 does not, so
-        # the tether will be seen as an obstacle behind the rover. That is the right
-        # trade - a tether read as an obstacle costs some rear clearance, an unplannable
-        # first goal costs the whole mission - but if the tether proves a problem, widen
-        # this and adopt a "drive 2 m before the first goal" workflow instead. It is a
-        # change to these two numbers only.
+        # Delete bearings between +/-30 deg in lidar_link (spool is +/-25.7 deg).
+        # +/-90 left base_link outside the cold-start map, so the first goal failed.
         lower_angle: -0.5235988
         upper_angle: 0.5235988

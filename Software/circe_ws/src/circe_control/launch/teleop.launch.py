@@ -1,26 +1,7 @@
 #!/usr/bin/env python3
-"""Gamepad teleop for CIRCE.
+"""Gamepad teleop for CIRCE: joy_node -> roverrobotics_input_manager -> /cmd_vel.
 
-    ros2 launch circe_control teleop.launch.py                  # PS4 pad
-    ros2 launch circe_control teleop.launch.py controller:=ps5
-
-Ported from roverrobotics_driver/launch/ps4_controller.launch.py, with the pad choice
-turned into a launch argument instead of a second near-identical launch file, and one
-substantive fix:
-
-  *** joy_linux -> joy ***
-  Upstream runs `joy_linux/joy_linux_node`. That package is NOT installed on this
-  machine and is not in circe.repos, so the upstream launch file fails outright with a
-  package-not-found error. `joy/joy_node` is installed, is the maintained
-  ros2 driver, and publishes the same sensor_msgs/Joy on /joy, so the input manager
-  downstream does not know the difference.
-
-Publishes: /cmd_vel (via roverrobotics_input_manager, see config/joy_topics.yaml)
-
-This is also where the twist_mux and the software e-stop belong when they arrive
-(IMPLEMENTATION_PLAN.md Phase 5). At that point /cmd_vel here should be remapped to a
-teleop-specific input of the mux rather than driving the base directly, so an
-autonomous goal and a human on the stick cannot both command the motors at once.
+    ros2 launch circe_control teleop.launch.py controller:=ps5   # default ps4
 """
 
 from pathlib import Path
@@ -44,7 +25,7 @@ def _launch_setup(context, *args, **kwargs):
     assert topics_config.is_file(), f'missing {topics_config}'
 
     return [
-        # respawn: the pad is a USB device and users unplug them mid-session.
+        # respawn: pads get unplugged mid-session.
         Node(
             package='roverrobotics_input_manager',
             executable='joys_manager.py',
@@ -63,8 +44,6 @@ def _launch_setup(context, *args, **kwargs):
             output='screen',
             parameters=[{
                 'device_id': LaunchConfiguration('joy_device_id'),
-                # Below this the stick is treated as centred. Matches the
-                # exclusion bands in the *_controller.yaml files.
                 'deadzone': 0.05,
                 'autorepeat_rate': 20.0,
             }],
@@ -82,8 +61,6 @@ def generate_launch_description():
         DeclareLaunchArgument(
             'joy_device_id', default_value='0',
             description='Which /dev/input/js* to open'),
-        # Upstream sets this so log lines from the respawning nodes are not lost
-        # when they die; keep it.
         SetEnvironmentVariable('RCUTILS_LOGGING_BUFFERED_STREAM', '1'),
         OpaqueFunction(function=_launch_setup),
     ])

@@ -1,10 +1,5 @@
-# slam_toolbox (async) parameters for the CIRCE rover.
-#
-# Derived from slam_toolbox's mapper_params_online_async.yaml, with the values
-# that are actually specific to this robot called out below. Everything not
-# commented is the upstream default, kept explicit so tuning has a baseline.
-#
-# The node name must stay 'slam_toolbox' to match this top-level key.
+# slam_toolbox (async) for CIRCE, from upstream mapper_params_online_async.yaml.
+# Matcher values are tuned for sparse outdoor scans (trust odometry more).
 slam_toolbox:
   ros__parameters:
 
@@ -19,69 +14,9 @@ slam_toolbox:
     # ROS Parameters
     odom_frame: odom
     map_frame: map
-    # CIRCE: rover_4wd.urdf roots the model at base_link. There is no
-    # base_footprint link, so the upstream default would never resolve.
+    # No base_footprint in the URDF.
     base_frame: base_link
-    # *** RAW /scan, DELIBERATELY - NOT /scan_filtered. ***
-    # This was tried the other way and MEASURED WORSE. The reasoning was that ground
-    # returns on a hill form an arc that moves with the robot, which is poison for a
-    # scan matcher. That is true, but circe_perception's scan_pitch_filter cuts every
-    # beam past its ground-strike range, and on an incline that also throws away the
-    # tree trunks BEYOND the strike range - exactly the distant, stable features scan
-    # matching depends on. Starving the matcher of landmarks hurt more than the ground
-    # returns did.
-    #
-    # Measured on circe_outdoor.sdf, identical 37.9 m route over the hill field,
-    # final error against the simulator's ground truth:
-    #
-    #   slam on /scan            9.5 m     (also observed 16.7 m on a repeat run)
-    #   slam on /scan_filtered  15.1 m
-    #
-    # *** THAT COMPARISON IS VOID AND HAS BEEN REVERSED. ***
-    # Both arms above were measured under the OLD matcher settings, where SLAM failed
-    # catastrophically either way (9.5-16.7 m, unstable across repeats). Comparing two
-    # broken configurations decided nothing. With the tuned matcher below, SLAM holds
-    # 0.21 m over the same course, and the trade-off changed completely.
-    #
-    # What forced the change: on /scan, SLAM maps its own ground strikes as PERMANENT
-    # obstacles. Climbing hill_12deg the rover pitches ~9-10 deg nose-down, the scan
-    # plane tilts into the hillside, and those returns are written into /map. Measured
-    # with the rover parked on the summit at (-6.94, 6.36):
-    #
-    #   /map                 robot cell -1, but 12 occupied cells within 13x13
-    #   /global_costmap      robot cell 99, 127 of 169 cells >= 90, ZERO free
-    #
-    # inflation_radius 0.55 turns those 12 phantom points into a solid lethal disc, and
-    # the rover ends up standing inside a wall it painted itself. NavFn cannot start a
-    # plan from a lethal cell, so EVERY descent goal aborts with
-    #   "Failed to create plan with tolerance of: 0.500000"
-    # while the climb up had worked perfectly -- the ground ahead was not yet polluted.
-    #
-    # ObstacleLayer cannot undo it: it combines with Max, so it can never clear a cell
-    # StaticLayer has marked. The only fix is to stop SLAM seeing the ground at all,
-    # which is exactly what scan_pitch_filter exists to do.
-    #
-    # Result after the change, same hill, climb then descend:
-    #   CLIMB   SUCCEEDED
-    #   DESCEND accepted and driven -- the rover left the summit instead of aborting.
-    #   phantom cells around the robot after the climb: 127 -> 62, with free space left
-    #
-    # *** THIS COSTS NOTHING ON FLAT GROUND. *** scan_pitch_filter has min_tilt_deg 3.0
-    # and is a no-op below it. Measured on the level: /scan 126 valid returns,
-    # /scan_filtered 126 -- identical. So the earlier concern about starving an already
-    # sparse scan does not apply where the rover spends most of its time; the filter
-    # only subtracts on slopes, which is precisely where its returns are lies.
-    #
-    # *** REMAINING, NOT FIXED: SLAM STILL DRIFTS ACROSS HILLS. ***
-    # Measured after the climb/descend cycle: |map -> odom| 3.213 m, yaw -14.6 deg,
-    # against 0.21 m on the flat tree course. Removing the ground strikes stopped the
-    # phantom walls but did not make a tilted 2D slice valid -- on a slope the scan
-    # plane cuts the world at a height that varies with range, so trunks match badly
-    # no matter how the returns are filtered. This is a limit of 2D scan matching on
-    # terrain, not a tuning error. Options if it matters: LOWER
-    # distance_variance_penalty / angle_variance_penalty (and the minimum_*_penalty
-    # floors that cap them) so the matcher defers harder to the EKF, or gate scans out
-    # of SLAM entirely above some tilt. See the Scan Matcher block below.
+    # Filtered so ground strikes on slopes aren't mapped as walls.
     scan_topic: /scan_filtered
     use_map_saver: true
     mode: mapping
@@ -92,10 +27,7 @@ slam_toolbox:
     map_update_interval: 5.0
     resolution: 0.05
 
-    # CIRCE: RPLidar A1 is a 0.15 - 12.0 m sensor. Leaving max_laser_range at the
-    # upstream 20.0 makes slam_toolbox raytrace free space out to 20 m along every
-    # beam, carving away unobserved cells and producing a map that claims open
-    # floor where the lidar simply had no return.
+    # RPLidar A1 range.
     min_laser_range: 0.15
     max_laser_range: 12.0
 
@@ -108,81 +40,17 @@ slam_toolbox:
     # General Parameters
     use_scan_matching: true
     use_scan_barycenter: true
-    # *** THE FOUR VALUES BELOW ARE WHAT MAKE OUTDOOR SLAM SURVIVABLE. ***
-    # Measured on circe_outdoor.sdf, identical 12.6 m Nav2 goal to (4, -12), three
-    # runs, ground truth from /ground_truth/odom:
-    #
-    #                                     |map->odom| max   yaw max   reached goal
-    #   stock (0.2 / 0.1 / 0.5)              20.72 m         116.8 deg   NO, +9.45 m
-    #   these values, loop closing off        0.24 m           0.6 deg   yes, 0.10 m
-    #   these values, loop closing ON         0.21 m           1.2 deg   yes, 0.10 m
-    #
-    # The stock run is the important one. map -> odom grew MONOTONICALLY, and at
-    # t=40 s the rover was physically 0.66 m from the goal while SLAM believed it was
-    # 9.19 m away -- so Nav2 drove it off and finished 9.45 m past. Scan matching was
-    # not merely unhelpful; it destroyed a good dead-reckoning estimate. The EKF over
-    # a comparable route is 0.36-0.56 m.
-    #
-    # WHY: the A1 sees about 12 m, and open Tennessee ground returns almost nothing.
-    # Measured valid returns on this course: 9.6% at spawn, 15.0% mean while driving
-    # through the tree field, 4.2% worst case -- i.e. 30 to 180 points out of 720,
-    # mostly distant trunks. Round trunks are self-similar and constrain a 2D pose
-    # weakly in translation and hardly at all in rotation. Default slam_toolbox
-    # accepts those weak matches and integrates their error.
-    #
-    # The fix is to make the matcher REFUSE weak evidence and fall back on odometry,
-    # which is the accurate input here. Loop closure was suspected and exonerated by
-    # the third run above -- leave it ON; it is what corrects long-run drift.
-    #
-    # These are tuned for OPEN TERRAIN. Indoors, against walls, the stock values give
-    # a denser graph and better maps; if CIRCE ever works indoors again, A/B them.
-
-    # Was 0.2. Fewer, better-separated nodes: at 0.2 m the graph fills with
-    # near-identical scans of the same two trunks, and averaging many weak matches
-    # does not make a strong one.
+    # Was 0.2.
     minimum_travel_distance: 0.5
     minimum_travel_heading: 0.2
     check_min_dist_and_heading_precisely: false
     scan_buffer_size: 10
-    # CIRCE: matched to the A1's real max range rather than the 10.0 default.
     scan_buffer_maximum_scan_distance: 12.0
-    # *** THE SINGLE MOST IMPORTANT VALUE IN THIS FILE. ***
-    # Was 0.1, which accepts almost any correlation as a real match. This is the
-    # threshold that decides "do I believe this scan match, or do I keep my odometry
-    # estimate?" -- and with 15% of beams returning, most matches are noise. 0.45
-    # matches the loop-closure fine threshold below, which upstream already sets at
-    # 0.45 for exactly this reason.
+    # Was 0.1. Reject weak matches and keep odometry.
     link_match_minimum_response_fine: 0.45
     link_scan_maximum_distance: 1.5
 
-    # *** THIS MUST BE LARGER THAN THE DRIFT IT IS SUPPOSED TO CORRECT. ***
-    # Was 3.0. This is the radius, around the robot's BELIEVED pose, in which Karto
-    # gathers candidate scans to attempt a loop closure against. A candidate further
-    # away than this is never even considered, so the mechanism silently switches off
-    # exactly when drift grows past it -- the one situation it exists for.
-    #
-    # Measured in circe_outdoor.sdf, driving onto the summit of hill_12deg at (-7, 6):
-    # a single traverse put |map -> odom| at 2.905 m / -16.0 deg, and it then STAYED
-    # there through a further 22.4 m of flat driving --
-    #
-    #     leg (2,-2)  |m->o| 2.927 m  -15.8 deg
-    #     leg (8,4)   |m->o| 2.833 m  -14.8 deg
-    #     leg (0,0)   |m->o| 3.008 m  -14.2 deg   <- back at the start, still 3 m out
-    #
-    # -- with every leg reported SUCCEEDED, because the rover really did reach the goal
-    # IN THE MAP FRAME. The map was simply 3 m from the world. Drift of ~3 m sat right
-    # on the old 3.0 m radius, so the correct candidate was at or outside the search
-    # boundary and no closure was ever attempted.
-    #
-    # 8.0 matches loop_search_space_dimension below, which is the width of the
-    # correlation grid the coarse match then runs in; there is no point gathering
-    # candidates from further away than that grid can resolve. Cost is more candidate
-    # scans per attempt, which is CPU at loop-closure time only, not per scan.
-    #
-    # Do not raise it much beyond that dimension: the guard against closing a loop onto
-    # the WRONG place is loop_match_minimum_response_fine (0.45) plus
-    # loop_match_minimum_chain_size (10), and a false closure corrupts the whole graph
-    # rather than degrading it.
+    # Was 3.0. Must exceed the drift it corrects; matches loop_search_space_dimension.
     loop_search_maximum_distance: 8.0
     do_loop_closing: true
     loop_match_minimum_chain_size: 10
@@ -191,9 +59,7 @@ slam_toolbox:
     loop_match_minimum_response_fine: 0.45
 
     # Correlation Parameters
-    # Was 0.5. Caps how far a single match may pull the pose. With sparse returns a
-    # wide search window finds a spurious optimum somewhere in the empty space; a
-    # narrow one bounds the damage of any individual bad match to 0.3 m.
+    # Was 0.5. Limits how far one bad match can move the pose.
     correlation_search_space_dimension: 0.3
     correlation_search_space_resolution: 0.01
     correlation_search_space_smear_deviation: 0.1
@@ -203,57 +69,14 @@ slam_toolbox:
     loop_search_space_resolution: 0.05
     loop_search_space_smear_deviation: 0.03
 
-    # ---- Scan Matcher Parameters: HOW HARD THE MATCHER MAY ARGUE WITH ODOMETRY ----
-    #
-    # Karto scores every candidate pose in the correlation search, then MULTIPLIES that
-    # score by a penalty that shrinks as the candidate moves away from where odometry
-    # says the robot is. From karto_sdk/Mapper.h:
-    #
-    #   "Variance of penalty for deviating from odometry when scan-matching. The
-    #    penalty is a multiplier (less than 1.0) [that] is a function of the delta of
-    #    the scan position being tested and the odometric pose"
-    #
-    # The shape is Gaussian-like -- roughly  penalty = 1 - k * delta^2 / variance --
-    # so the value below IS the variance, and the direction is the opposite of what it
-    # looks like:
-    #
-    #   SMALLER value -> tighter variance -> bigger penalty -> TRUSTS ODOMETRY MORE
-    #   LARGER  value -> looser  variance -> smaller penalty -> trusts scan matching more
-    #
-    # That is the lever for CIRCE's situation: the EKF is the accurate input
-    # (0.36-0.56 m over 37.9 m) and the scan is the unreliable one (10-15% valid
-    # returns). Lowering these makes SLAM correct odometry only when the evidence is
-    # strong. Lower them too far and SLAM stops correcting drift at all, which is the
-    # thing it is there to do -- so move them in steps and re-measure |map -> odom|.
+    # Scan Matcher Parameters. Smaller penalty values = trust odometry more.
     distance_variance_penalty: 0.5
     angle_variance_penalty: 1.0
 
     fine_search_angle_offset: 0.00349
     coarse_search_angle_offset: 0.349
     coarse_angle_resolution: 0.0349
-    # *** THESE FLOORS CAP THE PENALTIES ABOVE, AND THE ANGULAR ONE IS NEARLY INERT. ***
-    # Mapper.h: "Minimum value of the penalty multiplier so scores do not become too
-    # small." At 0.9, angular deviation can never cost a candidate more than 10% of its
-    # response -- so no matter how small angle_variance_penalty is set, the matcher is
-    # still almost free to rotate away from odometry. Given the measured failure on
-    # hills was 14.6 deg of yaw error, this floor is the more likely lever of the two,
-    # and lowering it should be tried BEFORE angle_variance_penalty.
-    # *** 0.9 -> 0.6 IS MEASURED AND IT WORKS. ***
-    # Climb + descend on hill_12deg, identical goals both runs:
-    #
-    #                        |map->odom| max   yaw max
-    #   minimum_angle_penalty 0.9   3.213 m    14.6 deg
-    #   minimum_angle_penalty 0.6   0.245 m     1.6 deg
-    #
-    # 13x better in position, 9x in yaw. The floor was the binding constraint, exactly
-    # as the Mapper.h comment implies: at 0.9 no angular deviation could cost a
-    # candidate more than 10% of its response, so angle_variance_penalty above was
-    # effectively inert and the matcher rotated away from odometry for free.
-    #
-    # Do not read this as "the hill problem is solved" -- see the note on phantom
-    # summit walls in the scan_topic block above. Better localisation actually made
-    # that one WORSE, because obstacles that used to smear across many cells now land
-    # repeatedly in the same place and build a solid ring.
+    # Was 0.9, which made angle_variance_penalty nearly inert (hill yaw error 14.6 -> 1.6 deg).
     minimum_angle_penalty: 0.6
     minimum_distance_penalty: 0.5
     use_response_expansion: true

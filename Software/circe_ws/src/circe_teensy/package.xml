@@ -18,27 +18,16 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <!-- scripts/teensy_bridge.py -->
   <exec_depend>rclpy</exec_depend>
   <exec_depend>std_msgs</exec_depend>
-  <!-- /gps/fix (NavSatFix). -->
   <exec_depend>sensor_msgs</exec_depend>
-  <!-- odom_topic is forwarded to the Teensy as the spool's speed reference. -->
   <exec_depend>nav_msgs</exec_depend>
-  <!-- pyserial: opens /dev/teensy. -->
   <exec_depend>python3-serial</exec_depend>
 
-  <!-- launch/teensy_bridge.launch.py -->
   <exec_depend>launch_ros</exec_depend>
   <exec_depend>ament_index_python</exec_depend>
 
-  <!--
-    Deliberately NOT declared:
-
-    platformio - not a rosdep key, and it only needs to be on the machine that builds
-                 the firmware. CMakeLists.txt looks for it and skips the firmware
-                 when it is missing, so the laptop still builds this package.
-  -->
+  <!-- platformio is intentionally not declared (not a rosdep key). -->
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

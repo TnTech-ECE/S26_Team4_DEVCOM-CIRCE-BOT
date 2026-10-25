@@ -1,31 +1,6 @@
 <?xml version="1.0" ?>
-<!--
-  Enclosed 10 x 10 m room with interior structure, for SLAM and Nav2 testing.
-
-  Design notes, because the geometry is not arbitrary:
-
-  * Everything is hand-authored. There is deliberately no Fuel <include>, so the world
-    loads with no network. The upstream roverrobotics worlds pull models from
-    fuel.ignitionrobotics.org at load time, which fails offline and stalls startup.
-
-  * Walls are 1.0 m tall. The A1 scan plane sits at z = 0.295, so anything shorter than
-    that is invisible to the lidar and Nav2 will happily drive through it. If you add
-    obstacles, keep them above 0.3 m or accept that they are decoration.
-
-  * The room is closed. slam_toolbox needs the scan to hit something in most directions
-    to constrain a pose; an open plane gives it nothing and the map smears.
-
-  * The interior mixes flat walls, corners, and round pillars on purpose. Scan matching
-    on flat walls alone is under-constrained along the wall direction, and a rover can
-    slide several metres before the solver notices.
-
-  * The centre is left open, with gaps between the dividers wide enough (>1.2 m) for
-    the 0.55 x 0.36 m footprint plus inflation_radius 0.35 to plan through.
-
-  *** WORLD-LEVEL SYSTEMS ***
-  Sensors and Imu are world-scoped in Harmonic and must be declared here, not in the
-  model. See the note in empty.sdf.
--->
+<!-- Closed 10 x 10 m room for SLAM/Nav2 tests. No Fuel includes (works offline).
+     Obstacles must be taller than the 0.295 m lidar plane to be seen by it. -->
 <sdf version="1.9">
   <world name="circe_indoor">
 
@@ -303,29 +278,9 @@
       </link>
     </model>
 
-    <!--
-      ============ TERRAIN TEST RIG for circe_perception ============
+    <!-- Terrain test rig: shallow ramp (drivable), steep ramp, kerb, pit (lethal). -->
 
-      Everything else in this world is a vertical wall, which the lidar already sees and
-      which tells the terrain classifier nothing. These four give each traversability test
-      something to bite on, with a known right answer:
-
-        ramp_shallow  ~9 deg   DRIVABLE, mid cost   (slope_warn 10 deg, lethal 25 deg)
-        ramp_steep    ~31 deg  LETHAL               (above slope_lethal)
-        kerb          0.08 m   LETHAL               (above step_lethal 0.06)
-        pit           0.15 m deep  LETHAL           (below drop_lethal 0.08)
-
-      If the two ramps score the same, the slope maths is wrong -- that is the single most
-      useful signal this rig provides. Angles are set with the pitch term of <pose>, and
-      the ramp is sunk so its low edge meets the floor rather than forming a step: a
-      surface-mounted ramp would trip the STEP test at its leading edge and mask the slope
-      result entirely.
-
-      All are static and clear of the divider gaps so they do not block navigation tests.
-    -->
-
-    <!-- 2.0 x 1.2 slab pitched 9 deg. Rise over the 2 m run is ~0.31 m, so sinking the
-         centre by half that puts the downhill edge flush with the floor. -->
+    <!-- Sunk so the low edge is flush with the floor. -->
     <model name="ramp_shallow">
       <static>true</static>
       <pose>3.0 1.2 0.079 0 -0.157 0</pose>
@@ -346,7 +301,7 @@
       </link>
     </model>
 
-    <!-- Same slab pitched 31 deg. Must classify lethal; the rover should route around. -->
+    <!-- 31 deg: should be routed around. -->
     <model name="ramp_steep">
       <static>true</static>
       <pose>3.0 -1.2 0.257 0 -0.541 0</pose>
@@ -367,8 +322,7 @@
       </link>
     </model>
 
-    <!-- 0.08 m kerb: above step_lethal (0.06) but well under the 0.295 m lidar plane, so
-         ONLY the camera can see it. Good end-to-end proof the terrain path is live. -->
+    <!-- Below the lidar plane: camera-only. -->
     <model name="kerb">
       <static>true</static>
       <pose>-3.2 2.8 0.04 0 0 0</pose>
@@ -386,12 +340,7 @@
       </link>
     </model>
 
-    <!--
-      Drop-off test. Gazebo's ground_plane is infinite, so a real hole cannot be cut in
-      it. This walls a 1.2 x 1.2 recess with four thin kerbs and floors it 0.15 m down --
-      the rover cannot fall in, but the camera sees a surface 0.15 m below local ground,
-      which is what drop_lethal (0.08) tests. Approach it from the open north side.
-    -->
+    <!-- Walled recess 0.15 m deep (the ground plane can't have a hole). -->
     <model name="pit_floor">
       <static>true</static>
       <pose>-3.4 0.6 -0.15 0 0 0</pose>

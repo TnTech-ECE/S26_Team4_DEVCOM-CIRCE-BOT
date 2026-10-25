@@ -4,50 +4,14 @@
     ros2 run circe_bringup wait_for.py --label base --timeout 60 \
         --tf true base_link lidar_link --topic true /odometry/wheels
 
-Exits 0 when every enabled check passes, 1 on timeout when --required is true, and 0
-on timeout when it is false. circe_bringup.launch.py chains one of these between every
-layer with RegisterEventHandler(OnProcessExit(...)), so a layer only starts once the
-layer beneath it has been OBSERVED working -- not merely spawned.
+Waits for actual output (not process start). Exits 0 when every enabled check passes;
+on timeout exits 1 if --required is true, else 0.
 
-*** WHY "PROCESS STARTED" IS NOT THE SIGNAL WE WANT ***
-launch's own OnProcessStart fires when the OS has forked the process, which on this
-stack means almost nothing:
+    --topic ENABLED NAME          one message received (QoS mirrors the publisher)
+    --tf    ENABLED PARENT CHILD  transform resolvable
+    --node  ENABLED NAME          node present in the graph
 
-    roverrobotics_driver   spawns, then opens /dev/rover-control. If the rover is off
-                           or the USB has not enumerated it spawns fine and publishes
-                           no odometry at all.
-    realsense2_camera      spawns, then resets and enumerates the D456 over USB 3.
-                           That takes seconds on a Pi 5, and initial_reset: true in
-                           realsense_d456.yaml makes it take longer still.
-    ekf_node               spawns instantly and publishes odom -> base_link only once
-                           /odometry/wheels arrives.
-    slam_toolbox           spawns, sits in `unconfigured`, and needs a lifecycle
-                           transition before it subscribes to anything.
-
-Every one of those is a real hardware failure that OnProcessStart reports as success.
-So each check here waits for the OUTPUT -- a message on a topic, an edge in the TF
-tree, a node in the graph -- which is the only evidence that the thing works.
-
-CHECK KINDS
-    --topic ENABLED NAME        one message received on NAME
-    --tf    ENABLED PARENT CHILD  PARENT -> CHILD resolvable in the TF tree
-    --node  ENABLED NAME        NAME present in the ROS graph
-
-ENABLED is a "true"/"false" string, not a flag, so callers can pass a
-LaunchConfiguration straight through and a check for a layer that is switched off
-disappears instead of hanging. That is what keeps the chain intact when, say,
-use_slam:=false: the gate still runs (so the handler after it still fires) but has
-nothing left to wait for and exits immediately.
-
-*** THE TOPIC CHECK MATCHES THE PUBLISHER'S QoS, IT DOES NOT ASSUME ONE. ***
-This stack mixes QoS profiles: the RealSense IMU publisher is hardcoded BEST_EFFORT
-(rs_node_setup.cpp, HID_QOS), the lidar and the filters use sensor-data QoS, and Nav2's
-costmap topics are TRANSIENT_LOCAL latched. A fixed RELIABLE subscriber never matches
-the first group, and a VOLATILE subscriber never receives the already-published message
-from the last. Both failures look identical from here -- a topic that exists and never
-arrives -- so the check reads the publisher's actual profile with
-get_publishers_info_by_topic() and mirrors it. A gate that reports a false negative is
-worse than no gate, because it stops a bringup that would have worked.
+ENABLED is a "true"/"false" string so disabled layers pass through immediately.
 """
 
 import argparse
@@ -83,13 +47,7 @@ class _Check:
 
 
 class _TopicCheck(_Check):
-    """Wait for an actual message, not merely for a publisher to exist.
-
-    A publisher with no data behind it is the signature of half this stack's hardware
-    faults: the lidar driver advertises /scan_raw before it has talked to the motor,
-    and imu_fusion advertises /imu/data whether or not the camera it reads ever
-    appears. Counting publishers would pass in both cases.
-    """
+    """Wait for an actual message, not merely for a publisher to exist."""
 
     def __init__(self, topic):
         super().__init__(f'message on {topic}')
@@ -116,10 +74,7 @@ class _TopicCheck(_Check):
             try:
                 msg_type = get_message(info.topic_type)
             except Exception:
-                # An unresolvable type means the message package is not on this
-                # machine. A live publisher is then the strongest evidence available,
-                # and refusing to accept it would block a bringup over a missing
-                # Python import that nothing in the chain actually needs.
+                # Message package not installed: accept the live publisher.
                 node.get_logger().warn(
                     f'{self.topic}: cannot import {info.topic_type}, '
                     'accepting the publisher itself as the signal')
@@ -136,14 +91,7 @@ class _TopicCheck(_Check):
 
     @staticmethod
     def _mirror(publisher_qos):
-        """Build a subscriber QoS compatible with this publisher.
-
-        Reliability and durability are copied exactly, which is always compatible.
-        Anything the middleware reports as UNKNOWN or SYSTEM_DEFAULT falls back to
-        BEST_EFFORT/VOLATILE -- the permissive end of both axes, which matches every
-        publisher except a latched one, and a latched publisher always reports its
-        durability honestly.
-        """
+        """Subscriber QoS compatible with this publisher (unknown -> best effort/volatile)."""
         reliability = publisher_qos.reliability
         if reliability not in (ReliabilityPolicy.RELIABLE, ReliabilityPolicy.BEST_EFFORT):
             reliability = ReliabilityPolicy.BEST_EFFORT
@@ -160,13 +108,7 @@ class _TopicCheck(_Check):
 
 
 class _TfCheck(_Check):
-    """Wait for one edge of the TF tree.
-
-    This is the check that matters most on this robot, because the frame-ownership
-    contract in circe_bringup.launch.py is enforced by exactly one publisher per edge:
-    odom -> base_link proves the EKF is fusing, map -> odom proves slam_toolbox got
-    past its lifecycle transitions and matched a scan.
-    """
+    """Wait for one edge of the TF tree."""
 
     def __init__(self, parent, child, buffer):
         super().__init__(f'transform {parent} -> {child}')
@@ -186,14 +128,7 @@ class _TfCheck(_Check):
 
 
 class _NodeCheck(_Check):
-    """Wait for a node to appear in the graph.
-
-    Weaker than the other two on purpose. It is the right check only where a node's
-    output is conditional on something outside the bringup -- terrain_node, for
-    instance, publishes /terrain/grid only once it has depth frames AND a subscriber,
-    so waiting for the topic would be waiting on the camera's view of the world rather
-    than on the node having started.
-    """
+    """Wait for a node to appear in the graph (for nodes whose output is conditional)."""
 
     def __init__(self, name):
         super().__init__(f'node {name}')
@@ -211,8 +146,7 @@ def _build(args, node):
     buffer = None
     if needs_tf:
         buffer = Buffer()
-        # Held on the node so the listener is not garbage collected out from under
-        # the buffer; without the reference /tf goes quiet after the first poll.
+        # Keep a reference so the listener isn't garbage collected.
         node._tf_listener = TransformListener(buffer, node, spin_thread=False)
 
     for enabled, topic in args.topic:
@@ -274,8 +208,7 @@ def main():
     parser.add_argument('--node', nargs=2, action='append', default=[],
                         metavar=('ENABLED', 'NAME'))
 
-    # launch_ros appends --ros-args ... to every Node it spawns; argparse must not see
-    # them, and rclpy.init must.
+    # Strip --ros-args before argparse.
     args = parser.parse_args(remove_ros_args(sys.argv)[1:])
 
     rclpy.init(args=sys.argv)
@@ -334,12 +267,7 @@ def main():
     if ready:
         return 0
 
-    # *** LEAVING THE LOOP IS NOT THE SAME AS PASSING. ***
-    # Ctrl-C shuts the rclpy context down, `while rclpy.ok()` goes false, and the loop
-    # falls out having verified nothing. Reporting that as success would make the
-    # OnProcessExit handler in the launch file start the NEXT layer -- spawning fresh
-    # processes into a bringup that is already tearing down. Only an explicit `ready`
-    # is success.
+    # Interrupted (Ctrl-C) is not success; don't let the next layer start.
     if not timed_out:
         logger.warn(f'[{args.label}] interrupted before its checks passed')
         return 130

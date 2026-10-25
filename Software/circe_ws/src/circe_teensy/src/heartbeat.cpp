@@ -10,15 +10,14 @@
 namespace {
 
 constexpr uint32_t HEARTBEAT_PERIOD_MS = 1000;
-// *** TIED TO heartbeat_hz IN config/teensy_bridge.yaml (5 Hz). *** Three missed beats
-// and the spool stops. Lower that rate and this trips on a healthy link.
+// Must exceed the Pi's heartbeat period (teensy_bridge.yaml heartbeat_hz).
 constexpr uint32_t PI_TIMEOUT_MS = 750;
 
 uint32_t g_last_sent_ms = 0;
 uint32_t g_counter = 0;
 
 uint32_t g_last_pi_counter = 0;
-bool g_pi_seen = false;  // nothing is alive until the first beat
+bool g_pi_seen = false;
 uint32_t g_last_pi_ms = 0;
 
 }  // namespace
@@ -40,7 +39,6 @@ void heartbeat_update() {
   hb.last_speed = spool_speed();
   hb.flags = (heartbeat_pi_alive() ? HB_PI_ALIVE : 0) | (estop_active() ? HB_ESTOP : 0) |
              (spool_may_run() ? HB_SPOOL_RUN : 0);
-  // Counts only heartbeats that actually left, so a gap in the Pi's log is a real loss.
   if (bridge_send(MSG_TEENSY_HEARTBEAT, &hb, sizeof(hb))) g_counter++;
 }
 

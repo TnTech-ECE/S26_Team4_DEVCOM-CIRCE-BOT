@@ -10,28 +10,16 @@
 
 namespace {
 
-// --- Drum geometry -----------------------------------------------------------------
-// Measured from circe_description/meshes/spool_drum.stl (radial profile of the mesh).
-constexpr float CORE_RADIUS_M = 0.0381f;  // 3 in core
-constexpr float WIDTH_M = 0.154f;         // between the flanges; the "6 in" spool
-// *** ASSUMED UNTIL MEASURED. *** Replace with the real cable and spool.
-constexpr float CABLE_DIAMETER_M = 0.006f;  // typical Cat6 jacket, 5.5-6.5 mm
-constexpr float FULL_LENGTH_M = 100.0f;     // cable on a freshly loaded drum
-constexpr float MAX_SPOOL_RAD_S = 15.7f;    // gearmotor output, 150 rpm
-// -----------------------------------------------------------------------------------
+// Drum geometry (from spool_drum.stl). Cable/motor values are ASSUMED until measured.
+constexpr float CORE_RADIUS_M = 0.0381f;
+constexpr float WIDTH_M = 0.154f;
+constexpr float CABLE_DIAMETER_M = 0.006f;
+constexpr float FULL_LENGTH_M = 100.0f;
+constexpr float MAX_SPOOL_RAD_S = 15.7f;  // 150 rpm
 
-// Never pay out the last few metres: the cable's end is tied to the core, and the
-// rover would tear it off.
-constexpr float RESERVE_M = 3.0f;
-// Pays out 3% faster than the rover. Too slow drags the drum and strains the cable
-// (Cat6 is rated ~110 N); too fast drops slack behind a rover driving away from it.
-// Winding in, too slow leaves slack under the reversing rover, so it leads there too.
-constexpr float OVERSPEED = 1.03f;
-// Below this the EKF's speed is noise around zero; the spool holds still.
+constexpr float RESERVE_M = 3.0f;      // never pay out the tied-off end
+constexpr float OVERSPEED = 1.03f;     // lead the rover slightly to avoid dragging the cable
 constexpr float DEADBAND_MPS = 0.02f;
-
-// The EKF publishes at tens of Hz; a gap this long means localization has stopped,
-// and a spool still turning at the last speed would pay out or reel in blind.
 constexpr uint32_t SPEED_TIMEOUT_MS = 300;
 constexpr uint32_t STATUS_PERIOD_MS = 200;
 
@@ -41,14 +29,12 @@ uint32_t g_last_speed_ms = 0;
 bool g_speed_seen = false;
 uint32_t g_last_status_ms = 0;
 
-// *** RESETS TO FULL ON EVERY BOOT. *** A Teensy reset mid-run loses the real figure,
-// and every radius after it is wrong until the drum is reloaded.
+// Resets to full on every boot.
 float g_cable_on_m = FULL_LENGTH_M;
 
 bool speed_fresh() { return g_speed_seen && millis() - g_last_speed_ms < SPEED_TIMEOUT_MS; }
 
-// Outer radius of the wound pack holding `length` of cable, square packing:
-// pi * W * (r^2 - r_core^2) = length * d^2.
+// Outer radius of a pack holding `length` of cable (square packing).
 float pack_radius(float length) {
   return sqrtf(CORE_RADIUS_M * CORE_RADIUS_M +
                length * CABLE_DIAMETER_M * CABLE_DIAMETER_M / (static_cast<float>(M_PI) * WIDTH_M));
@@ -57,8 +43,7 @@ float pack_radius(float length) {
 }  // namespace
 
 void spool_update() {
-  // Latched off: a lost Pi or an e-stop must not leave the spool armed to resume by
-  // itself once the cause clears. The Pi re-sends SPOOL_CMD to start again.
+  // Latched off; the Pi must re-send SPOOL_CMD.
   if (!heartbeat_pi_alive() || estop_active()) g_enabled = false;
 
   uint32_t now = millis();
@@ -105,7 +90,6 @@ bool spool_may_run() {
 float spool_cable_on_m() { return g_cable_on_m; }
 
 float spool_radius_m() {
-  // Cable leaves from the centre of the outer turn, half a diameter in from the pack.
   float r = pack_radius(g_cable_on_m) - CABLE_DIAMETER_M / 2;
   float innermost = CORE_RADIUS_M + CABLE_DIAMETER_M / 2;
   return r > innermost ? r : innermost;
@@ -125,12 +109,9 @@ float spool_target_rad_s() {
   if (!spool_may_run()) return 0.0f;
   float v = spool_speed();
   if (fabsf(v) < DEADBAND_MPS) return 0.0f;
-  // Out of cable going forward, or a full drum going back: hold, and let the flags
-  // tell the Pi to stop the rover.
   if (v > 0 && g_cable_on_m <= RESERVE_M) return 0.0f;
   if (v < 0 && g_cable_on_m >= FULL_LENGTH_M) return 0.0f;
   float w = v * OVERSPEED / spool_radius_m();
-  // Saturated means the rover is outrunning the drum; SPOOL_SATURATED says so.
   if (w > MAX_SPOOL_RAD_S) w = MAX_SPOOL_RAD_S;
   if (w < -MAX_SPOOL_RAD_S) w = -MAX_SPOOL_RAD_S;
   return w;

@@ -1,18 +1,6 @@
 <?xml version="1.0" ?>
-<!--
-  Bare ground plane for CIRCE bring-up checks.
-
-  Use this to answer "does the model spawn, rest on the ground, and drive?" without
-  anything else in the way. slam_toolbox will see nothing here and Nav2 has nothing to
-  plan around, which is the point - use circe_indoor.sdf for those.
-
-  *** WORLD-LEVEL SYSTEMS ***
-  Sensors and Imu are world-scoped in Gazebo Harmonic. The rover's xacro used to
-  declare them inside the model, copied from roverrobotics_description, because the
-  upstream worlds never declared them. They live here now. Without Sensors, the
-  gpu_lidar and rgbd_camera produce NO output at all and gz says nothing obvious about
-  why; without Imu, imu/data is silent.
--->
+<!-- Bare ground plane for spawn/drive checks. Sensors and Imu systems must be
+     declared at world level in Harmonic or the sensors publish nothing. -->
 <sdf version="1.9">
   <world name="empty">
 

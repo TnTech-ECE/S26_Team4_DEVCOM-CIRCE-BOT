@@ -8,19 +8,17 @@
 namespace {
 
 constexpr uint8_t ESTOP_PIN = 2;
-// A press must hold this long to count: rejects a spike on a long cable without
-// adding a delay anyone would notice.
+// Debounce: fast to latch a press, slower to accept a release.
 constexpr uint32_t PRESS_CONFIRM_MS = 5;
-// Release only arms the reset, so it can afford to wait out contact bounce.
 constexpr uint32_t RELEASE_CONFIRM_MS = 50;
 constexpr uint32_t REPORT_ACTIVE_MS = 200;
 constexpr uint32_t REPORT_CLEAR_MS = 1000;
 
-bool g_raw = true;          // last raw read, true = open circuit = pressed
+bool g_raw = true;          // true = open circuit = pressed
 uint32_t g_raw_since = 0;
-bool g_pressed = true;      // debounced
+bool g_pressed = true;
 bool g_latched = true;
-bool g_dirty = true;        // state changed and the Pi has not been told yet
+bool g_dirty = true;        // Pi not told yet
 uint32_t g_last_report_ms = 0;
 
 bool read_pressed() { return digitalReadFast(ESTOP_PIN) == HIGH; }
@@ -29,7 +27,7 @@ bool read_pressed() { return digitalReadFast(ESTOP_PIN) == HIGH; }
 
 void estop_begin() {
   pinMode(ESTOP_PIN, INPUT_PULLUP);
-  delayMicroseconds(50);  // let the pull-up charge the cable before the first read
+  delayMicroseconds(50);
   g_raw = g_pressed = g_latched = read_pressed();
   g_raw_since = millis();
   g_dirty = true;
@@ -54,7 +52,6 @@ void estop_update() {
     EstopState m;
     m.active = g_latched ? 1 : 0;
     m.button_pressed = g_pressed ? 1 : 0;
-    // Retried every loop until it leaves, so a full USB buffer cannot lose a press.
     if (bridge_send(MSG_ESTOP, &m, sizeof(m))) {
       g_dirty = false;
       g_last_report_ms = now;
@@ -65,7 +62,6 @@ void estop_update() {
 void estop_handle(uint8_t msg_id, const uint8_t * /*payload*/, size_t len) {
   if (msg_id != MSG_ESTOP_RESET || len != 0) return;
   if (!g_pressed) g_latched = false;
-  // Answered either way, so a refused reset shows on the Pi at once.
   g_dirty = true;
 }
 

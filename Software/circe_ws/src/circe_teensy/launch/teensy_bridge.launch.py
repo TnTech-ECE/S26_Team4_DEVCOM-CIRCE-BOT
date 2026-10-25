@@ -1,12 +1,5 @@
 #!/usr/bin/env python3
-"""
-Teensy USB bridge on its own.
-
-    ros2 launch circe_teensy teensy_bridge.launch.py
-
-Not yet started by circe_bringup.launch.py: it joins the bringup once the link has been
-proven on the rover. Parameters are in config/teensy_bridge.yaml.
-"""
+"""Teensy USB bridge on its own (not yet part of circe_bringup)."""
 
 from pathlib import Path
 

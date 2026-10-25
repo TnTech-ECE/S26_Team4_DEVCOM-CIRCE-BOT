@@ -11,40 +11,9 @@
     ros2 run circe_nav cable_mission.py --ros-args -p auto_start:=true \\
       -p target_x:=100.0 -p target_y:=0.0
 
-*** WHY: A 100 m GOAL IS NOT PLANNABLE, AND SCALING THE GRID IS THE WRONG FIX. ***
-The global costmap is a rolling window (60 x 60 m in nav2_params.yaml), so it reaches
-+/-30 m. A goal outside it is refused before the planner searches at all:
-
-    planner_server: GridBased plugin failed to plan from (0.00, 0.00) to
-    (32.00, -14.00): "Goal Coordinates of(32.000000, -14.000000) was outside bounds"
-
-Measured: 34.93 m refused, 19.7 m fine. That is a costmap limit, not a Nav2 limit --
-a 200 x 200 m window at 0.20 m is only 1.0 MB/layer and would reach 100 m. The reason
-not to is that the A1 lidar sees 12 m, so a 100 m plan is 88% invention: a straight
-line through unobserved ground, thrown away and recomputed every second. Chunking
-plans only as far as there is evidence, which is also cheaper.
-
-*** THE TWO FRAMES ARE THE DESIGN, NOT AN IMPLEMENTATION DETAIL. ***
-Outbound legs are stamped in `odom`; the return legs in `map`:
-
-  odom  robot->goal comes from wheels + IMU via the EKF. A map->odom correction moves
-        robot and goal together, so the geometry is untouched: SLAM maps but does not
-        steer. Right for the outbound leg, where terrain is new, the scan matcher is
-        weakest, and there is no surveyed coordinate the goal could be wrong against.
-        An incoming goal in any other frame is converted to `odom` ONCE on arrival,
-        which deliberately freezes it against later SLAM corrections.
-
-  map   anchored where SLAM believes the rover was when the mission started. Right for
-        the way home, where the rover re-observes terrain it mapped on the way out --
-        SLAM's best case -- and where arriving accurately actually matters.
-
-Measured, 74.6 m out-and-back on circe_outdoor.sdf, 6 legs, 0 aborts, 0 recoveries:
-    EKF error at the turnaround   0.61 m over 36.5 m driven  (1.7%)
-    error on arriving home        0.02 m
-
-*** REQUIRES SmacPlanner2D. *** With NavFn the same mission finished 1 leg of 4 (42
-failures of "Failed to create a plan from potential"). See planner_server in
-nav2_params.yaml.
+The global costmap only reaches +/-30 m, so far goals are split into legs.
+Outbound legs are in `odom` (SLAM corrections don't move the goal); the return
+home is in `map`. Needs SmacPlanner2D (NavFn failed most legs).
 """
 
 import math
@@ -72,21 +41,14 @@ class CableMission(Node):
     def __init__(self):
         super().__init__('cable_mission')
         self.declare_parameter('goal_topic', '/mission_goal')
-        # Must stay well under the global costmap's half-width (30 m), with room for
-        # the rover being off-course and for the planner routing around obstacles
-        # rather than straight at the goal.
+        # Well under the global costmap half-width (30 m).
         self.declare_parameter('leg_max', 20.0)
-        # *** THIS IS WHAT KEEPS THE ROVER MOVING. ***
-        # The next leg is issued while the current one is still this far away, and
-        # NavigateToPose preempts. Without it the rover must satisfy the goal checker
-        # (xy_goal_tolerance 0.5 m) and then wait for this node's next tick -- up to a
-        # second of standing still every leg. Set 0.0 to require full arrival.
+        # Send the next leg this far out so the rover doesn't stop; 0 = full arrival.
         self.declare_parameter('handoff_distance', 3.0)
         self.declare_parameter('return_home', True)
         self.declare_parameter('outbound_frame', 'odom')
         self.declare_parameter('home_frame', 'map')
-        # Safe default for cable laying: pressing past a leg you could not reach means
-        # paying out cable along a route nobody chose.
+        # Don't lay cable along an unplanned route.
         self.declare_parameter('stop_on_failure', True)
         self.declare_parameter('auto_start', False)
         self.declare_parameter('target_x', 0.0)
@@ -117,22 +79,7 @@ class CableMission(Node):
         self.stop = False
         self.exit_code = 0
 
-        # *** WHETHER THIS PROCESS OUTLIVES ITS MISSION. ***
-        # auto_start:=true is the one-shot CLI form documented at the top of this file:
-        # the process was started to run ONE named mission, so it prints the report and
-        # exits with a code the caller can test. Launched with use_mission:=true it is
-        # the opposite -- an operator tool that navigation.launch.py starts alongside
-        # Nav2 and that must still be there for the NEXT goal.
-        #
-        # Without this distinction the node called _finish -> stop = True -> process
-        # exit after the first mission, in both modes. The second /mission_goal then went
-        # nowhere at all: no subscriber, so no error, no warning, and no motion -- the
-        # rover simply ignored the operator. Measured: mission 1 finished 4 of 4 legs and
-        # logged "process has finished cleanly", after which a goal published to
-        # (-14, 8) produced no response of any kind.
-        #
-        # It also made the 'finished' branch of _on_goal below unreachable, which is the
-        # tell that re-arming was always the intent for the launched case.
+        # auto_start runs one mission and exits; launched mode stays up for the next goal.
         self.one_shot = bool(g('auto_start'))
         self.create_timer(0.25, self._tick)
 
@@ -192,8 +139,7 @@ class CableMission(Node):
         if here is None:
             self.get_logger().error('no transform %s -> base_link yet' % frame)
             return
-        # Home is where the mission STARTS, not the map origin -- the rover may have
-        # been driven before this mission began.
+        # Home is where the mission starts, not the map origin.
         self.home_pose = self._here(self.home_frame)
         if self.home_pose is None and self.return_home:
             self.get_logger().error(
@@ -241,8 +187,7 @@ class CableMission(Node):
         goal = NavigateToPose.Goal()
         p = PoseStamped()
         p.header.frame_id = frame
-        # Zero stamp = latest available transform. Correct for a goal that is a fixed
-        # point in its frame rather than a timed observation.
+        # Zero stamp = latest transform.
         p.header.stamp = rclpy.time.Time().to_msg()
         p.pose.position.x, p.pose.position.y = x, y
         p.pose.orientation.w = 1.0
@@ -271,8 +216,7 @@ class CableMission(Node):
         h.get_result_async().add_done_callback(lambda f, s=seq: self._result(f, s))
 
     def _result(self, fut, seq):
-        # A leg we deliberately preempted reports CANCELED/ABORTED; that is not a
-        # failure, and its seq is stale, so drop it.
+        # Stale seq = a leg we preempted; not a failure.
         if seq != self.seq:
             return
         try:
@@ -343,12 +287,7 @@ class CableMission(Node):
         self.phase = 'finished'
         self.exit_code = code
 
-        # Exit only in one-shot mode, or when the mission actually failed -- a failure
-        # should still surface as a non-zero exit so a supervisor sees it. On a clean
-        # finish in launched mode, fall back to waiting for the next goal: _on_goal
-        # accepts one in phase 'finished', and the rover keeps its map, its Nav2
-        # servers and its place in the world instead of needing the whole navigation
-        # stack restarted between deployments.
+        # Exit on one-shot or failure; otherwise wait for the next goal.
         if self.one_shot or code != 0:
             self.stop = True
         else:

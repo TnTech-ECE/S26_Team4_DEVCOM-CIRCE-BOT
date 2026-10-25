@@ -1,39 +1,20 @@
-# RPLidar A1 (A1M8) -- driver: sllidar_ros2 / sllidar_node
-#
-# Split out of roverrobotics_driver/config/accessories.yaml. The upstream `active:`
-# flag is gone: sensors are now toggled with the `use_lidar` launch argument on
-# circe_bringup/launch/sensors.launch.py, not by editing this file.
-#
-# The top-level key is the `/**` wildcard on purpose. Keying on a node name is the
-# classic way to lose an entire params file silently -- rename the node (or add a
-# namespace) and every value below reverts to the driver's own defaults with no error.
-# The driver's defaults are actively wrong for an A1 (serial_baudrate 1000000,
-# frame_id "laser_frame"), so that failure is expensive. This file is only ever passed
-# to the lidar node, so the wildcard costs nothing.
+# RPLidar A1 (sllidar_node). Keyed on /** so a node rename can't silently drop it.
 
 /**:
   ros__parameters:
     channel_type: "serial"
 
-    # Created by udev/60-rplidar.rules (CP2102 bridge, 10c4:ea60).
-    # Without that rule this path does not exist and the node exits.
+    # From udev/60-rplidar.rules.
     serial_port: "/dev/rplidar"
 
-    # *** 115200. *** The A1 runs at 115200 baud; 1000000 is the S2/S3 rate and is
-    # also what sllidar_node defaults to. Wrong baud = "failed to connect", and it is
-    # the first thing to check if the lidar will not come up.
-    serial_baudrate: 115200
+    serial_baudrate: 115200  # A1 rate (driver default 1000000 is wrong)
 
-    # Must match the lidar_link defined in
-    # circe_description/urdf/accessories/rplidar_a1.urdf.xacro. If these disagree,
-    # /scan arrives in a frame with no transform and Nav2/slam_toolbox drop it.
+    # Must match lidar_link in rplidar_a1.urdf.xacro.
     frame_id: "lidar_link"
 
     inverted: false
     angle_compensate: true
 
-    # A1 supports Standard (4 kHz) and Sensitivity/Boost (8 kHz).
-    # Standard is the safest starting point; switch to Sensitivity for denser scans.
-    # If the node rejects this string, try "Sensitivity" or "Boost".
+    # Standard (4 kHz) or Sensitivity/Boost (8 kHz).
     scan_mode: "Standard"
     scan_frequency: 10.0

@@ -1,38 +1,8 @@
 #!/usr/bin/env python3
-"""Rover Zero 4WD base: motor driver + robot_state_publisher.
+"""Rover Zero 4WD base: robot_state_publisher, joint_state_publisher, motor driver.
 
-Ported from roverrobotics_driver/launch/zero.launch.py, with two deliberate changes:
-
-  * the robot model comes from circe_description, not roverrobotics_description
-  * accessories.launch.py is NOT included here
-
-Upstream, zero.launch.py pulled the sensors in as a side effect, so you could not
-start the base without also starting the lidar and camera. That makes the bottom-up
-bring-up in the checklist impossible. Sensors now live in sensors.launch.py and both
-are composed by circe_bringup.launch.py.
-
-    ros2 launch circe_bringup rover.launch.py
-
-Publishes: /odometry/wheels, /joint_states, /tf (base_link and below), /robot_description
-Subscribes: /cmd_vel
-Does NOT publish odom -> base_link -- that edge belongs to the EKF in circe_nav.
-
-*** THE THREE NODES START IN ORDER, EACH AFTER THE LAST IS OBSERVED WORKING. ***
-Sequenced with scripts/wait_for.py, the same mechanism circe_bringup.launch.py uses
-between layers, for one reason: FAILURE ISOLATION. Started together, these three
-interleave their output and a broken base looks like one wall of log. Started in order,
-the last line before the silence names the fault:
-
-    robot_state_publisher   xacro built and the model is being published
-    joint_state_publisher   /joint_states is flowing, so the wheels can render
-                            (it takes the URDF from robot_state_publisher's latched
-                            /robot_description, so it genuinely wants RSP up first)
-    roverrobotics_driver    /dev/rover-control is open and odometry is arriving
-
-The driver goes last although it depends on neither of the others. It is the node that
-actually fails on hardware -- power, USB enumeration, udev, a port held by a stale
-process -- and putting it after the two that always work means the console ends on the
-thing worth reading.
+Nodes start in order, each gated by wait_for.py, so the log ends at the failing one.
+Publishes /odometry/wheels, /joint_states, /tf; subscribes /cmd_vel. The EKF owns odom -> base_link.
 """
 
 from pathlib import Path
@@ -49,10 +19,7 @@ from launch_ros.parameter_descriptions import ParameterValue
 
 
 def _gate(label, timeout, checks, hint='', required='true'):
-    """Block until `checks` pass, then exit. See scripts/wait_for.py for the details.
-
-    `required` is strict_order, already resolved -- see _launch_setup for why.
-    """
+    """Node that blocks until `checks` pass, then exits (scripts/wait_for.py)."""
     arguments = ['--label', label,
                  '--timeout', str(float(timeout)),
                  '--required', required]
@@ -66,7 +33,7 @@ def _gate(label, timeout, checks, hint='', required='true'):
 
 
 def _then(gate, label, next_label, *actions):
-    """Start `actions` once `gate` exits successfully; say why if it did not."""
+    """Start `actions` once `gate` exits successfully."""
     def _on_exit(event, context):
         if event.returncode == 0:
             return list(actions)
@@ -77,27 +44,16 @@ def _then(gate, label, next_label, *actions):
 
 
 def _launch_setup(context):
-    """Build the base chain with strict_order already RESOLVED to a literal.
-
-    The joint_states gate is created by an OnProcessExit handler, after
-    circe_bringup.launch.py's scoped include of this file has been popped, so a
-    LaunchConfiguration('strict_order') evaluated there reads the includer's value --
-    or kills the launch if the includer has none. The long version, reproduced, is in
-    sensors.launch.py's _launch_setup.
-    """
+    """Build the base chain with strict_order resolved (see sensors.launch.py)."""
     strict_order = LaunchConfiguration('strict_order').perform(context)
 
     hardware_config = Path(
         get_package_share_directory('circe_bringup'), 'config', 'rover_zero_4wd.yaml')
-    # Fail at launch with a clear message rather than letting the driver come up with
-    # robot_type "NONE" and device_port "NONE" and report a confusing serial error.
     assert hardware_config.is_file(), f'missing rover config: {hardware_config}'
 
     robot_description = ParameterValue(
         Command(['xacro ', LaunchConfiguration('model')]), value_type=str)
 
-    # Publishes base_link -> chassis_link -> {wheels, imu_link, lidar_link,
-    # sensor_shelf_link -> camera_bottom_screw_frame -> camera_link}.
     robot_state_publisher = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
@@ -105,20 +61,14 @@ def _launch_setup(context):
         output='screen',
     )
 
-    # base_link -> lidar_link is a FIXED joint, so robot_state_publisher puts it on
-    # /tf_static as soon as the xacro is parsed -- before and independently of any
-    # joint state. That makes it the cleanest possible "the model built" signal: it
-    # cannot be satisfied by a half-started node and it does not depend on the
-    # joint_state_publisher that has not started yet.
+    # Fixed joint on /tf_static: proves the xacro built.
     gate_model = _gate('robot_model', 30, hint=(
         'robot_state_publisher published no TF, which nearly always means the xacro '
         'failed to expand. Run `xacro $(ros2 pkg prefix circe_description)/share/'
         'circe_description/urdf/circe_rover.urdf.xacro` and read the error directly.'),
         checks=[['--tf', 'true', 'base_link', 'lidar_link']], required=strict_order)
 
-    # The wheel joints are `continuous` in the URDF and the driver publishes no
-    # /joint_states, so without this robot_state_publisher warns about missing
-    # joint states and the wheels never render.
+    # Wheel joints are continuous and the driver publishes no /joint_states.
     joint_state_publisher = Node(
         package='joint_state_publisher',
         executable='joint_state_publisher',
@@ -131,9 +81,7 @@ def _launch_setup(context):
         'the node waits forever without erroring.'),
         checks=[['--topic', 'true', '/joint_states']], required=strict_order)
 
-    # respawn: the serial link to the motor controller drops if the rover is
-    # power-cycled or the USB re-enumerates. Upstream respawns, and so do we --
-    # without it a brownout ends the drive session.
+    # respawn: survives rover power-cycles / USB re-enumeration.
     driver = Node(
         package='roverrobotics_driver',
         name='roverrobotics_driver',

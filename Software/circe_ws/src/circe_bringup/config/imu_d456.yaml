@@ -1,126 +1,38 @@
-# D456 internal IMU -- node: circe_perception / imu_fusion.py
-#
-# The alternative to config/bno055.yaml, and the one that is actually fitted: the
-# D456 carries a 6-axis MEMS IMU that comes free with the camera CIRCE already runs.
-# Selected with `imu_source:=d456` on sensors.launch.py (the default).
-#
-# *** THE CAMERA'S IMU TOPIC IS NOT A DROP-IN FOR /imu/data. ***
-# realsense2_camera publishes /camera/camera/imu with
-#
-#     orientation = (0, 0, 0, 0),  orientation_covariance[0] = -1
-#
-# because the part has no magnetometer and no on-chip fusion. `unite_imu_method: 2`
-# in realsense_d456.yaml merges the gyro and accel STREAMS onto one topic; it does
-# not produce an attitude. Pointing a consumer that reads msg.orientation at that
-# topic does not fail -- it silently reports a permanently level robot:
-#
-#     scan_pitch_filter.py  on_imu()   -> roll 0.00, pitch 0.00, every message
-#     terrain_node.py       _on_imu()  -> same
-#
-# and scan_pitch_filter's imu_timeout backstop does NOT catch it, because messages
-# are arriving. That is the ramp failure both nodes exist to prevent, reinstated
-# invisibly. imu_fusion.py sits in between and produces the missing attitude.
-#
-# The second reason it cannot be a remap: the camera reports in
-# camera_imu_optical_frame (X right, Y down, Z forward). Body yaw rate is that
-# frame's -gy, not gz. robot_localization would rotate it via TF for itself, but the
-# two perception nodes read the quaternion directly and cannot.
-#
-# What this file tunes is the complementary filter that fuses the gyro against the
-# accelerometer's gravity vector. Read imu_fusion.py's docstring before changing any
-# of it -- every value below has a failure mode attached.
+# D456 internal IMU -> /imu/data via circe_perception/imu_fusion.py (default imu_source).
+# The camera's raw IMU has no orientation; imu_fusion adds roll/pitch in base_link.
 
 /**:
   ros__parameters:
 
-    # Everything is rotated into this frame before filtering, so the published
-    # quaternion's roll and pitch ARE the body's, which is what makes this a drop-in
-    # replacement for the BNO055 on /imu/data.
     target_frame: base_link
 
-    # ---- complementary filter ------------------------------------------------
-    #
-    # Time constant in seconds: how long gyro drift is allowed to accumulate before
-    # gravity pulls it back. This is the one real tuning knob.
-    #   larger  -> smoother, ignores bumps, drifts back slowly
-    #   smaller -> tracks gravity fast, but braking and washboard read as attitude
-    # 1.0 s is deliberately long. On Tennessee terrain the ACCELEROMETER is the noisy
-    # input; the gyro is quiet over a second.
+    # Complementary filter time constant (s): larger = smoother, slower to correct.
     tau: 1.0
 
-    # Ignore the accelerometer entirely whenever |a| is this far from 9.80665. A
-    # rover that is accelerating, braking or landing off a kerb is not measuring
-    # gravity, and folding those samples in tilts the estimate toward the direction
-    # of travel. On rejection the filter coasts on the gyro, which is what a gyro is
-    # for over short intervals. Widen it and hard braking will read as a nose-down
-    # pitch; narrow it too far and the filter rarely corrects at all.
+    # Skip accel samples this far from g (rover accelerating, not measuring gravity).
     accel_gate: 1.5          # m/s^2
 
-    # ---- gyro bias -----------------------------------------------------------
-    #
-    # *** NOT A REFINEMENT. THIS IS WHERE HEADING COMES FROM. ***
-    # circe_nav/config/localization_ekf.yaml takes vx/vy from the wheels and ONLY
-    # yaw rate from the IMU, so the EKF's heading is a pure integral of gyro z.
-    # An uncorrected zero-rate offset is therefore heading drift at exactly that
-    # rate. Measured in the filter's own test harness with a 1.003 deg/s offset:
-    #
-    #     bias learning off : 60.2  deg of heading drift after 60 s
-    #     bias learning on  :  0.08 deg
+    # Gyro bias learning while still; EKF heading depends on it.
     learn_gyro_bias: true
 
-    # *** MUST BE LOOSER THAN THE BIAS IT IS LOOKING FOR. ***
-    # The stillness test gates on |w - bias|, and before anything has been learned
-    # that quantity IS the bias. At 0.02 rad/s a part with an ordinary 1 deg/s
-    # (0.0175 rad/s) offset sits on the limit, noise pushes it over every few
-    # samples, the dwell timer resets forever and the bias is never learned --
-    # measured, the residual stayed at the full 1.003 deg/s indefinitely.
-    # 0.06 rad/s = 3.4 deg/s admits an uncalibrated part while excluding any
-    # commanded rotation (Nav2 samples wz over +/-2.0 rad/s).
+    # Must be looser than the bias being learned.
     bias_gyro_thresh: 0.06   # rad/s
     bias_accel_thresh: 0.30  # m/s^2 away from g
 
-    # Wheel odometry is what makes the loose threshold above safe. A gentle Nav2
-    # path-following turn can sit under 3.4 deg/s for seconds, and without this gate
-    # the node would absorb that real rotation into the bias and then subtract it.
-    # This is the EKF's own odom0, so it is always present on hardware; if it goes
-    # silent the node warns once and falls back to the IMU-only test.
+    # Wheel odometry confirms the rover is actually still.
     odom_topic: /odometry/wheels
     bias_odom_lin: 0.01      # m/s
     bias_odom_ang: 0.01      # rad/s
     odom_timeout: 0.5        # s
 
-    # Seconds of continuous stillness required before any sample is believed, so a
-    # momentary lull mid-manoeuvre cannot contribute.
+    # Stillness required before learning (s).
     bias_dwell: 1.0
 
-    # Long-run tracking constant, for temperature drift over a mission. The first
-    # samples use a 1/n running mean instead, so the initial estimate converges in
-    # about a second rather than a minute -- see imu_fusion.py.
+    # Long-run bias tracking for temperature drift (s).
     bias_tau: 60.0
 
-    # ---- integration guard ---------------------------------------------------
-    #
-    # A gap longer than this means dropped frames or a stalled camera. Integrating
-    # across it would smear a large rotation into one step, so the filter re-seeds
-    # from gravity instead.
+    # Re-seed from gravity after a gap longer than this.
     max_dt: 0.1              # s
 
-    # 0 = publish on every input message (~200 Hz, set by gyro_fps in
-    # realsense_d456.yaml). The EKF runs at 30 Hz and its imu0_queue_size is 12, so
-    # 200 Hz is already more than it consumes -- it costs nothing that matters, since
-    # neither the EKF nor the two perception consumers run anywhere near that fast.
-    #
-    # Set to the 100.0 this comment has recommended all along. The cost of 0.0 is not
-    # bandwidth -- a united IMU sample is ~100 bytes, so 200 Hz is ~20 KB/s and
-    # invisible next to the 3 MB/s depth stream. The cost is that imu_fusion.py is a
-    # PYTHON node on a single-threaded executor: at 0.0 it wakes, runs the
-    # complementary filter and publishes 200 times a second on one Pi 5 core. When
-    # that core saturates the callback falls behind, the BEST_EFFORT inbound queue
-    # (qos_profile_sensor_data, depth 5) overflows, and the resulting IMU gaps look
-    # exactly like a DDS fault while being pure CPU starvation.
-    #
-    # 100.0 halves that work and still leaves >3x headroom over the EKF's 30 Hz.
-    # Do not drop below ~60: heading here is a PURE INTEGRAL of gyro z (see the bias
-    # section above), robot_localization integrates every queued sample rather than
-    # only the newest, and thinning the stream thins that integral.
+    # 0 = every input (~200 Hz). Keep >= ~60 Hz for EKF heading integration.
     publish_rate_limit: 100.0  # Hz
