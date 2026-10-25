@@ -14,28 +14,43 @@ constexpr uint32_t SILENT_REPORT_MS = 1000;
 constexpr uint32_t BYTE_GAP_MS = 100;     // a frame that stalls this long is abandoned
 // 223 fixed bytes of data + 3 per cell, plus header and trailer, for 24 cells.
 constexpr size_t MAX_RESPONSE = 400;
-
-HardwareSerialIMXRT &g_port = Serial1;  // the Teensy 4 class: has addMemoryForRead()
-
 // The whole response lands in ~25 ms at 115200; the core's 64-byte buffer would
 // overflow if loop() is busy for more than ~5 ms of it.
-uint8_t g_rx_extra[512];
+constexpr size_t RX_EXTRA = 512;
 
-// "Read all data" (command 0x06, source 0x02), checksum 0x0128.
-const uint8_t READ_ALL[] = {0x4E, 0x57, 0x00, 0x13, 0x00, 0x00, 0x00, 0x00, 0x06, 0x02, 0x00,
-                            0x00, 0x00, 0x00, 0x00, 0x00, 0x68, 0x00, 0x00, 0x01, 0x28};
+// "Read all data" (command 0x06, source 0x03), checksum 0x0129. Source 0x03 is "PC",
+// the frame chrissank/JKBMSInterface reads a JK-BD4A8S4P's GPS port with.
+const uint8_t READ_ALL[] = {0x4E, 0x57, 0x00, 0x13, 0x00, 0x00, 0x00, 0x00, 0x06, 0x03, 0x00,
+                            0x00, 0x00, 0x00, 0x00, 0x00, 0x68, 0x00, 0x00, 0x01, 0x29};
 
-uint8_t g_buf[MAX_RESPONSE];
-size_t g_pos = 0;
-size_t g_frame_len = 0;  // total bytes, known once the length field is in
-uint32_t g_last_byte_ms = 0;
+struct Bms {
+  HardwareSerialIMXRT *port;  // the Teensy 4 class: has addMemoryForRead()
+  uint8_t id;
 
-uint32_t g_last_poll_ms = 0;
-uint32_t g_last_ok_ms = 0;
-uint32_t g_last_sent_ms = 0;
+  uint8_t rx_extra[RX_EXTRA];
 
-BmsStatus g_status = {};
-BmsCells g_cells = {};
+  // Frame assembly.
+  uint8_t buf[MAX_RESPONSE];
+  size_t pos;
+  size_t frame_len;  // total bytes, known once the length field is in
+  uint32_t last_byte_ms;
+
+  // Polling and reporting.
+  uint32_t last_poll_ms;
+  uint32_t last_ok_ms;
+  uint32_t last_sent_ms;
+  BmsStatus status;
+  BmsCells cells;
+};
+
+// Teensy RX <- BMS TX, Teensy TX -> BMS RX:
+//   bms 0  Serial1  RX1 pin 0, TX1 pin 1
+//   bms 1  Serial2  RX2 pin 7, TX2 pin 8
+// The id is BmsStatus.bms_id, the index into battery_topics on the Pi.
+Bms g_bms[] = {
+  {&Serial1, 0},
+  {&Serial2, 1},
+};
 
 uint16_t be16(const uint8_t *p) { return (static_cast<uint16_t>(p[0]) << 8) | p[1]; }
 uint32_t be32(const uint8_t *p) {
@@ -70,16 +85,17 @@ int field_len(uint8_t id) {
   }
 }
 
-void report(uint32_t now) {
-  if (g_status.status == BMS_OK) bridge_send(MSG_BMS_CELLS, &g_cells, sizeof(g_cells));
-  bridge_send(MSG_BMS_STATUS, &g_status, sizeof(g_status));
-  g_last_sent_ms = now;
+void report(Bms &b, uint32_t now) {
+  if (b.status.status == BMS_OK) bridge_send(MSG_BMS_CELLS, &b.cells, sizeof(b.cells));
+  bridge_send(MSG_BMS_STATUS, &b.status, sizeof(b.status));
+  b.last_sent_ms = now;
 }
 
 // Walks the TLV data. Returns false if the fields every report needs are missing.
-bool parse_data(const uint8_t *d, size_t n) {
-  BmsStatus s = g_status;
+bool parse_data(Bms &b, const uint8_t *d, size_t n) {
+  BmsStatus s = b.status;
   BmsCells cells = {};
+  cells.bms_id = b.id;
   uint16_t raw_current = 0;
   uint8_t version = 0x01;  // newest layout, assumed if 0xC0 is never reached
   bool have_cells = false, have_voltage = false, have_current = false, have_soc = false;
@@ -134,75 +150,80 @@ bool parse_data(const uint8_t *d, size_t n) {
   s.protocol_version = version;
   if (s.cell_count == 0) s.cell_count = cells.count;
   s.status = BMS_OK;
-  g_status = s;
-  g_cells = cells;
+  b.status = s;
+  b.cells = cells;
   return true;
 }
 
-void handle_frame(uint32_t now) {
-  size_t len = g_frame_len - 2;  // the length field's value
+void handle_frame(Bms &b, uint32_t now) {
+  size_t len = b.frame_len - 2;  // the length field's value
   uint16_t sum = 0;
-  for (size_t i = 0; i < len; i++) sum += g_buf[i];
+  for (size_t i = 0; i < len; i++) sum += b.buf[i];
   // Data runs from byte 11 to just before record(4) + 0x68 + checksum(4). esphome's
   // slice also takes the record number; walked as TLV, its bytes would read as IDs.
-  if (sum != be16(g_buf + len) || g_buf[8] != 0x06 || len < 18 ||
-      !parse_data(g_buf + 11, len - 18)) {
-    g_status.bad_frames++;
+  if (sum != be16(b.buf + len) || b.buf[8] != 0x06 || len < 18 ||
+      !parse_data(b, b.buf + 11, len - 18)) {
+    b.status.bad_frames++;
     return;
   }
-  g_last_ok_ms = now;
-  report(now);
+  b.last_ok_ms = now;
+  report(b, now);
 }
 
-void feed(uint8_t b, uint32_t now) {
-  if (g_pos > 0 && now - g_last_byte_ms > BYTE_GAP_MS) g_pos = 0;
-  g_last_byte_ms = now;
+void feed(Bms &b, uint8_t c, uint32_t now) {
+  if (b.pos > 0 && now - b.last_byte_ms > BYTE_GAP_MS) b.pos = 0;
+  b.last_byte_ms = now;
 
-  if (g_pos == 0 && b != 0x4E) return;  // hunting for the header
-  if (g_pos == 1 && b != 0x57) {
-    g_pos = (b == 0x4E) ? 1 : 0;  // 4E 4E 57: the second 4E may be the real start
+  if (b.pos == 0 && c != 0x4E) return;  // hunting for the header
+  if (b.pos == 1 && c != 0x57) {
+    b.pos = (c == 0x4E) ? 1 : 0;  // 4E 4E 57: the second 4E may be the real start
     return;
   }
-  g_buf[g_pos++] = b;
-  if (g_pos == 4) {
-    g_frame_len = be16(g_buf + 2) + 2;
-    if (g_frame_len < 20 || g_frame_len > MAX_RESPONSE) {
-      g_status.bad_frames++;
-      g_pos = 0;
+  b.buf[b.pos++] = c;
+  if (b.pos == 4) {
+    b.frame_len = be16(b.buf + 2) + 2;
+    if (b.frame_len < 20 || b.frame_len > MAX_RESPONSE) {
+      b.status.bad_frames++;
+      b.pos = 0;
     }
     return;
   }
-  if (g_pos > 4 && g_pos == g_frame_len) {
-    handle_frame(now);
-    g_pos = 0;
+  if (b.pos > 4 && b.pos == b.frame_len) {
+    handle_frame(b, now);
+    b.pos = 0;
   }
 }
 
 }  // namespace
 
 void bms_begin() {
-  g_port.addMemoryForRead(g_rx_extra, sizeof(g_rx_extra));
-  g_port.begin(BMS_BAUD);
   uint32_t now = millis();
-  g_last_ok_ms = now;
-  g_last_sent_ms = now;
-  g_last_poll_ms = now - POLL_MS;  // first poll on the first update
-  g_status.status = BMS_NO_DATA;
+  for (Bms &b : g_bms) {
+    b.port->addMemoryForRead(b.rx_extra, sizeof(b.rx_extra));
+    b.port->begin(BMS_BAUD);
+    b.last_ok_ms = now;
+    b.last_sent_ms = now;
+    b.last_poll_ms = now - POLL_MS;  // first poll on the first update
+    b.status.bms_id = b.id;
+    b.status.status = BMS_NO_DATA;
+  }
 }
 
 void bms_update() {
   uint32_t now = millis();
-  while (g_port.available() > 0) feed(g_port.read(), now);
+  for (Bms &b : g_bms) {
+    while (b.port->available() > 0) feed(b, b.port->read(), now);
 
-  if (now - g_last_poll_ms >= POLL_MS) {
-    g_last_poll_ms = now;
-    // 21 bytes fit the core's TX buffer, so this returns at once.
-    g_port.write(READ_ALL, sizeof(READ_ALL));
-  }
+    if (now - b.last_poll_ms >= POLL_MS) {
+      b.last_poll_ms = now;
+      // 21 bytes fit the core's TX buffer, so this returns at once.
+      b.port->write(READ_ALL, sizeof(READ_ALL));
+    }
 
-  // A dead or unwired BMS sends nothing, so silence is reported explicitly.
-  if (now - g_last_ok_ms >= NO_DATA_MS && now - g_last_sent_ms >= SILENT_REPORT_MS) {
-    g_status.status = BMS_NO_DATA;
-    report(now);
+    // A dead or unwired BMS sends nothing, so silence is reported explicitly.
+    if (now - b.last_ok_ms >= NO_DATA_MS && now - b.last_sent_ms >= SILENT_REPORT_MS) {
+      b.status.status = BMS_NO_DATA;
+      report(b, now);
+    }
   }
 }

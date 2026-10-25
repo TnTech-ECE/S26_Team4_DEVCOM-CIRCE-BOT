@@ -12,7 +12,7 @@ Frames from the Teensy become ROS topics, and ROS topics become frames to the Te
                     ESTOP             -> /teensy/estop (std_msgs/Bool, latched), and
                                          estop_trigger_topic while latched
                     SPOOL_STATUS      -> log file only, until the motor exists
-                    BMS_CELLS+STATUS  -> battery_topic (sensor_msgs/BatteryState), log
+                    BMS_CELLS+STATUS  -> battery_topics[id] (sensor_msgs/BatteryState), log
     Pi -> Teensy    /spool/cmd        (std_msgs/Bool)      -> SPOOL_CMD
                     odom_topic        (nav_msgs/Odometry)  -> ODOM_SPEED
                     estop_reset_topic (std_msgs/Bool)      -> ESTOP_RESET
@@ -94,14 +94,14 @@ INCOMING = {
         'SPOOL_STATUS', '<fffB',
         ('cable_on_m', 'radius_m', 'target_rad_s', 'flags')),
     MSG_BMS_STATUS: (
-        'BMS_STATUS', '<HhHHHHHbbbBBBBB',
-        ('voltage_cv', 'current_ca', 'alarms', 'mode', 'cycles', 'capacity_ah',
+        'BMS_STATUS', '<BHhHHHHHbbbBBBBB',
+        ('bms_id', 'voltage_cv', 'current_ca', 'alarms', 'mode', 'cycles', 'capacity_ah',
          'bad_frames', 'temp_mos_c', 'temp_1_c', 'temp_2_c', 'soc_pct', 'cell_count',
          'battery_type', 'protocol_version', 'status')),
     # The fixed array is folded into one 'cell_mv' list of length count on receipt.
     MSG_BMS_CELLS: (
-        'BMS_CELLS', f'<B{BMS_MAX_CELLS}H',
-        ('count',) + tuple(f'_cell{i}' for i in range(BMS_MAX_CELLS))),
+        'BMS_CELLS', f'<BB{BMS_MAX_CELLS}H',
+        ('bms_id', 'count') + tuple(f'_cell{i}' for i in range(BMS_MAX_CELLS))),
 }
 
 # Fields logged by name rather than number. Mirrors UltrasonicStatus in protocol.h.
@@ -240,7 +240,9 @@ class TeensyBridge(Node):
         self._us_fov = self.declare_parameter('ultrasonic_fov_rad', 1.047).value
         if len(us_topics) != len(self._us_frames):
             raise ValueError('ultrasonic_topics and ultrasonic_frames differ in length')
-        battery_topic = self.declare_parameter('battery_topic', '/battery/state').value
+        # Index = the bms_id the Teensy sends (its table in src/bms.cpp).
+        battery_topics = self.declare_parameter(
+            'battery_topics', ['/battery/bms_0', '/battery/bms_1']).value
         self._battery_frame = self.declare_parameter('battery_frame', 'base_link').value
         estop_trigger_topic = self.declare_parameter(
             'estop_trigger_topic', '/soft_estop/trigger').value
@@ -268,8 +270,8 @@ class TeensyBridge(Node):
         self._last_teensy_hb = None  # monotonic time of the last TEENSY_HEARTBEAT
         self._estop_active = None
         self._last_estop_trigger = 0.0
-        self._bms_cells = []
-        self._bms_alarms = 0
+        self._bms_cells = [[] for _ in battery_topics]
+        self._bms_alarms = [0 for _ in battery_topics]
 
         latched = QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL)
         self._pub_connected = self.create_publisher(Bool, '/teensy/connected', latched)
@@ -278,7 +280,8 @@ class TeensyBridge(Node):
         self._pub_us = [self.create_publisher(Range, t, 10) for t in us_topics]
         self._pub_estop = self.create_publisher(Bool, '/teensy/estop', latched)
         self._pub_estop_trigger = self.create_publisher(Bool, estop_trigger_topic, 10)
-        self._pub_battery = self.create_publisher(BatteryState, battery_topic, 10)
+        self._pub_battery = [self.create_publisher(BatteryState, t, 10)
+                             for t in battery_topics]
         self._set_connected(False)
 
         self.create_subscription(Bool, '/spool/cmd', self._on_spool_cmd, 10)
@@ -395,8 +398,8 @@ class TeensyBridge(Node):
             return
         raw = struct.unpack(fmt, payload)
         if msg_id == MSG_BMS_CELLS:
-            count = min(raw[0], BMS_MAX_CELLS)
-            values = {'count': count, 'cell_mv': list(raw[1:1 + count])}
+            count = min(raw[1], BMS_MAX_CELLS)
+            values = {'bms_id': raw[0], 'count': count, 'cell_mv': list(raw[2:2 + count])}
         else:
             values = dict(zip(fields, raw))
         text = ' '.join(f'{k}={self._format(name, k, v)}' for k, v in values.items())
@@ -413,9 +416,11 @@ class TeensyBridge(Node):
         elif msg_id == MSG_ESTOP:
             self._handle_estop(values)
         elif msg_id == MSG_BMS_CELLS:
-            self._bms_cells = values['cell_mv']
+            if self._check_bms_id(values['bms_id']):
+                self._bms_cells[values['bms_id']] = values['cell_mv']
         elif msg_id == MSG_BMS_STATUS:
-            self._publish_battery(values)
+            if self._check_bms_id(values['bms_id']):
+                self._publish_battery(values)
 
     def _handle_estop(self, v):
         active = bool(v['active'])
@@ -435,7 +440,16 @@ class TeensyBridge(Node):
             self._last_estop_trigger = now
         self._estop_active = active
 
+    def _check_bms_id(self, bid):
+        if bid < len(self._pub_battery):
+            return True
+        self.get_logger().warning(
+            f'BMS frame from bms_id {bid}, but battery_topics has only '
+            f'{len(self._pub_battery)} entries', throttle_duration_sec=10.0)
+        return False
+
     def _publish_battery(self, v):
+        bid = v['bms_id']
         msg = BatteryState()
         msg.header.stamp = self.get_clock().now().to_msg()
         msg.header.frame_id = self._battery_frame
@@ -445,15 +459,15 @@ class TeensyBridge(Node):
             msg.present = False
             msg.voltage = msg.current = msg.temperature = msg.percentage = nan
             msg.design_capacity = nan
-            self._pub_battery.publish(msg)
+            self._pub_battery[bid].publish(msg)
             return
 
         alarms = v['alarms']
-        if alarms != self._bms_alarms:
+        if alarms != self._bms_alarms[bid]:
             names = bit_names(alarms, BMS_ALARMS)
             self.get_logger().warning(
-                f'BMS alarms: {", ".join(names) or "cleared"}')
-            self._bms_alarms = alarms
+                f'BMS {bid} alarms: {", ".join(names) or "cleared"}')
+            self._bms_alarms[bid] = alarms
 
         msg.present = True
         msg.voltage = v['voltage_cv'] / 100.0
@@ -481,8 +495,8 @@ class TeensyBridge(Node):
                 if set_alarms & bits:
                     msg.power_supply_health = health
                     break
-        msg.cell_voltage = [mv / 1000.0 for mv in self._bms_cells]
-        self._pub_battery.publish(msg)
+        msg.cell_voltage = [mv / 1000.0 for mv in self._bms_cells[bid]]
+        self._pub_battery[bid].publish(msg)
 
     def _publish_ultrasonic(self, v):
         sid = v['sensor_id']

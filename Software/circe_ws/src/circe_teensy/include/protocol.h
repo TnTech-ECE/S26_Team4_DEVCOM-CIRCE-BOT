@@ -78,14 +78,15 @@ struct SpoolStatus {
   uint8_t flags;       // SpoolFlags
 };
 
-// JK BMS, one per poll (1 Hz), or every 1 s while the BMS is silent. Raw JK units, so
-// the Teensy does no float maths and the Pi owns the conversion.
+// JK BMS, per BMS: one per poll (1 Hz), or every 1 s while that BMS is silent. Raw JK
+// units, so the Teensy does no float maths and the Pi owns the conversion.
 enum BmsStatusCode : uint8_t {
   BMS_OK = 0,
   BMS_NO_DATA = 1,  // no valid response for 3 s; every other field is the last good one
 };
 
 struct BmsStatus {
+  uint8_t bms_id;          // the table in src/bms.cpp; index into battery_topics on the Pi
   uint16_t voltage_cv;     // pack, 0.01 V
   int16_t current_ca;      // 0.01 A, positive = charging
   uint16_t alarms;         // JK field 0x8B bitmask, names in scripts/teensy_bridge.py
@@ -103,9 +104,11 @@ struct BmsStatus {
   uint8_t status;          // BmsStatusCode
 };
 
-// Sent just before each BMS_OK status, so the Pi pairs it with the status that follows.
+// Sent just before each BMS_OK status, so the Pi pairs it with the status that follows
+// from the same bms_id.
 constexpr size_t BMS_MAX_CELLS = 24;
 struct BmsCells {
+  uint8_t bms_id;
   uint8_t count;
   uint16_t cell_mv[BMS_MAX_CELLS];  // only the first `count` are meaningful
 };
@@ -165,8 +168,8 @@ static_assert(sizeof(UltrasonicReading) == 6, "UltrasonicReading: '<BBHH'");
 static_assert(sizeof(GpsFix) == 33, "GpsFix: '<iiffffIHBBB'");
 static_assert(sizeof(EstopState) == 2, "EstopState: '<BB'");
 static_assert(sizeof(SpoolStatus) == 13, "SpoolStatus: '<fffB'");
-static_assert(sizeof(BmsStatus) == 22, "BmsStatus: '<HhHHHHHbbbBBBBB'");
-static_assert(sizeof(BmsCells) == 49, "BmsCells: '<B24H'");
+static_assert(sizeof(BmsStatus) == 23, "BmsStatus: '<BHhHHHHHbbbBBBBB'");
+static_assert(sizeof(BmsCells) == 50, "BmsCells: '<BB24H'");
 static_assert(sizeof(PiHeartbeat) == 4, "PiHeartbeat: '<I'");
 static_assert(sizeof(SpoolCmd) == 1, "SpoolCmd: '<B'");
 static_assert(sizeof(OdomSpeed) == 4, "OdomSpeed: '<f'");

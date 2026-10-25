@@ -30,9 +30,11 @@
     estop_trigger_topic: /soft_estop/trigger
     estop_reset_topic: /soft_estop/reset
 
-    # JK BMS, as sensor_msgs/BatteryState. temperature is the hotter of the BMS's two
-    # probes; the MOSFET temperature is only in the log.
-    battery_topic: /battery/state
+    # JK BMSs, as sensor_msgs/BatteryState. One topic per BMS, indexed by the bms_id in
+    # the table at the top of src/bms.cpp (0 = Serial1 pins 0/1, 1 = Serial2 pins 7/8).
+    # temperature is the hotter of the BMS's two probes; the MOSFET temperature is only
+    # in the log.
+    battery_topics: ['/battery/bms_0', '/battery/bms_1']
     battery_frame: base_link
 
     # /gps/fix header.frame_id. navsat_transform_node looks up base_link -> this frame to

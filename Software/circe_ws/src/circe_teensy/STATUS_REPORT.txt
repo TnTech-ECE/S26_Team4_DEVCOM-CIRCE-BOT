@@ -1,7 +1,121 @@
 CIRCE TEENSY I/O BOARD - STATUS REPORT
-Date: 2026-10-23
+Written: 2026-10-23    Last updated: 2026-10-24 21:05 CDT (see section 0)
 Scope: Teensy 4.0 firmware + Pi bridge node (circe_teensy package).
-       The JK BMS is excluded from this report and tracked separately.
+       The JK BMS is excluded from the percentages and tracked separately, but BMS
+       changes still change the Teensy <-> Pi message format, so they are logged here.
+Location: team repo TnTech-ECE/S26_Team4_DEVCOM-CIRCE-BOT, Software/circe_ws/src/circe_teensy.
+       /home/devcom/circe_ws on the Pi is a symlink to that repo's Software/circe_ws.
+
+==========================================================================================
+0. SESSION LOG (newest first)
+==========================================================================================
+
+How to resume: read the newest block below, then do its "Pick up here" item. Sections
+1-7 describe the overall state.
+
+Several team members share this Pi and the same Claude Code account. When you stop
+working, add a new block at the top of this log saying who you are, what you did, and
+the state you left things in (built? flashed? committed? pushed?). Older entries filled
+in from git history and file times say "unknown" where the author can't be verified.
+
+Git identity on this Pi: the global ~/.gitconfig is gmostar, but this repo's own
+.git/config sets sharifz0089, and the SSH key authenticates as sharifz0089. So commits
+and pushes from this clone show up as sharifz0089, whoever is at the keyboard. That is
+fine. The rule is that every commit message has a "Prompted-by: <name>" line for the
+person who actually did the work, and the same name goes in the "Who:" line here. For
+now, everyone works from this one clone, one person at a time.
+
+------------------------------------------------------------------------------------------
+[2026-10-24 21:05 CDT]
+  Who:          gmostar, with Claude Code
+  Done:         Committed and pushed circe_teensy to main (commit message has
+                "Prompted-by: gmostar"). This includes: the two-BMS change, the new
+                package .gitignore, this report, and untracking
+                .vscode/c_cpp_properties.json and .vscode/launch.json (machine-specific
+                paths; PlatformIO regenerates them).
+  State:        Built: yes. Flashed: NO. Committed + pushed: yes.
+  Pick up here: Flash the firmware AND rebuild the Pi package together
+                (pio run -t upload; colcon build --packages-select circe_teensy),
+                because the BMS frames changed. Then the spool motor questions in
+                section 7, then step 5a.
+------------------------------------------------------------------------------------------
+[2026-10-24 20:57 CDT]
+  Who:          gmostar, with Claude Code
+  Done:         Recorded the spool motor hardware: TB6600 stepper driver, stepper motors
+                17HS15-1504D-E1K and 17HS19-2004D-E1K (both with 1000 PPR encoders).
+                Updated sections 2, 4, 5, 6 and 7 to match. This is a step/direction
+                driver, NOT a UART controller, so the motor no longer needs Serial6/7.
+  State:        Report only; no code changed. The src/main.cpp header comment still says
+                the motor needs Serial6/7 and should be corrected in the next code change.
+                Everything from the 20:49 entry is still uncommitted.
+  Pick up here: Same as 20:49 (commit + push, then flash + rebuild the Pi package).
+                Then decide which motor drives the spool (section 7) and start step 5a.
+------------------------------------------------------------------------------------------
+[2026-10-24 20:49 CDT]
+  Who:          gmostar, with Claude Code
+  Done:         Checked that circe_teensy can be pushed: SSH to GitHub works, local main
+                matches origin/main (bd94002), no secrets, .pio/ and __pycache__/ are
+                ignored. Updated this report (added this log, fixed stale sections).
+                Rebuilt the firmware from the current source: builds clean, no warnings.
+                Pi node passes a Python syntax check.
+  State:        Built: yes (20:49). Flashed: NO, the Teensy still runs older firmware.
+                Committed: NO. The 16:28 two-BMS change, the new package .gitignore and
+                this report are uncommitted.
+  Pick up here: 1. Commit and push circe_teensy to main. First untrack
+                   .vscode/c_cpp_properties.json and .vscode/launch.json
+                   (git rm --cached). They contain machine-specific paths and are now
+                   listed in .gitignore.
+                2. Then flash the firmware AND rebuild the Pi package together (colcon
+                   build --packages-select circe_teensy), because the BMS frames changed.
+------------------------------------------------------------------------------------------
+[2026-10-24 18:55 CDT]
+  Who:          unknown
+  Done:         Teensy plugged into the Pi 5 over USB. It shows up as /dev/teensy ->
+                /dev/ttyACM0 (16c0:0483, Teensyduino Serial).
+  State:        Connected, not mounted. Firmware on the board predates the 16:28 change.
+------------------------------------------------------------------------------------------
+[2026-10-24 16:28-16:30 CDT]
+  Who:          unknown (Claude Code on the shared account)
+  Done:         Support for two JK BMSs (JK-BD4A8S4P):
+                  - BMS 0 on Serial1 (pins 0/1), BMS 1 on Serial2 (pins 7/8); table at
+                    the top of src/bms.cpp.
+                  - BMS_STATUS and BMS_CELLS gain a leading bms_id byte
+                    (BmsStatus '<BHhHHHHHbbbBBBBB' 23 bytes, BmsCells '<BB24H' 50 bytes).
+                  - Pi parameter battery_topic -> battery_topics
+                    ['/battery/bms_0', '/battery/bms_1'] (config/teensy_bridge.yaml).
+                  - The spool motor controller can no longer use Serial2; it now needs
+                    Serial6 or Serial7 (pads underneath).
+  State:        Built 16:29, but protocol.h was edited at 16:30, after that build (the
+                20:49 rebuild covers it). Not flashed, not committed. UART on this BMS
+                model is untested on CIRCE.
+------------------------------------------------------------------------------------------
+[2026-10-24 15:04 / 15:21 CDT]
+  Who:          Sharif (per gmostar), with Claude Code on gmostar's account. Commits
+                authored as gmostar.
+  Done:         Commit 81e8243: deleted the old teensy_code/ folder from GitHub (including
+                build/install files that had been committed by mistake) and moved the
+                ROS 2 workspace source to Software/circe_ws. Commit bd94002: added
+                roverrobotics_ros2 and sllidar_ros2 as git submodules.
+  State:        Both pushed to origin/main.
+------------------------------------------------------------------------------------------
+[2026-10-23 17:52-18:55 CDT]
+  Who:          authored as gmostar (person at the keyboard unknown)
+  Done:         First commits of the workspace to the team repo (c5fc332, e396bbc,
+                3d4470d), under teensy_code/.
+  State:        Pushed.
+------------------------------------------------------------------------------------------
+[2026-10-23 11:44 CDT]
+  Who:          unknown (Claude Code)
+  Done:         This report written. Pi watchdog, e-stop, spool safety cut-outs and spool
+                speed model added (see section 3).
+  State:        Software-tested only. Teensy not connected at the time.
+------------------------------------------------------------------------------------------
+[2026-10-19]
+  Who:          unknown
+  Done:         Teensy <-> Pi USB link proven on hardware (data both ways, zero bad or
+                dropped messages). udev rule /etc/udev/rules.d/63-teensy.rules installed
+                (17:49).
+------------------------------------------------------------------------------------------
 
 ==========================================================================================
 1. SUMMARY
@@ -10,8 +124,9 @@ Scope: Teensy 4.0 firmware + Pi bridge node (circe_teensy package).
 Overall: about 50% of minimal system functionality.
 
 Most of the firmware is written, but very little of it has been tested on hardware.
-The Teensy is currently not connected. Everything added since 2026-10-19 has only
-been tested in software (on the Pi, with simulated inputs), not on the board.
+The Teensy is connected to the Pi 5 over USB (/dev/teensy), but it is not mounted, and
+the firmware on it is older than the current source. Everything added since 2026-10-19
+has only been tested in software (on the Pi, with simulated inputs), not on the board.
 
 "Minimal system functionality" means:
   1. The Teensy and the Pi exchange data reliably over USB.
@@ -30,7 +145,9 @@ Subsystem            Weight  Done   Evidence
 -------------------  ------  -----  -------------------------------------------------------
 Teensy <-> Pi link     15%    90%   Proven on hardware 2026-10-19: data flowing both
                                     ways, zero bad or dropped messages. Has changed since
-                                    then; the new version has not run on the board yet.
+                                    then (2026-10-23 heartbeat/e-stop/spool messages,
+                                    2026-10-24 bms_id in the BMS frames); the new version
+                                    has not run on the board yet.
 Ultrasonic (x2)        15%    75%   Code complete. Each sensor gave good readings on the
                                     bench, but only one at a time. Not mounted. Their
                                     positions are not yet in the robot model (URDF).
@@ -42,11 +159,14 @@ E-stop                 15%    50%   Code complete and software-tested: latching,
                                     driver's stop. No button wired yet. No hardware
                                     power cut yet.
 Spool motor control    30%    25%   Done: safety cut-outs, speed-vs-radius model, out-of-
-                                    cable and full-spool limits. Missing: motor controller
-                                    driver, encoder, speed control loop, remembering the
-                                    cable count across restarts, calibration.
-Rover integration      10%    10%   Teensy not connected or mounted. The Pi node is not
-                                    started by the rover's bringup yet.
+                                    cable and full-spool limits. Hardware chosen 2026-10-24
+                                    (TB6600 + NEMA 17 stepper with encoder, section 4).
+                                    Missing: step/direction output code, encoder reading,
+                                    stall/missed-step check, remembering the cable count
+                                    across restarts, calibration.
+Rover integration      10%    10%   Teensy connected to the Pi over USB, but not mounted.
+                                    The Pi node is not started by the rover's bringup yet
+                                    (no teensy entry in circe_bringup/launch).
 -------------------  ------  -----
 Weighted total               ~50%
 
@@ -55,10 +175,15 @@ Software tests run (2026-10-23, all passing):
   - E-stop and spool safety cut-outs, simulated pin and clock: 17/17 checks.
   - Spool speed/radius model: 12/12 checks.
   - Firmware builds with no warnings; uses 3% of the Teensy's flash.
-  Note: these test programs live in a temporary folder, not in the package yet.
+  Note: these test programs lived in a temporary folder and are now LOST. They must be
+  rewritten into the package's test/ folder. They also predate the 2026-10-24 BMS
+  frame change.
+
+Build check (2026-10-24 20:49): firmware builds clean with no warnings
+(flash code 47 KB of 2 MB). Pi node passes a Python syntax check.
 
 ==========================================================================================
-3. WHAT WAS DONE THIS SESSION
+3. WHAT WAS DONE IN THE 2026-10-23 SESSION
 ==========================================================================================
 
 - Code review of the whole package. The main finding was that the spool had no
@@ -89,6 +214,8 @@ Software tests run (2026-10-23, all passing):
   heartbeats, not just while the USB port is open.
 - The Teensy now counts messages it had to drop and reports the count.
 
+For later work, see section 0.
+
 ==========================================================================================
 4. ASSUMPTIONS (replace when real values are known)
 ==========================================================================================
@@ -98,25 +225,50 @@ Measured from the spool's CAD model (spool_drum.stl):
   - Flange diameter                     228.6 mm (9 in)
   - Width between flanges               154 mm (about 6 in)
 
+Spool motor hardware (on hand, 2026-10-24):
+  - Driver: TB6600 stepper driver. Step (PUL), direction (DIR) and enable (ENA)
+    inputs, opto-isolated; 9-42 V motor supply; current and microstepping set by DIP
+    switches. It is NOT a serial controller, so it needs 3 plain GPIO pins and no UART.
+  - Motors (StepperOnline NEMA 17, 1.8 deg = 200 full steps/rev, with encoder):
+      17HS19-2004D-E1K   2.0 A/phase, ~52 Ncm holding torque
+      17HS15-1504D-E1K   1.5 A/phase, lower torque (~40-45 Ncm)
+    Figures for the 17HS19 come from a StepperOnline eBay listing. No listing for the
+    exact 17HS15 part was found. Check both against the real datasheets or labels.
+  - Encoder (both motors, "E1K"): 1000 PPR optical incremental, = 4000 counts/rev after
+    quadrature decoding. The 17HS19 listing says it has DIFFERENTIAL outputs
+    (A+/A-/B+/B-). Supply voltage (probably 5 V) not yet confirmed. The encoder goes to
+    the Teensy (the TB6600 has no encoder input), so the Teensy does the stall and
+    missed-step checking.
+  - Speed: a stepper's speed comes straight from the step rate, so no speed control
+    loop is needed. At 1/8 microstepping, 150 rpm is 4000 steps/s. The encoder confirms
+    the motor really moved and keeps the cable count (spool_add_rotation()).
+
 Assumed - need real values:
   - Cable outer diameter                6.0 mm (typical Cat6)
   - Cable on a full spool               100 m
-  - Motor top speed at the spool        150 rpm
-  - Motor controller                    unknown; planned to connect by UART (Serial2,
-                                        pins 7/8)
-  - Encoder                             present; counts per revolution, gear ratio and
-                                        whether it connects to the controller or the
-                                        Teensy are unknown
+  - Motor top speed at the spool        150 rpm (MAX_SPOOL_RAD_S in src/spool.cpp).
+                                        Plausible for these steppers, but stepper
+                                        torque drops with speed; check under load.
+  - Gear ratio motor -> spool           unknown (1:1 assumed)
+  - Which motor drives the spool        unknown (the 17HS19 has more torque)
+
+Teensy pin use (2026-10-24):
+  Serial1 BMS 0 (pins 0/1)    Serial2 BMS 1 (pins 7/8)    Serial3 GPS (pins 14/15)
+  Serial4 ultrasonic 1 (16/17)    Serial5 ultrasonic 0 (20/21)
+  Pin 2 e-stop    Pin 13 status LED
+  Spool, not yet assigned: TB6600 PUL/DIR/ENA (3 GPIO) + encoder A/B (2 GPIO).
+  Free candidates: 3, 4, 5, 6, 9, 10, 11, 12, 22, 23.
 
 ==========================================================================================
 5. NEXT STEPS (in order)
 ==========================================================================================
 
-1. Connect and flash the Teensy.
-   - Install the USB rule (circe_bringup/udev/63-teensy.rules).
-   - Upload the new firmware.
+1. Flash the Teensy.
+   - Done already: USB rule installed (2026-10-19); the board is connected as
+     /dev/teensy (2026-10-24).
+   - Upload the new firmware (pio run -t upload).
    - Rebuild the Pi package. The firmware and the Pi node must be updated together,
-     because the message format changed.
+     because the message format changed (most recently the BMS bms_id byte).
    - On the bench, jumper pin 2 to GND (stands in for the e-stop button), or the
      board starts in e-stop.
 2. Fit the e-stop button.
@@ -128,15 +280,22 @@ Assumed - need real values:
    interfere with each other, and add their positions to the robot model.
 4. GPS: get a fix outdoors, check how accurate it is, and add the antenna position
    to the robot model.
-5. Spool motor (once the controller model is known):
-   a. Write the controller code on Serial2 and read the encoder.
-   b. Speed control loop, tested on the bench with no cable on the spool.
+5. Spool motor (TB6600 + NEMA 17 stepper with encoder, see section 4):
+   a. Pick the pins. Generate the step pulses from a hardware timer (IntervalTimer or
+      FlexPWM), not from loop(), so a busy loop() cannot stall the motor (concern 9).
+      Read the encoder (Encoder library on interrupts, or the Teensy 4 hardware
+      quadrature decoder) and feed spool_add_rotation(). Disable the TB6600 (ENA)
+      whenever spool_may_run() is false.
+   b. Bench test with no cable on the spool: step rate vs. spool_target_rad_s(), and
+      flag a stall when the encoder disagrees with the steps sent.
    c. Remember how much cable is on the spool across Teensy restarts, or have the Pi
       set it.
    d. Have the Pi stop the rover when the spool runs out of cable or cannot keep up.
    e. Measure the real cable diameter and length, then test on the rover with cable.
 6. Start the Pi bridge node from the rover's normal bringup.
-7. Put the workspace under version control (see concern 13).
+7. Version control: the package is in the team repo and up to date as of 2026-10-24
+   21:05. Commit after each working session, with a Prompted-by line (section 0).
+8. Rewrite the lost software tests into test/ (see section 2).
 
 ==========================================================================================
 6. CONCERNS AND RISKS
@@ -150,8 +309,21 @@ Safety
      the rover yet. If the rover keeps driving, it pulls on the cable's anchored end.
      The Pi must stop the rover when this happens (next step 5d).
   3. The Teensy's pins are 3.3 V only. Any 5 V signal can damage it. Check the
-     signal voltage of the ultrasonics (when powered at 5 V) and of the motor
-     controller before wiring.
+     signal voltage of the ultrasonics (when powered at 5 V) before wiring.
+     Spool encoder: if it runs on 5 V, its outputs must not go straight to the Teensy.
+     With differential outputs, use a line receiver that has 3.3 V outputs (e.g.
+     AM26LV32), or level-shift A+ and B+.
+     TB6600 inputs: the module is rated for 3.3-24 V control signals, and others
+     drive it from 3.3 V. Clone boards vary, so check that it steps reliably at
+     3.3 V; if not, add a transistor or buffer.
+ 15. Stepper on e-stop: disabling the TB6600 (ENA) removes holding torque, so cable
+     tension can turn the spool backwards. Decide whether the spool should hold
+     (stay enabled at zero speed) or go limp. The encoder will keep counting either
+     way. Steppers also miss steps silently when overloaded; the encoder check
+     (step 5b) is what catches it.
+ 14. BMS wiring: with two packs in series, the upper pack's B- sits at the lower
+     pack's full voltage. Tying both BMS GND pins to the Teensy shorts the lower pack.
+     Put a digital isolator (ADuM1201, ISO7721) on BOTH BMS links (see include/bms.h).
 
 Spool accuracy
   4. The cable count resets to "full" whenever the Teensy restarts. After a restart
@@ -168,12 +340,14 @@ Spool accuracy
      testing.
 
 System
-  8. All five easily reachable serial ports are spoken for once the motor controller
-     is added (BMS, motor, GPS, 2 ultrasonics). There is no spare for future serial
-     devices without soldering to pads on the underside of the board.
+  8. All five easily reachable serial ports are already used (2 BMS, GPS, 2
+     ultrasonics). The spool no longer needs one (the TB6600 uses step/direction
+     pins), but there is no spare serial port for future devices without soldering
+     to the pads on the underside of the board.
   9. While the GPS is unplugged or silent, the Teensy pauses for about 25 ms every
-     3 s to resend its settings. This must be removed before the motor control loop
-     goes in, or the spool will stutter.
+     3 s to resend its settings. This must be removed, or the step pulses must come
+     from a hardware timer (step 5a). Otherwise the stepper stalls for 25 ms at a
+     time and can lose steps.
  10. The Pi's heartbeat rate and the Teensy's timeout are linked. If the heartbeat
      drops below about 4 per second, the spool will cut out even though nothing is
      wrong.
@@ -182,14 +356,22 @@ System
  12. The message format is defined twice (Teensy C++ and Pi Python). The firmware
      build checks message sizes, but nothing checks automatically that the two
      sides agree.
- 13. The workspace is not in version control (git). There is no history and no
-     backup. A bad edit or a lost SD card loses the work.
+ 13. Version control: the package is in the team repo, but work is lost if it is
+     left uncommitted. Two people working in the same clone at once is not handled
+     yet; work one at a time for now. Several people share this Pi and Claude Code account, so
+     commit and add a section 0 entry at the end of every session.
 
 ==========================================================================================
 7. INFORMATION NEEDED
 ==========================================================================================
 
-  - Spool motor controller model and its serial protocol.
-  - Encoder counts per revolution, gear ratio, and the motor's top speed at the spool.
+  - Known since 2026-10-24: TB6600 driver, 17HS15-1504D-E1K and 17HS19-2004D-E1K
+    motors, 1000 PPR encoders (section 4).
+  - Which of the two motors drives the spool, and what the other one is for.
+  - Gear ratio between motor and spool (or direct drive).
+  - TB6600 DIP switch settings: microstepping and current (1.5 A for the 17HS15,
+    2.0 A for the 17HS19).
+  - Encoder supply voltage and output type (differential or single-ended), from the
+    datasheet or the cable colours/labels.
   - Cable outer diameter and length loaded on the spool.
   - E-stop button model (does it have two normally-closed contacts?).

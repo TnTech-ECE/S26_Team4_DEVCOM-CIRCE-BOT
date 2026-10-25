@@ -1,8 +1,9 @@
 // CIRCE Teensy 4.0 I/O board. Each feature lives in its own include/ + src/ pair;
 // this file only wires them together. Nothing in loop() may block.
 //
-// Hardware UARTs: Serial1 BMS, Serial2 free (spool motor controller), Serial3 GPS,
-// Serial4 + Serial5 ultrasonics. Pin 2 e-stop, pin 13 status LED.
+// Hardware UARTs: Serial1 + Serial2 BMS, Serial3 GPS, Serial4 + Serial5 ultrasonics.
+// The spool motor controller needs Serial6 or Serial7 (pads underneath). Pin 2 e-stop,
+// pin 13 status LED.
 #include <Arduino.h>
 
 #include "bms.h"
