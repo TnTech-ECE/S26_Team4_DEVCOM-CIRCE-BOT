@@ -1,0 +1,42 @@
+<?xml version="1.0" ?>
+<sdf version="1.9">
+  <world name="my_world">
+
+    <!-- Standard plugins for physics, sensors, etc. (Gazebo Harmonic) -->
+    <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"/>
+    <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/>
+    <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"/>
+    <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
+    <model name="environment">
+      <static>true</static>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <mesh>
+              <uri>file:///home/njromsdal/ros2_ws/src/circe_environment_pkg/meshes/Contested_Environment_1.dae</uri>
+              <scale>1 1 1</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <mesh>
+              <uri>file:///home/njromsdal/ros2_ws/src/circe_environment_pkg/meshes/Contested_Environment_1.dae</uri>
+              <scale>1 1 1</scale>
+            </mesh>
+          </geometry>
+        </collision>
+      </link>
+    </model>
+
+  </world>
+</sdf>
