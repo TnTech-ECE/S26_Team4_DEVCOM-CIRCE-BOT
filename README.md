@@ -36,12 +36,17 @@ Daniel Davis
 Summer Morris  
 
 ### Faculty Supervisor
+Dr. Van Neste met with us on a weekly basis in the planning for this project.
 
-Tell who the faculty supervisor was for the project
 
 ### Stakeholders
 
-Tell a bit about the customer for the project. Also discuss any other groups (specific or general) that are expected to be impacted by the project.
+1. DEVCOM:  
+Dedra  
+Elias  
+Chase  
+Joze  
+
 
 ### Recognitions
 
