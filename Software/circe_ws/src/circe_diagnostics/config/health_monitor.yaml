@@ -1,0 +1,81 @@
+# CIRCE health checks (health_monitor.py). One file for sim and hardware, so each floor
+# must clear both. Rates are starting values; tune with `ros2 topic hz`.
+# `enabled` is set per check by diagnostics.launch.py. Labels must not contain '/'.
+
+/**:
+  ros__parameters:
+    diagnostic_updater.period: 1.0
+
+    # Rates averaged over this many update periods.
+    window_size: 5
+
+    rate_checks: [lidar_raw, lidar_masked, lidar_filtered, camera_depth, imu_raw, imu_fused,
+                  odom_wheels]
+
+    # ---- Lidar: one check per pipeline stage (A1 ~5.5 Hz) ----
+    lidar_raw:
+      label: Lidar raw scan
+      topic: /scan_raw
+      type: sensor_msgs/msg/LaserScan
+      min_hz: 4.0
+      max_hz: 15.0
+    lidar_masked:
+      label: Lidar masked scan
+      topic: /scan
+      type: sensor_msgs/msg/LaserScan
+      min_hz: 4.0
+      max_hz: 15.0
+    lidar_filtered:
+      label: Lidar filtered scan
+      topic: /scan_filtered
+      type: sensor_msgs/msg/LaserScan
+      min_hz: 4.0
+      max_hz: 15.0
+
+    # ---- Camera (camera_info has the depth rate; hw 15 Hz, sim 10 Hz) ----
+    camera_depth:
+      label: Camera depth
+      topic: /camera/camera/depth/camera_info
+      type: sensor_msgs/msg/CameraInfo
+      min_hz: 8.0
+      max_hz: 20.0
+
+    # ---- IMU: raw (hardware only) and fused ----
+    imu_raw:
+      label: IMU raw
+      topic: /camera/camera/imu
+      type: sensor_msgs/msg/Imu
+      min_hz: 150.0
+    # imu_fusion is capped at 100 Hz; 60 is the EKF's floor.
+    imu_fused:
+      label: IMU fused
+      topic: /imu/data
+      type: sensor_msgs/msg/Imu
+      min_hz: 60.0
+
+    # ---- Odometry (hw 15 Hz, sim 50 Hz; off in bench_mode) ----
+    odom_wheels:
+      label: Odometry wheels
+      topic: /odometry/wheels
+      type: nav_msgs/msg/Odometry
+      min_hz: 10.0
+
+    # ---- SLAM: map -> odom (~50 Hz) ----
+    slam:
+      parent_frame: map
+      child_frame: odom
+      min_hz: 20.0
+
+    # ---- Host ----
+    host:
+      # First matching thermal zone wins (Pi 5, then x86 laptop).
+      thermal_zone_types: [cpu-thermal, x86_pkg_temp]
+      # One limit per type above.
+      temp_warn_c: [70.0, 90.0]
+      temp_error_c: [80.0, 100.0]
+      cpu_warn_percent: 90.0
+      memory_warn_percent: 85.0
+      memory_error_percent: 95.0
+      disk_path: /
+      disk_warn_percent: 85.0
+      disk_error_percent: 95.0

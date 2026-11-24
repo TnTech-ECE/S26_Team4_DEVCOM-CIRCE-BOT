@@ -1,0 +1,30 @@
+# Rover Zero 4WD base driver + joint_state_publisher.
+# Wheel geometry is hardcoded in librover (protocol_zero_2.hpp), so it isn't set here.
+
+roverrobotics_driver:
+  ros__parameters:
+    robot_type: "zero2"
+
+    device_port: "/dev/rover-control"
+    comm_type: "serial"
+
+    control_mode: "INDEPENDENT_WHEEL"
+    motor_control_p_gain: 0.0011
+    motor_control_i_gain: 0.000
+    motor_control_d_gain: 0.00008
+
+    speed_topic: "/cmd_vel"
+    odom_topic: "/odometry/wheels"
+    odom_frame_id: "odom"
+    odom_child_frame_id: "base_link"
+    odometry_frequency: 15.0
+    diagnostics_frequency: 0.2
+
+    # Keep false: the EKF owns odom -> base_link.
+    publish_tf: false
+
+
+joint_state_publisher:
+  ros__parameters:
+    publish_default_positions: true
+    rate: 30

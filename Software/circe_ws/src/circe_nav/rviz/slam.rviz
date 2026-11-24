@@ -1,0 +1,15 @@
+Panels:
+  - Class: rviz_default_plugins/Displays
+    Name: Displays
+Visualization Manager:
+  Class: ""
+  Name: root
+  Displays:
+    - Class: rviz_default_plugins/Map
+      Name: Map
+      Topic: /map
+    - Class: rviz_default_plugins/LaserScan
+      Name: LaserScan
+      Topic: /scan
+  Global Options:
+    Fixed Frame: map

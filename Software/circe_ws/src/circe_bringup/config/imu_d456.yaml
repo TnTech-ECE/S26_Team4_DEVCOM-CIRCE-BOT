@@ -1,0 +1,38 @@
+# D456 internal IMU -> /imu/data via circe_perception/imu_fusion.py (default imu_source).
+# The camera's raw IMU has no orientation; imu_fusion adds roll/pitch in base_link.
+
+/**:
+  ros__parameters:
+
+    target_frame: base_link
+
+    # Complementary filter time constant (s): larger = smoother, slower to correct.
+    tau: 1.0
+
+    # Skip accel samples this far from g (rover accelerating, not measuring gravity).
+    accel_gate: 1.5          # m/s^2
+
+    # Gyro bias learning while still; EKF heading depends on it.
+    learn_gyro_bias: true
+
+    # Must be looser than the bias being learned.
+    bias_gyro_thresh: 0.06   # rad/s
+    bias_accel_thresh: 0.30  # m/s^2 away from g
+
+    # Wheel odometry confirms the rover is actually still.
+    odom_topic: /odometry/wheels
+    bias_odom_lin: 0.01      # m/s
+    bias_odom_ang: 0.01      # rad/s
+    odom_timeout: 0.5        # s
+
+    # Stillness required before learning (s).
+    bias_dwell: 1.0
+
+    # Long-run bias tracking for temperature drift (s).
+    bias_tau: 60.0
+
+    # Re-seed from gravity after a gap longer than this.
+    max_dt: 0.1              # s
+
+    # 0 = every input (~200 Hz). Keep >= ~60 Hz for EKF heading integration.
+    publish_rate_limit: 100.0  # Hz

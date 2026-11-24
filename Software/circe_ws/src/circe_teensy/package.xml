@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>circe_teensy</name>
+  <version>0.1.0</version>
+  <description>
+    The Teensy 4.0 I/O board for CIRCE: BMS, ultrasonic rangers, e-stop button, GPS and
+    the cable spool motor, talking to the Pi 5 over USB serial (/dev/teensy).
+    teensy_bridge.py turns the Teensy's frames into ROS topics and forwards spool
+    commands and odometry to it.
+
+    The firmware is a PlatformIO project rooted in this directory (platformio.ini,
+    src/, include/, lib/). colcon builds it when PlatformIO is installed and installs
+    firmware.hex to share/circe_teensy/firmware/. Building never flashes the board.
+  </description>
+  <maintainer email="sz1305568@gmail.com">sharif</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>nav_msgs</exec_depend>
+  <exec_depend>python3-serial</exec_depend>
+
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>ament_index_python</exec_depend>
+
+  <!-- platformio is intentionally not declared (not a rosdep key). -->
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

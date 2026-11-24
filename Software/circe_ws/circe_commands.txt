@@ -1,0 +1,115 @@
+CIRCE — TERMINAL COMMAND CHEAT SHEET
+====================================
+Pi hostname: circe-desktop   (LAN 10.104.132.133, Tailscale 100.71.190.66)
+ROS 2 Jazzy, ROS_DOMAIN_ID=42, RMW = rmw_cyclonedds_cpp
+
+Every new terminal on the Pi already gets this from ~/.bashrc:
+    source /opt/ros/jazzy/setup.bash
+    export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+    export CYCLONEDDS_URI=file:///etc/cyclonedds/rover.xml
+    export ROS_DOMAIN_ID=42
+    source ~/circe_ws/install/setup.bash
+
+If you run the viewers on the LAPTOP, its terminal needs the same
+ROS_DOMAIN_ID (42) and RMW_IMPLEMENTATION, or it won't see the Pi.
+
+
+------------------------------------------------------------------
+1. BRINGUP ON THE PI
+------------------------------------------------------------------
+
+# (optional) Rebuild after code changes
+cd ~/circe_ws
+colcon build --symlink-install
+source install/setup.bash
+
+# Pre-flight: check the hardware is plugged in
+ls -l /dev/rover-control /dev/rplidar /dev/teensy
+
+# Pre-flight: the stock Rover services should NOT be running (they fight CIRCE)
+systemctl status roverrobotics rover-realsense realsense-watchdog.timer
+
+# Full stack: base + sensors + EKF + perception + SLAM + Nav2 + diagnostics
+ros2 launch circe_bringup circe_bringup.launch.py
+
+# Common variants
+ros2 launch circe_bringup circe_bringup.launch.py use_teleop:=true      # + gamepad
+ros2 launch circe_bringup circe_bringup.launch.py use_camera:=true      # + D456 (needs USB 3 cable)
+ros2 launch circe_bringup circe_bringup.launch.py use_nav2:=false       # up to SLAM, drive by hand
+ros2 launch circe_bringup circe_bringup.launch.py use_nav2:=false use_slam:=false
+ros2 launch circe_bringup circe_bringup.launch.py bench_mode:=true      # desk test, NO rover attached
+ros2 launch circe_bringup circe_bringup.launch.py strict_order:=false   # gates warn instead of stopping
+
+# Show every launch argument and its default
+ros2 launch circe_bringup circe_bringup.launch.py --show-args
+
+# Stop everything: Ctrl-C in the bringup terminal
+
+
+------------------------------------------------------------------
+2. RVIZ2 FOR NAV2   (run on the laptop; the Pi can't render it well)
+------------------------------------------------------------------
+
+# If the CIRCE workspace is built and sourced on the laptop:
+rviz2 -d $(ros2 pkg prefix circe_nav)/share/circe_nav/rviz/nav2_view.rviz
+
+# If it isn't, copy the config over from the Pi once, then open it:
+scp devcom@10.104.132.133:~/circe_ws/src/circe_nav/rviz/nav2_view.rviz ~/nav2_view.rviz
+rviz2 -d ~/nav2_view.rviz
+
+# Mapping-only view (SLAM without Nav2):
+rviz2 -d $(ros2 pkg prefix circe_nav)/share/circe_nav/rviz/slam.rviz
+
+# Use "2D Pose Estimate" / "Nav2 Goal" on the RViz toolbar to send goals.
+
+
+------------------------------------------------------------------
+3. RQT ROBOT MONITOR   (diagnostics health tree from /diagnostics_agg)
+------------------------------------------------------------------
+
+ros2 run rqt_robot_monitor rqt_robot_monitor
+
+# Text-only alternatives (work over SSH):
+ros2 topic echo /diagnostics_toplevel_state      # one line: worst status on the robot
+ros2 topic echo /diagnostics_agg                 # the full tree
+
+
+------------------------------------------------------------------
+4. LIST ALL ROS 2 TOPICS
+------------------------------------------------------------------
+
+ros2 topic list                  # names only
+ros2 topic list -t               # names + message types
+ros2 topic info -v /scan         # who publishes / subscribes to one topic
+ros2 topic hz /scan_filtered     # check a topic is actually flowing
+ros2 node list                   # every running node
+
+
+------------------------------------------------------------------
+5. NODE GRAPH — HOW EVERYTHING IS CONNECTED
+------------------------------------------------------------------
+
+# Nodes and the topics between them (GUI):
+ros2 run rqt_graph rqt_graph
+#   In the window: choose "Nodes/Topics (all)" and untick "Hide: Dead sinks /
+#   Leaf topics" to see everything. Press the refresh button after bringup.
+
+# TF tree (map -> odom -> base_link -> sensors), saved as a PDF:
+cd ~ && ros2 run tf2_tools view_frames
+#   writes frames_<date>.pdf in the current directory
+
+# Check one TF link directly:
+ros2 run tf2_ros tf2_echo odom base_link
+ros2 run tf2_ros tf2_echo map odom
+
+
+------------------------------------------------------------------
+TROUBLESHOOTING
+------------------------------------------------------------------
+- Laptop sees no topics: check `echo $ROS_DOMAIN_ID` is 42 on both machines,
+  that both use the same RMW, then run `ros2 daemon stop` and try again.
+- Bringup stops at a gate: it prints which signal is missing (TF edge,
+  /scan, /odometry/wheels, ...). Everything below that layer is still running,
+  so inspect it with the commands in sections 4 and 5.
+- Duplicate nodes or "device busy": the stock Rover systemd services are
+  probably back; see the pre-flight check in section 1.

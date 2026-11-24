@@ -1,0 +1,252 @@
+# RViz layout for CIRCE under Gazebo.
+#
+# Derived from circe_nav/rviz/nav2_view.rviz, with the parts that never applied to this
+# robot removed and the camera pointed at real topic names:
+#   * the "Realsense" group there points at /intel_realsense_r200_depth/*, which is a
+#     leftover from some other robot entirely and has never existed on CIRCE
+#   * the AMCL particle cloud display is dropped: localisation here is slam_toolbox,
+#     there is no AMCL, and nothing publishes /particle_cloud
+#   * the TurtleBot bumper PointCloud2 is dropped for the same reason
+#
+# Fixed frame is map, so it will show "Frame [map] does not exist" until slam_toolbox
+# is running. That is expected with circe_sim.launch.py alone -- switch Fixed Frame to
+# odom for sim-only work.
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+    Property Tree Widget:
+      Expanded:
+        - /Global Options1
+        - /TF1
+        - /Sensors1
+        - /Nav21
+      Splitter Ratio: 0.5
+    Tree Height: 700
+  - Class: rviz_common/Views
+    Name: Views
+  - Class: nav2_rviz_plugins/Navigation 2
+    Name: Navigation 2
+
+Visualization Manager:
+  Class: ""
+  Name: root
+  Global Options:
+    Background Color: 48; 48; 48
+    Fixed Frame: map
+    Frame Rate: 30
+  Enabled: true
+
+  Displays:
+    - Class: rviz_default_plugins/Grid
+      Name: Grid
+      Enabled: true
+      Cell Size: 1
+      Plane Cell Count: 20
+      Color: 160; 160; 164
+      Reference Frame: <Fixed Frame>
+
+    - Class: rviz_default_plugins/RobotModel
+      Name: RobotModel
+      Enabled: true
+      Description Source: Topic
+      Description Topic:
+        Value: /robot_description
+        Depth: 5
+        Durability Policy: Volatile
+        Reliability Policy: Reliable
+      Alpha: 1
+      Visual Enabled: true
+      Collision Enabled: false
+
+    - Class: rviz_default_plugins/TF
+      Name: TF
+      Enabled: true
+      Marker Scale: 0.4
+      Show Names: true
+      Show Axes: true
+      Show Arrows: false
+      Update Interval: 0
+
+    - Class: rviz_common/Group
+      Name: Sensors
+      Enabled: true
+      Displays:
+        - Class: rviz_default_plugins/LaserScan
+          Name: LaserScan
+          Enabled: true
+          Topic:
+            Value: /scan
+            Depth: 5
+            Durability Policy: Volatile
+            Reliability Policy: Best Effort
+          Size (m): 0.03
+          Style: Points
+          Color: 255; 85; 0
+          Color Transformer: FlatColor
+          Decay Time: 0
+
+        # SIM ONLY. Hardware runs the D456 depth-only for the Pi 5 (enable_color: false
+        # in circe_bringup/config/realsense_d456.yaml), so this topic does not exist on
+        # the real robot. The gz rgbd_camera still renders colour, which is cheap on a
+        # dev box and useful for visual checks.
+        - Class: rviz_default_plugins/Image
+          Name: Camera Color (sim only)
+          Enabled: true
+          Topic:
+            Value: /camera/camera/color/image_raw
+            Depth: 5
+            Durability Policy: Volatile
+            Reliability Policy: Best Effort
+
+        # If this cloud appears rotated ~90 degrees, the rgbd_camera's gz_frame_id
+        # optical-frame convention is wrong -- see the note in realsense_d456.urdf.xacro.
+        - Class: rviz_default_plugins/PointCloud2
+          Name: Depth Cloud
+          Enabled: false
+          Topic:
+            Value: /camera/camera/depth/color/points
+            Depth: 5
+            Durability Policy: Volatile
+            Reliability Policy: Best Effort
+          Size (m): 0.01
+          Style: Points
+          Color Transformer: RGB8
+          Decay Time: 0
+
+        - Class: rviz_default_plugins/Odometry
+          Name: EKF Odometry
+          Enabled: false
+          Topic:
+            Value: /odometry/filtered
+            Depth: 5
+            Durability Policy: Volatile
+            Reliability Policy: Reliable
+          Keep: 100
+          Shape:
+            Alpha: 1
+            Color: 0; 255; 127
+            Shaft Length: 0.3
+            Shaft Radius: 0.03
+            Head Length: 0.1
+            Head Radius: 0.06
+
+    - Class: rviz_common/Group
+      Name: Nav2
+      Enabled: true
+      Displays:
+        - Class: rviz_default_plugins/Map
+          Name: Map
+          Enabled: true
+          Topic:
+            Value: /map
+            Depth: 1
+            Durability Policy: Transient Local
+            Reliability Policy: Reliable
+          Color Scheme: map
+          Alpha: 0.7
+
+        - Class: rviz_default_plugins/Map
+          Name: Global Costmap
+          Enabled: false
+          Topic:
+            Value: /global_costmap/costmap
+            Depth: 1
+            Durability Policy: Transient Local
+            Reliability Policy: Reliable
+          Color Scheme: costmap
+          Alpha: 0.5
+
+        - Class: rviz_default_plugins/Map
+          Name: Local Costmap
+          Enabled: true
+          Topic:
+            Value: /local_costmap/costmap
+            Depth: 1
+            Durability Policy: Transient Local
+            Reliability Policy: Reliable
+          Color Scheme: costmap
+          Alpha: 0.6
+
+        - Class: rviz_default_plugins/Path
+          Name: Global Plan
+          Enabled: true
+          Topic:
+            Value: /plan
+            Depth: 5
+            Durability Policy: Volatile
+            Reliability Policy: Reliable
+          Color: 0; 12; 255
+          Line Style: Lines
+
+        - Class: rviz_default_plugins/Path
+          Name: Local Plan
+          Enabled: true
+          Topic:
+            Value: /local_plan
+            Depth: 5
+            Durability Policy: Volatile
+            Reliability Policy: Reliable
+          Color: 0; 255; 0
+          Line Style: Lines
+
+        - Class: rviz_default_plugins/Polygon
+          Name: Footprint
+          Enabled: true
+          Topic:
+            Value: /local_costmap/published_footprint
+            Depth: 5
+            Durability Policy: Volatile
+            Reliability Policy: Reliable
+          Color: 25; 255; 0
+
+  Tools:
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/Select
+    - Class: rviz_default_plugins/FocusCamera
+    - Class: rviz_default_plugins/Measure
+      Line color: 128; 128; 0
+    - Class: rviz_default_plugins/SetInitialPose
+      Topic:
+        Value: /initialpose
+    - Class: rviz_default_plugins/PublishPoint
+      Topic:
+        Value: /clicked_point
+    - Class: nav2_rviz_plugins/GoalTool
+    # *** SECOND GOAL TOOL: LONG-RANGE MISSIONS. ***
+    # The Nav2 Goal tool above publishes /goal_pose, which goes STRAIGHT to Nav2 and is
+    # refused for anything past the global costmap's ~30 m rolling half-width. This one
+    # publishes /mission_goal, which circe_nav/scripts/cable_mission.py chunks into legs
+    # (launch with use_mission:=true). Both are kept because they mean different things:
+    #   /goal_pose     one-way, direct, short goals
+    #   /mission_goal  chunked, drives out on odom and RETURNS HOME on map
+    # Do not repoint the Nav2 Goal tool at /mission_goal -- every casual click would
+    # then also drive the rover all the way back to its start.
+    - Class: rviz_default_plugins/SetGoal
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /mission_goal
+
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Name: Current View
+      Distance: 12
+      Pitch: 0.85
+      Yaw: 2.4
+      Focal Point:
+        X: 0
+        Y: 0
+        Z: 0
+      Target Frame: <Fixed Frame>
+    Saved: ~
+
+Window Geometry:
+  Height: 900
+  Width: 1500
+  Displays:
+    collapsed: false
+  Views:
+    collapsed: false

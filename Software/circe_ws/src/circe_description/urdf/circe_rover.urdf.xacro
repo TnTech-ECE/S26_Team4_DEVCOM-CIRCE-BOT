@@ -1,0 +1,203 @@
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="circe_rover">
+
+    <!--
+      CIRCE: Rover Zero 4WD chassis (from rover_4wd.urdf) + RPLidar A1 + RealSense D456.
+      sim_mode:=true adds the Gazebo plugins/sensors; false is the hardware URDF.
+    -->
+    <xacro:arg name="sim_mode" default="false" />
+
+    <!-- Robot Parameters -->
+    <xacro:property name="wheel_z_offset" value="0.020" />
+    <xacro:property name="wheel_x_offset" value="0.145" />
+    <xacro:property name="front_flipper_x_offset" value="-0.0035" />
+    <xacro:property name="wheel_y_offset" value="0.18" />
+    <xacro:property name="track_y_offset" value="0.11" />
+    <xacro:property name="wheel_mass" value="1.25" />
+    <xacro:property name="chassis_mass" value="4.53592" />
+
+    <!-- Sensors. Order matters: lidar -> mast -> camera. -->
+    <xacro:include filename="$(find circe_description)/urdf/accessories/rplidar_a1.urdf.xacro" />
+    <xacro:include filename="$(find circe_description)/urdf/accessories/circe_sensor_mast.urdf.xacro" />
+    <xacro:include filename="$(find circe_description)/urdf/accessories/realsense_d456.urdf.xacro" />
+    <xacro:include filename="$(find circe_description)/urdf/accessories/circe_imu.urdf.xacro" />
+
+    <!-- Tether spool on the rear deck. -->
+    <xacro:include filename="$(find circe_description)/urdf/accessories/circe_cable_spool.urdf.xacro" />
+
+    <!-- Robot Definition -->
+    <link name="base_link" />
+    <link name="chassis_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="1.57 -0 1.57" />
+            <geometry>
+                <mesh filename="package://roverrobotics_description/meshes/flipper_chassis.dae"/>
+            </geometry>
+        </visual>
+        <visual>
+            <origin xyz="0 ${track_y_offset} 0" rpy="1.57 3.1415 0" />
+            <geometry>
+                <mesh filename="package://roverrobotics_description/meshes/flipper_track.dae"/>
+            </geometry>
+        </visual>
+
+        <collision>
+            <origin xyz="0 ${track_y_offset} 0" rpy="1.57 3.1415 0" />
+            <geometry>
+                <mesh filename="package://roverrobotics_description/meshes/flipper_track.dae"/>
+            </geometry>
+        </collision>
+
+         <visual>
+            <origin xyz="0 ${-track_y_offset} 0" rpy="1.57 3.1415 0" />
+            <geometry>
+                <mesh filename="package://roverrobotics_description/meshes/flipper_track.dae"/>
+            </geometry>
+        </visual>
+
+        <collision>
+            <origin xyz="0 ${-track_y_offset} 0" rpy="1.57 3.1415 0" />
+            <geometry>
+                <mesh filename="package://roverrobotics_description/meshes/flipper_track.dae"/>
+            </geometry>
+        </collision>
+
+        <collision>
+            <origin xyz="0 0 0" rpy="1.57 -0 1.57" />
+            <geometry>
+                <mesh filename="package://roverrobotics_description/meshes/flipper_chassis.dae"/>
+            </geometry>
+        </collision>
+
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <mass value="${chassis_mass}" />
+            <inertia ixx="0.028064" ixy="0.0"  ixz="0.0" iyy="0.08226" iyz="0.0" izz="0.10258" />
+        </inertial>
+    </link>
+
+    <joint name="base_to_chassis" type="fixed">
+        <parent link="base_link"/>
+        <child link="chassis_link"/>
+        <origin xyz="0 0 0.125"/>
+    </joint>
+
+
+    <link name="fr_wheel_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="-1.57 0 0" />
+            <geometry>
+                <mesh filename="package://roverrobotics_description/meshes/pro_tire.dae"/>
+            </geometry>
+        </visual>
+
+        <collision>
+            <origin xyz="0 0 0" rpy="-1.57 0 0" />
+            <geometry>
+                <mesh filename="package://roverrobotics_description/meshes/pro_tire.dae"/>
+            </geometry>
+        </collision>
+
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <mass value="${wheel_mass}" />
+            <inertia ixx="0.005645" ixy="0.0"  ixz="0.0" iyy= "0.01008" iyz="0.0" izz="0.005645"/>
+        </inertial>
+    </link>
+    <joint name="fr_wheel_to_chassis" type="continuous">
+        <parent link="chassis_link"/> 
+        <child link="fr_wheel_link"/>
+        <axis xyz="0 1 0"/>
+        <origin xyz="${wheel_x_offset + front_flipper_x_offset} ${-wheel_y_offset} 0" rpy="0 0 0"/>
+    </joint>
+
+    <link name="fl_wheel_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="1.57 0 0" />
+            <geometry>
+                <mesh filename="package://roverrobotics_description/meshes/pro_tire.dae"/>
+            </geometry>
+        </visual>
+
+        <collision>
+            <origin xyz="0 0 0" rpy="1.57 0 0" />
+            <geometry>
+                <mesh filename="package://roverrobotics_description/meshes/pro_tire.dae"/>
+            </geometry>
+        </collision>
+
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <mass value="${wheel_mass}" />
+            <inertia ixx="0.005645" ixy="0.0"  ixz="0.0" iyy= "0.01008" iyz="0.0" izz="0.005645"/>
+        </inertial>
+    </link>
+    <joint name="fl_wheel_to_chassis" type="continuous">
+        <parent link="chassis_link"/>
+        <child link="fl_wheel_link"/>
+        <axis xyz="0 1 0"/>
+        <origin xyz="${wheel_x_offset + front_flipper_x_offset} ${wheel_y_offset} 0" rpy="0 0 0"/>
+    </joint>
+
+    <link name="rr_wheel_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="1.57 0 3.1415" />
+            <geometry>
+                <mesh filename="package://roverrobotics_description/meshes/pro_tire.dae"/>
+            </geometry>
+        </visual>
+
+        <collision>
+            <origin xyz="0 0 0" rpy="1.57 0 3.1415" />
+            <geometry>
+                <mesh filename="package://roverrobotics_description/meshes/pro_tire.dae"/>
+            </geometry>
+        </collision>
+
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <mass value="${wheel_mass}" />
+            <inertia ixx="0.005645" ixy="0.0"  ixz="0.0" iyy= "0.01008" iyz="0.0" izz="0.005645"/>
+        </inertial>
+    </link>
+    <joint name="rr_wheel_to_chassis" type="continuous">
+        <parent link="chassis_link"/>
+        <child link="rr_wheel_link"/>
+        <axis xyz="0 1 0"/>
+        <origin xyz="${-wheel_x_offset} ${-wheel_y_offset} 0"/>
+    </joint>
+
+    <link name="rl_wheel_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="-1.57 0 3.1415" />
+            <geometry>
+                <mesh filename="package://roverrobotics_description/meshes/pro_tire.dae"/>
+            </geometry>
+        </visual>
+
+        <collision>
+            <origin xyz="0 0 0" rpy="-1.57 0 3.1415" />
+            <geometry>
+                <mesh filename="package://roverrobotics_description/meshes/pro_tire.dae"/>
+            </geometry>
+        </collision>
+
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <mass value="${wheel_mass}" />
+            <inertia ixx="0.005645" ixy="0.0"  ixz="0.0" iyy= "0.01008" iyz="0.0" izz="0.005645"/>
+        </inertial>
+    </link>
+    <joint name="rl_wheel_to_chassis" type="continuous">
+        <parent link="chassis_link"/>
+        <child link="rl_wheel_link"/>
+        <axis xyz="0 1 0"/>
+        <origin xyz="${-wheel_x_offset} ${wheel_y_offset} 0"/>
+    </joint>
+    
+
+    <!-- Gazebo plugins and wheel friction (sim only). -->
+    <xacro:if value="$(arg sim_mode)">
+        <xacro:include filename="$(find circe_description)/urdf/gazebo/plugins.xacro" />
+    </xacro:if>
+
+</robot>

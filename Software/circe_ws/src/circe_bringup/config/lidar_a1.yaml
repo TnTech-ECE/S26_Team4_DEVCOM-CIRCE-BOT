@@ -1,0 +1,20 @@
+# RPLidar A1 (sllidar_node). Keyed on /** so a node rename can't silently drop it.
+
+/**:
+  ros__parameters:
+    channel_type: "serial"
+
+    # From udev/60-rplidar.rules.
+    serial_port: "/dev/rplidar"
+
+    serial_baudrate: 115200  # A1 rate (driver default 1000000 is wrong)
+
+    # Must match lidar_link in rplidar_a1.urdf.xacro.
+    frame_id: "lidar_link"
+
+    inverted: false
+    angle_compensate: true
+
+    # Standard (4 kHz) or Sensitivity/Boost (8 kHz).
+    scan_mode: "Standard"
+    scan_frequency: 10.0

@@ -1,0 +1,5 @@
+# /dev/rplidar -> RPLidar A1 (CP2102). 10c4:ea60 is generic; add ATTRS{serial} if
+# another CP2102 device is ever attached.
+# Install: sudo cp 6*.rules /etc/udev/rules.d/ && sudo udevadm control --reload-rules && sudo udevadm trigger
+
+KERNEL=="ttyUSB*", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", MODE:="0777", SYMLINK+="rplidar"

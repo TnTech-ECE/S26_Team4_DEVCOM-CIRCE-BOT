@@ -1,0 +1,35 @@
+# Teensy USB bridge (teensy_bridge.py)
+/**:
+  ros__parameters:
+    # udev symlink (63-teensy.rules); ttyACM order isn't fixed.
+    port: /dev/teensy
+
+    # Forwarded as ODOM_SPEED for spool pay-out.
+    odom_topic: /odometry/filtered
+
+    # Also the spool watchdog: keep above ~4 Hz (PI_TIMEOUT_MS = 750 ms).
+    heartbeat_hz: 5.0
+
+    teensy_timeout_s: 3.0
+
+    # Rover driver's software e-stop.
+    estop_trigger_topic: /soft_estop/trigger
+    estop_reset_topic: /soft_estop/reset
+
+    # Indexed by bms_id (src/bms.cpp).
+    battery_topics: ['/battery/bms_0', '/battery/bms_1']
+    battery_frame: base_link
+
+    gps_frame: gps_link
+
+    # 1-sigma horizontal error per unit HDOP, m.
+    gps_sigma_per_hdop: 2.5
+
+    # Indexed by sensor_id (src/ultrasonic.cpp).
+    ultrasonic_topics: ['/ultrasonic/sensor_0', '/ultrasonic/sensor_1']
+    ultrasonic_frames: ['ultrasonic_0_link', 'ultrasonic_1_link']
+
+    ultrasonic_fov_rad: 1.047
+
+    # Empty: ~/circe_logs/teensy_rx_<timestamp>.txt
+    log_file: ''

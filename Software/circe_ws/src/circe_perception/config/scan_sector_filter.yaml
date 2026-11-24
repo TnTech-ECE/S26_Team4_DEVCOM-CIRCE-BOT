@@ -1,0 +1,14 @@
+# Rear-sector lidar mask: /scan_raw -> /scan (before the /scan_filtered fork).
+# Bearing 0 in lidar_link is the rover's REAR (lidar is yawed 180 deg), so the
+# masked sector is centred on 0. Masked beams become range_max + 1 (no return).
+
+/**:
+  ros__parameters:
+    filter1:
+      name: rear_sector
+      type: laser_filters/LaserScanAngularBoundsFilterInPlace
+      params:
+        # Delete bearings between +/-30 deg in lidar_link (spool is +/-25.7 deg).
+        # +/-90 left base_link outside the cold-start map, so the first goal failed.
+        lower_angle: -0.5235988
+        upper_angle: 0.5235988

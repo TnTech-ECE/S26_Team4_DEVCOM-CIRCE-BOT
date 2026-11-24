@@ -1,0 +1,66 @@
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="realsense_d456">
+
+    <!--
+      RealSense D456 (modelled by the D455 macro) on sensor_shelf_link.
+      Include after circe_sensor_mast.urdf.xacro.
+      use_nominal_extrinsics follows sim_mode: on hardware the driver publishes the
+      camera_* frames from factory calibration. Measure the mount offsets before driving.
+    -->
+    <xacro:include filename="$(find realsense2_description)/urdf/_d455.urdf.xacro" />
+
+    <xacro:property name="camera_mount_x" value="0.0" />
+    <xacro:property name="camera_mount_y" value="0.0" />
+    <xacro:property name="camera_mount_z" value="0.0" />
+    <xacro:property name="camera_mount_roll" value="0.0" />
+    <!-- Positive pitch tilts down. -->
+    <xacro:property name="camera_mount_pitch" value="0.0" />
+    <xacro:property name="camera_mount_yaw" value="0.0" />
+
+    <xacro:arg name="sim_mode" default="false" />
+
+    <xacro:sensor_d455 parent="sensor_shelf_link" name="camera"
+                       use_nominal_extrinsics="$(arg sim_mode)">
+        <origin xyz="${camera_mount_x} ${camera_mount_y} ${camera_mount_z}"
+                rpy="${camera_mount_roll} ${camera_mount_pitch} ${camera_mount_yaw}"/>
+    </xacro:sensor_d455>
+
+    <!--
+      Simulated D456 (sim only). gz topics are renamed to the driver's names in
+      circe_gazebo/config/gz_bridge.yaml. Low resolution/rate to save CPU.
+    -->
+    <xacro:if value="$(arg sim_mode)">
+    <gazebo reference="camera_link">
+        <sensor name="rgbd_camera" type="rgbd_camera">
+            <topic>camera/camera</topic>
+            <gz_frame_id>camera_depth_optical_frame</gz_frame_id>
+            <update_rate>10</update_rate>
+            <always_on>1</always_on>
+            <visualize>false</visualize>
+            <camera>
+                <horizontal_fov>1.518</horizontal_fov>
+                <image>
+                    <width>424</width>
+                    <height>240</height>
+                    <format>R8G8B8</format>
+                </image>
+                <clip>
+                    <near>0.2</near>
+                    <far>20.0</far>
+                </clip>
+                <depth_camera>
+                    <clip>
+                        <near>0.4</near>
+                        <far>20.0</far>
+                    </clip>
+                </depth_camera>
+                <noise>
+                    <type>gaussian</type>
+                    <mean>0.0</mean>
+                    <stddev>0.007</stddev>
+                </noise>
+            </camera>
+        </sensor>
+    </gazebo>
+    </xacro:if>
+
+</robot>

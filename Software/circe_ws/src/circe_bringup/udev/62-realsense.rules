@@ -1,0 +1,11 @@
+# USB permissions for the RealSense D456 (no package ships this rule). Replug after install.
+
+SUBSYSTEM=="usb", ATTRS{idVendor}=="8086", MODE:="0666", GROUP:="plugdev"
+SUBSYSTEM=="usb_device", ATTRS{idVendor}=="8086", MODE:="0666", GROUP:="plugdev"
+
+# UVC video nodes (depth/IR streams).
+SUBSYSTEM=="video4linux", ATTRS{idVendor}=="8086", MODE:="0666", GROUP:="video"
+
+# HID/iio nodes for the IMU; without these /camera/camera/imu stays silent.
+SUBSYSTEM=="hidraw", ATTRS{idVendor}=="8086", MODE:="0666", GROUP:="plugdev"
+KERNEL=="iio*", ATTRS{idVendor}=="8086", MODE:="0666", GROUP:="plugdev"

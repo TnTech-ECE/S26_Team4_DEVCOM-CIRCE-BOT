@@ -1,0 +1,372 @@
+# Nav2 for CIRCE. No AMCL: map -> odom comes from slam_toolbox.
+# No use_sim_time here; it would override the value nav2_bringup passes in.
+
+bt_navigator:
+  ros__parameters:
+    global_frame: map
+    robot_base_frame: base_link
+    odom_topic: /odometry/filtered
+    bt_loop_duration: 10
+    default_server_timeout: 20
+    # No plugin_lib_names: Jazzy registers built-in BT nodes itself (duplicates crash).
+
+controller_server:
+  ros__parameters:
+    # Sized for the Pi 5 (400 samples x 30 steps x 15 Hz); 20 Hz missed its rate.
+    controller_frequency: 15.0
+    min_x_velocity_threshold: 0.001
+    min_y_velocity_threshold: 0.5
+    min_theta_velocity_threshold: 0.01
+    failure_tolerance: 0.3
+    progress_checker_plugin: "progress_checker"
+    goal_checker_plugins: ["general_goal_checker"]
+    controller_plugins: ["FollowPath"]
+    odom_topic: "odometry/filtered"
+
+    # Driver and gz bridge both take unstamped Twist.
+    enable_stamped_cmd_vel: false
+
+    progress_checker:
+      plugin: "nav2_controller::SimpleProgressChecker"
+      required_movement_radius: 0.5
+      movement_time_allowance: 10.0
+    general_goal_checker:
+      stateful: True
+      plugin: "nav2_controller::SimpleGoalChecker"
+      xy_goal_tolerance: 0.5
+      yaw_goal_tolerance: 0.5
+    FollowPath:
+      plugin: "nav2_mppi_controller::MPPIController"
+      # model_dt must be >= 1/controller_frequency. Horizon = 30 x 0.0667 = 2 s.
+      time_steps: 30
+      model_dt: 0.0667
+      # Raise toward 600 if trajectories jitter.
+      batch_size: 400
+      vx_std: 0.2
+      vy_std: 0.2
+      wz_std: 0.4
+      # Stock speed (platform max 2.59 m/s).
+      vx_max: 0.5
+      vx_min: -0.35
+      vy_max: 0.5
+      wz_max: 1.9
+      iteration_count: 1
+      prune_distance: 1.7
+      transform_tolerance: 0.1
+      temperature: 0.3
+      gamma: 0.015
+      motion_model: "DiffDrive"
+      visualize: false
+      reset_period: 1.0 # (only in Humble)
+      TrajectoryVisualizer:
+        trajectory_step: 5
+        time_step: 3
+      AckermannConstrains:
+        min_turning_r: 0.2
+      critics: ["ConstraintCritic", "CostCritic", "GoalCritic", "GoalAngleCritic", "PathAlignCritic", "PathFollowCritic", "PathAngleCritic", "PreferForwardCritic"]
+      ConstraintCritic:
+        enabled: true
+        cost_power: 1
+        cost_weight: 4.0
+      GoalCritic:
+        enabled: true
+        cost_power: 1
+        cost_weight: 5.0
+        threshold_to_consider: 1.4
+      GoalAngleCritic:
+        enabled: true
+        cost_power: 1
+        cost_weight: 3.0
+        threshold_to_consider: 0.5
+      PreferForwardCritic:
+        enabled: true
+        cost_power: 1
+        # Was 5.0; the rover reversed into goals.
+        cost_weight: 20.0
+        threshold_to_consider: 0.5
+      # Replaced ObstaclesCritic; scores the real footprint against inflated cost.
+      CostCritic:
+        enabled: true
+        cost_power: 1
+        cost_weight: 3.81
+        critical_cost: 300.0
+        collision_cost: 1000000.0
+        # Needs inflation_radius > circumscribed radius (0.395 m).
+        consider_footprint: true
+        near_goal_distance: 1.0
+        inflation_layer_name: "inflation_layer"
+        trajectory_point_step: 2
+      PathAlignCritic:
+        enabled: true
+        cost_power: 1
+        # Was 14.0, which overruled obstacle avoidance.
+        cost_weight: 8.0
+        max_path_occupancy_ratio: 0.05
+        trajectory_point_step: 3
+        threshold_to_consider: 0.5
+        offset_from_furthest: 20
+        use_path_orientations: false
+      PathFollowCritic:
+        enabled: true
+        cost_power: 1
+        cost_weight: 5.0
+        offset_from_furthest: 5
+        threshold_to_consider: 1.4
+      PathAngleCritic:
+        enabled: true
+        cost_power: 1
+        cost_weight: 2.0
+        offset_from_furthest: 4
+        threshold_to_consider: 0.5
+        max_angle_to_furthest: 1.0
+        mode: 0
+
+local_costmap:
+  local_costmap:
+    ros__parameters:
+      update_frequency: 10.0
+      publish_frequency: 5.0
+      global_frame: odom
+      robot_base_frame: base_link
+      rolling_window: true
+      width: 8
+      height: 8
+      resolution: 0.05
+      footprint: "[[0.27305, 0.1778],[0.27305, -0.1778],[-0.27305, -0.1778],[-0.27305, 0.1778]]"
+      # CostCritic collision margin (was 0.01).
+      footprint_padding: 0.05
+      # terrain_layer before inflation so its cost gets inflated.
+      plugins: ["voxel_layer", "terrain_layer", "inflation_layer"]
+      # StaticLayer on live /terrain/grid: graded cost, add-only (use_maximum).
+      terrain_layer:
+        plugin: "nav2_costmap_2d::StaticLayer"
+        map_topic: /terrain/grid
+        trinary_costmap: false
+        use_maximum: true
+        subscribe_to_updates: false
+        map_subscribe_transient_local: false
+        # StaticLayers ignore clear-costmap recoveries; never mark the robot's own cells.
+        footprint_clearing_enabled: True
+      inflation_layer:
+        plugin: "nav2_costmap_2d::InflationLayer"
+        cost_scaling_factor: 3.0
+        # Main avoidance knob. Must leave room in the narrowest gap (0.70 closed indoor doorways).
+        inflation_radius: 0.55
+      voxel_layer:
+        plugin: "nav2_costmap_2d::VoxelLayer"
+        enabled: True
+        publish_voxel_map: True
+        origin_z: 0.0
+        z_resolution: 0.05
+        z_voxels: 16
+        max_obstacle_height: 2.0
+        mark_threshold: 0
+        observation_sources: scan
+        scan:
+          # scan_pitch_filter removes ground returns on slopes.
+          topic: /scan_filtered
+          max_obstacle_height: 2.0
+          clearing: True
+          marking: True
+          data_type: "LaserScan"
+          raytrace_max_range: 3.0
+          raytrace_min_range: 0.0
+          obstacle_max_range: 2.5
+          obstacle_min_range: 0.0
+      static_layer:
+        plugin: "nav2_costmap_2d::StaticLayer"
+        map_subscribe_transient_local: True
+      always_send_full_costmap: True
+
+global_costmap:
+  global_costmap:
+    ros__parameters:
+      update_frequency: 1.0
+      publish_frequency: 1.0
+      global_frame: map
+      robot_base_frame: base_link
+      footprint: "[[0.27305, 0.1778],[0.27305, -0.1778],[-0.27305, -0.1778],[-0.27305, 0.1778]]"
+      footprint_padding: 0.025
+
+      # 0.10 is 4x cheaper but unverified; profile planning time on the Pi.
+      resolution: 0.05
+
+      # Rolling 60 x 60 m, so goals in unmapped terrain work; legs must stay < 30 m.
+      rolling_window: true
+      width: 60
+      height: 60
+
+      # Unseen ground stays unknown, not free.
+      track_unknown_space: true
+
+      # No terrain_layer here yet (it fought /map over bounds before rolling_window).
+      plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
+      obstacle_layer:
+        plugin: "nav2_costmap_2d::ObstacleLayer"
+        enabled: True
+        observation_sources: scan
+        scan:
+          topic: /scan_filtered
+          max_obstacle_height: 2.0
+          clearing: True
+          marking: True
+          data_type: "LaserScan"
+          raytrace_max_range: 3.0
+          raytrace_min_range: 0.0
+          obstacle_max_range: 2.5
+          obstacle_min_range: 0.0
+      static_layer:
+        plugin: "nav2_costmap_2d::StaticLayer"
+        map_subscribe_transient_local: True
+        # SLAM pose error can put the robot "inside" a mapped obstacle; this clears it.
+        footprint_clearing_enabled: True
+      inflation_layer:
+        plugin: "nav2_costmap_2d::InflationLayer"
+        cost_scaling_factor: 3.0
+        # SmacPlanner's "Inflation layer not found" startup error is a Nav2 quirk; ignore it.
+        inflation_radius: 0.55
+      always_send_full_costmap: True
+
+map_server:
+  ros__parameters:
+    use_sim_time: False
+    # Unused while slam_toolbox publishes /map.
+    yaml_filename: ""
+
+map_saver:
+  ros__parameters:
+    use_sim_time: False
+    save_map_timeout: 5.0
+    free_thresh_default: 0.25
+    occupied_thresh_default: 0.65
+    map_subscribe_transient_local: True
+
+planner_server:
+  ros__parameters:
+    expected_planner_frequency: 20.0
+    planner_plugins: ["GridBased"]
+
+    # SmacPlanner2D: NavFn failed on mostly-unknown rolling costmaps.
+    GridBased:
+      plugin: "nav2_smac_planner::SmacPlanner2D"
+
+      # Plan through unexplored ground.
+      allow_unknown: true
+
+      tolerance: 0.5
+
+      max_iterations: 1000000
+      max_on_approach_iterations: 1000
+      max_planning_time: 2.0
+
+      # Off: mis-checks goal bounds on a rolling costmap.
+      downsample_costmap: false
+      downsampling_factor: 2
+
+      cost_travel_multiplier: 2.0
+
+      use_final_approach_orientation: false
+
+smoother_server:
+  ros__parameters:
+    smoother_plugins: ["simple_smoother"]
+    simple_smoother:
+      plugin: "nav2_smoother::SimpleSmoother"
+      tolerance: 1.0e-10
+      max_its: 1000
+      do_refinement: True
+
+behavior_server:
+  ros__parameters:
+    costmap_topic: local_costmap/costmap_raw
+    footprint_topic: local_costmap/published_footprint
+    cycle_frequency: 10.0
+    behavior_plugins: ["spin", "backup", "drive_on_heading", "assisted_teleop", "wait"]
+    spin:
+      plugin: "nav2_behaviors::Spin"
+    backup:
+      plugin: "nav2_behaviors::BackUp"
+    drive_on_heading:
+      plugin: "nav2_behaviors::DriveOnHeading"
+    wait:
+      plugin: "nav2_behaviors::Wait"
+    assisted_teleop:
+      plugin: "nav2_behaviors::AssistedTeleop"
+    global_frame: odom
+    robot_base_frame: base_link
+    transform_tolerance: 1.2
+    simulate_ahead_time: 2.0
+    max_rotational_vel: 2.5
+    min_rotational_vel: 0.55
+    rotational_acc_lim: 4.2
+
+waypoint_follower:
+  ros__parameters:
+    loop_rate: 20
+    stop_on_failure: false
+    waypoint_task_executor_plugin: "wait_at_waypoint"
+    wait_at_waypoint:
+      plugin: "nav2_waypoint_follower::WaitAtWaypoint"
+      enabled: True
+      waypoint_pause_duration: 200
+
+velocity_smoother:
+  ros__parameters:
+    smoothing_frequency: 20.0
+    scale_velocities: False
+    feedback: "OPEN_LOOP"
+    # The real speed cap: last in the chain.
+    max_velocity: [0.4, 0.0, 2.0]
+    min_velocity: [-0.4, 0.0, -2.0]
+    max_accel: [2.5, 0.0, 3.0]
+    max_decel: [-2.5, 0.0, -3.0]
+    odom_topic: "odometry/filtered"
+    odom_duration: 0.1
+    deadband_velocity: [0.0, 0.0, 0.0]
+    velocity_timeout: 5.0
+
+docking_server:
+  ros__parameters:
+    # Required by the Jazzy bringup even without a dock; no docks declared.
+    controller_frequency: 50.0
+    base_frame: "base_link"
+    fixed_frame: "odom"
+    dock_plugins: ['simple_charging_dock']
+    simple_charging_dock:
+      plugin: 'opennav_docking::SimpleChargingDock'
+      docking_threshold: 0.05
+      staging_x_offset: -0.7
+      use_external_detection_pose: false
+      use_battery_status: false
+      use_stall_detection: false
+
+collision_monitor:
+  ros__parameters:
+    # Required by the Jazzy bringup. Last in the cmd_vel chain.
+    base_frame_id: "base_link"
+    odom_frame_id: "odom"
+    cmd_vel_in_topic: "cmd_vel_smoothed"
+    cmd_vel_out_topic: "cmd_vel"
+    state_topic: "collision_monitor_state"
+    transform_tolerance: 0.2
+    source_timeout: 1.0
+    base_shift_correction: True
+    stop_pub_timeout: 2.0
+    polygons: ["FootprintApproach"]
+    FootprintApproach:
+      type: "polygon"
+      action_type: "approach"
+      footprint_topic: "/local_costmap/published_footprint"
+      time_before_collision: 1.2
+      simulation_time_step: 0.1
+      min_points: 6
+      visualize: False
+      enabled: True
+    observation_sources: ["scan"]
+    scan:
+      type: "scan"
+      topic: "scan"
+      # Above ground returns, below real obstacles.
+      min_height: 0.15
+      max_height: 2.0
+      enabled: True

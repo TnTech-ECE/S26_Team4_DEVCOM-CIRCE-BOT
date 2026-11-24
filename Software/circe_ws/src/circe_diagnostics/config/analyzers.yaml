@@ -1,0 +1,68 @@
+# CIRCE diagnostics tree (diagnostic_aggregator): Sensors, Localization, Navigation, Computer.
+# num_items: 0 keeps an empty group (e.g. use_nav2:=false) from reading STALE/ERROR.
+
+/**:
+  ros__parameters:
+    path: CIRCE
+    pub_rate: 1.0
+
+    sensors:
+      type: diagnostic_aggregator/AnalyzerGroup
+      path: Sensors
+      analyzers:
+        # Includes scan_sector_filter's own heartbeat.
+        lidar:
+          type: diagnostic_aggregator/GenericAnalyzer
+          path: Lidar
+          find_and_remove_prefix: ['circe_health_monitor: Lidar', 'scan_sector_filter']
+          num_items: 0
+          timeout: 5.0
+        camera:
+          type: diagnostic_aggregator/GenericAnalyzer
+          path: Camera
+          find_and_remove_prefix: ['circe_health_monitor: Camera']
+          num_items: 0
+          timeout: 5.0
+        imu:
+          type: diagnostic_aggregator/GenericAnalyzer
+          path: IMU
+          find_and_remove_prefix: ['circe_health_monitor: IMU']
+          num_items: 0
+          timeout: 5.0
+        odometry:
+          type: diagnostic_aggregator/GenericAnalyzer
+          path: Odometry
+          find_and_remove_prefix: ['circe_health_monitor: Odometry']
+          num_items: 0
+          timeout: 5.0
+
+    localization:
+      type: diagnostic_aggregator/AnalyzerGroup
+      path: Localization
+      analyzers:
+        ekf:
+          type: diagnostic_aggregator/GenericAnalyzer
+          path: EKF
+          find_and_remove_prefix: ['ekf_filter_node']
+          num_items: 0
+          timeout: 5.0
+        slam:
+          type: diagnostic_aggregator/GenericAnalyzer
+          path: SLAM
+          find_and_remove_prefix: ['circe_health_monitor: SLAM', 'lifecycle_manager_localization']
+          num_items: 0
+          timeout: 5.0
+
+    navigation:
+      type: diagnostic_aggregator/GenericAnalyzer
+      path: Navigation
+      find_and_remove_prefix: ['lifecycle_manager_navigation']
+      num_items: 0
+      timeout: 5.0
+
+    computer:
+      type: diagnostic_aggregator/GenericAnalyzer
+      path: Computer
+      find_and_remove_prefix: ['circe_health_monitor: Host']
+      num_items: 0
+      timeout: 5.0

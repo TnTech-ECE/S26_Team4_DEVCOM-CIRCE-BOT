@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>circe_diagnostics</name>
+  <version>0.1.0</version>
+  <description>
+    Runtime health monitoring for CIRCE. circe_health_monitor watches the parts of the
+    stack that report nothing about themselves -- lidar, camera, IMU, SLAM and the Pi 5
+    -- and diagnostic_aggregator folds those statuses, together with the ones the EKF
+    and Nav2 already publish, into one tree on /diagnostics_agg and a single overall
+    level on /diagnostics_toplevel_state.
+
+    Monitoring only: nothing here acts on what it reports.
+  </description>
+  <maintainer email="sz1305568@gmail.com">sharif</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <!-- scripts/health_monitor.py -->
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>diagnostic_updater</exec_depend>
+  <exec_depend>diagnostic_msgs</exec_depend>
+  <exec_depend>rcl_interfaces</exec_depend>
+  <exec_depend>tf2_msgs</exec_depend>
+  <exec_depend>rosidl_runtime_py</exec_depend>
+  <!-- Message types named in config/health_monitor.yaml. -->
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>nav_msgs</exec_depend>
+  <exec_depend>python3-psutil</exec_depend>
+
+  <exec_depend>diagnostic_aggregator</exec_depend>
+
+  <!-- rqt_robot_monitor (viewer) intentionally not declared. -->
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

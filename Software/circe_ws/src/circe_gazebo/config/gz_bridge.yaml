@@ -1,0 +1,85 @@
+# ros_gz_bridge config, loaded by circe_sim.launch.py.
+# Do NOT bridge /tf: the EKF owns odom -> base_link; the DiffDrive TF is parked on /tf_gazebo.
+# Jazzy only knows gz.msgs.* (ignition.msgs.* rows are silently dropped).
+# Camera rows rename gz topics to match realsense2_camera.
+
+# Bridge first: use_sim_time nodes sit at time zero without it.
+- ros_topic_name: "/clock"
+  gz_topic_name: "/clock"
+  ros_type_name: "rosgraph_msgs/msg/Clock"
+  gz_type_name: "gz.msgs.Clock"
+  direction: GZ_TO_ROS
+
+# Unstamped Twist, same as roverrobotics_driver.
+- ros_topic_name: "/cmd_vel"
+  gz_topic_name: "/cmd_vel"
+  ros_type_name: "geometry_msgs/msg/Twist"
+  gz_type_name: "gz.msgs.Twist"
+  direction: ROS_TO_GZ
+
+# EKF odom0.
+- ros_topic_name: "/odometry/wheels"
+  gz_topic_name: "/odometry/wheels"
+  ros_type_name: "nav_msgs/msg/Odometry"
+  gz_type_name: "gz.msgs.Odometry"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/joint_states"
+  gz_topic_name: "/joint_states"
+  ros_type_name: "sensor_msgs/msg/JointState"
+  gz_type_name: "gz.msgs.Model"
+  direction: GZ_TO_ROS
+
+# /scan_raw, not /scan: scan_sector_filter masks the rear and republishes /scan.
+- ros_topic_name: "/scan_raw"
+  gz_topic_name: "/scan"
+  ros_type_name: "sensor_msgs/msg/LaserScan"
+  gz_type_name: "gz.msgs.LaserScan"
+  direction: GZ_TO_ROS
+
+# Sim IMU gives exact attitude and true yaw; hardware (imu_fusion.py) does not.
+- ros_topic_name: "/imu/data"
+  gz_topic_name: "/imu/data"
+  ros_type_name: "sensor_msgs/msg/Imu"
+  gz_type_name: "gz.msgs.IMU"
+  direction: GZ_TO_ROS
+
+# Camera: visualisation and terrain only.
+- ros_topic_name: "/camera/camera/color/image_raw"
+  gz_topic_name: "/camera/camera/image"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/camera/camera/color/camera_info"
+  gz_topic_name: "/camera/camera/camera_info"
+  ros_type_name: "sensor_msgs/msg/CameraInfo"
+  gz_type_name: "gz.msgs.CameraInfo"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/camera/camera/depth/image_rect_raw"
+  gz_topic_name: "/camera/camera/depth_image"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+  direction: GZ_TO_ROS
+
+# Same camera_info bridged again under the depth name, for the terrain node.
+- ros_topic_name: "/camera/camera/depth/camera_info"
+  gz_topic_name: "/camera/camera/camera_info"
+  ros_type_name: "sensor_msgs/msg/CameraInfo"
+  gz_type_name: "gz.msgs.CameraInfo"
+  direction: GZ_TO_ROS
+
+# Disabled on hardware; bridged for RViz only.
+- ros_topic_name: "/camera/camera/depth/color/points"
+  gz_topic_name: "/camera/camera/points"
+  ros_type_name: "sensor_msgs/msg/PointCloud2"
+  gz_type_name: "gz.msgs.PointCloudPacked"
+  direction: GZ_TO_ROS
+
+# Sim-only ground truth for measuring localisation error. Nav stack must never use it.
+- ros_topic_name: "/ground_truth/odom"
+  gz_topic_name: "/ground_truth/odom"
+  ros_type_name: "nav_msgs/msg/Odometry"
+  gz_type_name: "gz.msgs.Odometry"
+  direction: GZ_TO_ROS
