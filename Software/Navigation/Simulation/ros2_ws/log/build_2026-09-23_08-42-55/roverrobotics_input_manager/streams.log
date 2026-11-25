@@ -1,0 +1,48 @@
+[0.015s] Invoking command in '/home/njromsdal/ros2_ws/build/roverrobotics_input_manager': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/njromsdal/ros2_ws/src/roverrobotics_ros2/roverrobotics_input_manager -DCMAKE_INSTALL_PREFIX=/home/njromsdal/ros2_ws/install/roverrobotics_input_manager
+[0.205s] -- The C compiler identification is GNU 13.3.0
+[0.355s] -- The CXX compiler identification is GNU 13.3.0
+[0.383s] -- Detecting C compiler ABI info
+[0.547s] -- Detecting C compiler ABI info - done
+[0.564s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.564s] -- Detecting C compile features
+[0.565s] -- Detecting C compile features - done
+[0.582s] -- Detecting CXX compiler ABI info
+[0.757s] -- Detecting CXX compiler ABI info - done
+[0.773s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.774s] -- Detecting CXX compile features
+[0.775s] -- Detecting CXX compile features - done
+[0.804s] -- Found ament_cmake: 2.5.6 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[1.062s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+[1.368s] -- Configuring done (1.3s)
+[1.371s] -- Generating done (0.0s)
+[1.373s] -- Build files have been written to: /home/njromsdal/ros2_ws/build/roverrobotics_input_manager
+[1.380s] Invoked command in '/home/njromsdal/ros2_ws/build/roverrobotics_input_manager' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/njromsdal/ros2_ws/src/roverrobotics_ros2/roverrobotics_input_manager -DCMAKE_INSTALL_PREFIX=/home/njromsdal/ros2_ws/install/roverrobotics_input_manager
+[1.382s] Invoking command in '/home/njromsdal/ros2_ws/build/roverrobotics_input_manager': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/njromsdal/ros2_ws/build/roverrobotics_input_manager -- -j20 -l20
+[1.434s] Invoked command in '/home/njromsdal/ros2_ws/build/roverrobotics_input_manager' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/njromsdal/ros2_ws/build/roverrobotics_input_manager -- -j20 -l20
+[1.450s] Invoking command in '/home/njromsdal/ros2_ws/build/roverrobotics_input_manager': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/njromsdal/ros2_ws/build/roverrobotics_input_manager
+[1.462s] -- Install configuration: ""
+[1.462s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_input_manager/lib/roverrobotics_input_manager/modules
+[1.462s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_input_manager/lib/roverrobotics_input_manager/modules/Topics.py
+[1.462s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_input_manager/lib/roverrobotics_input_manager/modules/__pycache__
+[1.463s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_input_manager/lib/roverrobotics_input_manager/modules/__pycache__/Topics.cpython-310.pyc
+[1.463s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_input_manager/lib/roverrobotics_input_manager/modules/__pycache__/Topics.cpython-38.pyc
+[1.463s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_input_manager/lib/roverrobotics_input_manager/modules/__pycache__/Controller.cpython-38.pyc
+[1.463s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_input_manager/lib/roverrobotics_input_manager/modules/__pycache__/Controller.cpython-310.pyc
+[1.463s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_input_manager/lib/roverrobotics_input_manager/modules/Controller.py
+[1.463s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_input_manager/lib/roverrobotics_input_manager/joys_manager.py
+[1.463s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_input_manager/share/ament_index/resource_index/package_run_dependencies/roverrobotics_input_manager
+[1.463s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_input_manager/share/ament_index/resource_index/parent_prefix_path/roverrobotics_input_manager
+[1.463s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_input_manager/share/roverrobotics_input_manager/environment/ament_prefix_path.sh
+[1.464s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_input_manager/share/roverrobotics_input_manager/environment/ament_prefix_path.dsv
+[1.464s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_input_manager/share/roverrobotics_input_manager/environment/path.sh
+[1.464s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_input_manager/share/roverrobotics_input_manager/environment/path.dsv
+[1.464s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_input_manager/share/roverrobotics_input_manager/local_setup.bash
+[1.464s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_input_manager/share/roverrobotics_input_manager/local_setup.sh
+[1.464s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_input_manager/share/roverrobotics_input_manager/local_setup.zsh
+[1.464s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_input_manager/share/roverrobotics_input_manager/local_setup.dsv
+[1.464s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_input_manager/share/roverrobotics_input_manager/package.dsv
+[1.464s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_input_manager/share/ament_index/resource_index/packages/roverrobotics_input_manager
+[1.464s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_input_manager/share/roverrobotics_input_manager/cmake/roverrobotics_input_managerConfig.cmake
+[1.464s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_input_manager/share/roverrobotics_input_manager/cmake/roverrobotics_input_managerConfig-version.cmake
+[1.464s] -- Installing: /home/njromsdal/ros2_ws/install/roverrobotics_input_manager/share/roverrobotics_input_manager/package.xml
+[1.467s] Invoked command in '/home/njromsdal/ros2_ws/build/roverrobotics_input_manager' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/njromsdal/ros2_ws/build/roverrobotics_input_manager

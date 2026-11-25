@@ -1,0 +1,21 @@
+[01m[K/home/njromsdal/ros2_ws/src/roverrobotics_ros2/roverrobotics_driver/library/librover/src/vesc.cpp:[m[K In member function ‘[01m[Kvesc::vescChannelStatus vesc::BridgedVescArray::[01;32m[KparseReceivedMessage[m[K(std::vector<unsigned char>)[m[K’:
+[01m[K/home/njromsdal/ros2_ws/src/roverrobotics_ros2/roverrobotics_driver/library/librover/src/vesc.cpp:76:5:[m[K [01;35m[Kwarning: [m[Kcontrol reaches end of non-void function [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wreturn-type-Wreturn-type]8;;[m[K]
+   76 |     [01;35m[K}[m[K
+      |     [01;35m[K^[m[K
+In file included from [01m[K/home/njromsdal/ros2_ws/src/roverrobotics_ros2/roverrobotics_driver/include/roverrobotics_ros2_driver.hpp:23[m[K,
+                 from [01m[K/home/njromsdal/ros2_ws/src/roverrobotics_ros2/roverrobotics_driver/src/roverrobotics_ros2_driver.cpp:1[m[K:
+[01m[K/opt/ros/jazzy/include/rcpputils/rcppmath/rolling_mean_accumulator.hpp:20:2:[m[K [01;35m[Kwarning: [m[K#warning "the rcppmath namespace is deprecated, include rcpputils/rolling_mean_accumulator.hpp instead" [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wcpp-Wcpp]8;;[m[K]
+   20 | #[01;35m[Kwarning[m[K \
+      |  [01;35m[K^~~~~~~[m[K
+[01m[K/home/njromsdal/ros2_ws/src/roverrobotics_ros2/roverrobotics_driver/include/roverrobotics_ros2_driver.hpp:44:44:[m[K [01;35m[Kwarning: [m[K‘[01m[Kusing rcppmath::RollingMeanAccumulator = class rcpputils::RollingMeanAccumulator<double>[m[K’ is deprecated: use rcpputils::RollingMeanAccumulator instead [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wdeprecated-declarations-Wdeprecated-declarations]8;;[m[K]
+   44 |   using RollingMeanAccumulator = rcppmath::[01;35m[KRollingMeanAccumulator<double>[m[K;
+      |                                            [01;35m[K^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+[01m[K/opt/ros/jazzy/include/rcpputils/rcppmath/rolling_mean_accumulator.hpp:27:7:[m[K [01;36m[Knote: [m[Kdeclared here
+   27 | using [01;36m[KRollingMeanAccumulator[m[K [[deprecated("use rcpputils::RollingMeanAccumulator instead")]] =
+      |       [01;36m[K^~~~~~~~~~~~~~~~~~~~~~[m[K
+[01m[K/home/njromsdal/ros2_ws/src/roverrobotics_ros2/roverrobotics_driver/include/roverrobotics_ros2_driver.hpp:44:74:[m[K [01;35m[Kwarning: [m[K‘[01m[Kusing rcppmath::RollingMeanAccumulator = class rcpputils::RollingMeanAccumulator<double>[m[K’ is deprecated: use rcpputils::RollingMeanAccumulator instead [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wdeprecated-declarations-Wdeprecated-declarations]8;;[m[K]
+   44 |   using RollingMeanAccumulator = rcppmath::RollingMeanAccumulator<double>[01;35m[K;[m[K
+      |                                                                          [01;35m[K^[m[K
+[01m[K/opt/ros/jazzy/include/rcpputils/rcppmath/rolling_mean_accumulator.hpp:27:7:[m[K [01;36m[Knote: [m[Kdeclared here
+   27 | using [01;36m[KRollingMeanAccumulator[m[K [[deprecated("use rcpputils::RollingMeanAccumulator instead")]] =
+      |       [01;36m[K^~~~~~~~~~~~~~~~~~~~~~[m[K
